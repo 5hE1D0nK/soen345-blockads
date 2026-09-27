@@ -119,6 +119,10 @@ func mitmTLSFlow(
 	}
 	defer clientTLS.Close()
 
+	if IsYouTubeHost(hostname) {
+		logf("[YouTube] TLS handshake successful with %s — MITM active", hostname)
+	}
+
 	relayHTTPFlow(clientTLS, serverConn, hostname, filter, blocker)
 }
 
@@ -167,6 +171,14 @@ func relayHTTPFlow(clientConn, serverConn net.Conn, hostname string, filter *Mit
 			resp := ServeLocalAsset(req)
 			resp.Write(clientConn)
 			continue
+		}
+
+		// YouTube AdBlock & Protocol interception (sgmodule equivalent)
+		if IsYouTubeHost(reqHost) {
+			if handled, ytResp := HandleYouTubeRequest(req); handled && ytResp != nil {
+				ytResp.Write(clientConn)
+				continue
+			}
 		}
 
 		if blocker != nil && reqHost != hostname && blocker.IsDomainBlocked(reqHost) {
@@ -229,6 +241,11 @@ func relayHTTPFlow(clientConn, serverConn net.Conn, hostname string, filter *Mit
 		if err != nil {
 			return
 		}
+
+		if IsYouTubeHost(reqHost) {
+			FilterYouTubeResponse(req, resp)
+		}
+
 		if ShouldInjectHTML(resp.Header.Get("Content-Type")) {
 			wrapResponseForInjection(resp)
 		}

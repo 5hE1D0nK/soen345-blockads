@@ -237,6 +237,12 @@ func (f *MitmFilter) IsInterceptionAllowed(host string) bool {
 		return false
 	}
 
+	// Layer 1.5: YouTube hosts exemption (youtubei.googleapis.com, googlevideo.com, youtube.com)
+	// Allows in-depth Protobuf and URL rewrite filtering instead of being bypassed as general Google domains.
+	if IsYouTubeHost(host) {
+		return true
+	}
+
 	// Layer 2: Check minimal hardcoded passthrough
 	for _, suffix := range minimalPassthroughSuffixes {
 		if strings.HasSuffix(host, suffix) || host == suffix[1:] {

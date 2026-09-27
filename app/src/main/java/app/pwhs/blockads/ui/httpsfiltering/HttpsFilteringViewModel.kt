@@ -461,10 +461,10 @@ class HttpsFilteringViewModel(
             emptySet()
         }
 
-        return activities
-            .mapNotNull { resolveInfo ->
-                val activityInfo = resolveInfo.activityInfo ?: return@mapNotNull null
-                val pkgName = activityInfo.packageName
+        val candidates = (activities.mapNotNull { it.activityInfo?.packageName } + curatedBrowsers).toSet()
+
+        return candidates
+            .mapNotNull { pkgName ->
                 try {
                     val appInfo = pm.getApplicationInfo(pkgName, 0)
                     val isSelected = if (savedSelected.isEmpty()) {
@@ -483,7 +483,6 @@ class HttpsFilteringViewModel(
                     null
                 }
             }
-            .distinctBy { it.packageName }
             .sortedBy { it.appName }
     }
 

@@ -55,3 +55,5 @@ com.fevdev.nakedbrowserpro
 com.ghostery.android.ghostery
 com.hsv.freeadblockerbrowser
 org.adblockplus.browser
+com.google.android.youtube
+app.revanced.android.youtube

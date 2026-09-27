@@ -167,6 +167,20 @@ object SystemCertificateInstaller {
             commands.add("chmod 644 $userStoreDir/$hashOld.0")
             commands.add("chown system:system $userStoreDir/$hashOld.0 2>/dev/null || true")
 
+            // 6. Live inject into Conscrypt APEX immediately so it works right away
+            commands.add("""
+                APEX_DIR="/apex/com.android.conscrypt/cacerts"
+                if [ -d "${'$'}APEX_DIR" ]; then
+                    for h in $hashOld $hashSha1; do
+                        cert="$MODULE_DIR/system/apex/com.android.conscrypt/cacerts/${'$'}h.0"
+                        if [ -f "${'$'}cert" ]; then
+                            cp "${'$'}cert" "${'$'}APEX_DIR/" 2>/dev/null || true
+                        fi
+                    done
+                    chmod 644 "${'$'}APEX_DIR"/* 2>/dev/null || true
+                fi
+            """.trimIndent())
+
             val res = Shell.cmd(*commands.toTypedArray()).exec()
             if (res.isSuccess) {
                 Timber.d("CA installed to system store module successfully (hashOld=$hashOld, hashSha1=$hashSha1)")
