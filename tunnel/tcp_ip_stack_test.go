@@ -201,10 +201,12 @@ func TestBufferedTunDropsOnOverflow(t *testing.T) {
 
 func TestBufferedTunReadAndHalt(t *testing.T) {
 	leakCheck(t)
-	fds, err := unix.Socketpair(unix.AF_UNIX, unix.SOCK_DGRAM|unix.SOCK_CLOEXEC, 0)
+	fds, err := unix.Socketpair(unix.AF_UNIX, unix.SOCK_DGRAM, 0)
 	if err != nil {
 		t.Fatal(err)
 	}
+	unix.CloseOnExec(fds[0])
+	unix.CloseOnExec(fds[1])
 	a := os.NewFile(uintptr(fds[0]), "a")
 	peer := os.NewFile(uintptr(fds[1]), "b")
 	defer a.Close()

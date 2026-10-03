@@ -71,6 +71,7 @@ class VpnConnectionSupervisorTest {
         isRunningProvider = { running },
         isIdleProvider = { idle },
         socketProtector = { true },
+        isEngineRunning = { true },
         onTearDownForRestart = { teardowns++; running = false; idle = true },
         onStartVpn = { starts++; running = true; idle = false },
         onPhaseChanged = { phases += it },
@@ -189,7 +190,7 @@ class VpnConnectionSupervisorTest {
     private fun stubProbe(vararg statuses: ConnectionStatus) {
         mockkConstructor(ConnectionQualityProbe::class)
         coEvery { anyConstructed<ConnectionQualityProbe>().runDiagnosis() } returnsMany statuses.map {
-            ProbeResult(it, physicalOk = it != ConnectionStatus.NO_PHYSICAL_INTERNET, vpnDnsOk = it == ConnectionStatus.HEALTHY, latencyMs = 1)
+            ProbeResult(it, physicalOk = it != ConnectionStatus.NO_PHYSICAL_INTERNET, engineOk = it == ConnectionStatus.HEALTHY, latencyMs = 1)
         }
     }
 

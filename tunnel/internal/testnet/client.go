@@ -49,10 +49,12 @@ const (
 // unix.Close. client is the other end, non-blocking so reads honor
 // deadlines and Close unblocks them.
 func Socketpair() (engineFd int, client *os.File, err error) {
-	fds, err := unix.Socketpair(unix.AF_UNIX, unix.SOCK_DGRAM|unix.SOCK_CLOEXEC, 0)
+	fds, err := unix.Socketpair(unix.AF_UNIX, unix.SOCK_DGRAM, 0)
 	if err != nil {
 		return -1, nil, err
 	}
+	unix.CloseOnExec(fds[0])
+	unix.CloseOnExec(fds[1])
 	if err := unix.SetNonblock(fds[1], true); err != nil {
 		unix.Close(fds[0])
 		unix.Close(fds[1])

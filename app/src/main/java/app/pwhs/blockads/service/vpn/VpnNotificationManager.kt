@@ -24,7 +24,10 @@ class VpnNotificationManager(private val context: Context) {
         const val ALERT_CHANNEL_ID = "blockads_vpn_alert_channel"
 
         fun cancelWireGuardConfigIssue(context: Context) {
-            context.getSystemService(NotificationManager::class.java)?.cancel(WG_CONFIG_ISSUE_NOTIFICATION_ID)
+            runCatching {
+                (context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager)
+                    ?.cancel(WG_CONFIG_ISSUE_NOTIFICATION_ID)
+            }
         }
     }
 
