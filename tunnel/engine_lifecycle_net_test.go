@@ -253,18 +253,31 @@ func TestStartWireGuardConfig(t *testing.T) {
 			defer unix.Close(fd)
 			done := make(chan struct{})
 			go func() { e.Start(fd, nil, cfg); close(done) }()
-			waitUntil(t, "interceptor running", e.interceptor.IsRunning)
-			adapter := e.GetRouter().GetAdapter()
-			if (adapter != nil) != (name == "valid") {
-				t.Errorf("adapter = %T", adapter)
-			}
-			if adapter != nil && adapter.Name() != "wireguard" {
-				t.Errorf("adapter name = %q", adapter.Name())
-			}
-			e.Stop()
-			<-done
-			if e.GetRouter().GetAdapter() != nil {
-				t.Error("Stop left the adapter active")
+			if name == "valid" {
+				waitUntil(t, "interceptor running", e.interceptor.IsRunning)
+				adapter := e.GetRouter().GetAdapter()
+				if adapter == nil || adapter.Name() != "wireguard" {
+					t.Errorf("adapter = %v", adapter)
+				}
+				e.Stop()
+				<-done
+				if e.GetRouter().GetAdapter() != nil {
+					t.Error("Stop left the adapter active")
+				}
+			} else {
+				// PR #260 fails closed: an invalid WireGuard config stops the engine
+				// immediately instead of falling back to DNS-only.
+				select {
+				case <-done:
+				case <-time.After(5 * time.Second):
+					t.Fatal("timed out waiting for engine to fail closed")
+				}
+				if e.IsRunning() {
+					t.Error("engine is still running after invalid WireGuard config")
+				}
+				if e.GetRouter().GetAdapter() != nil {
+					t.Error("adapter active after invalid WireGuard config")
+				}
 			}
 		})
 	}
