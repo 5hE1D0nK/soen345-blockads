@@ -44,10 +44,12 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.pwhs.blockads.R
 
 @Composable
 fun BentoHeader(modifier: Modifier = Modifier) {
@@ -80,7 +82,7 @@ fun BentoHeader(modifier: Modifier = Modifier) {
                     color = Color.White
                 )
                 Text(
-                    text = "Bảo vệ riêng tư & lọc nội dung",
+                    text = stringResource(R.string.browser_bento_privacy_header),
                     style = MaterialTheme.typography.labelSmall,
                     color = Color.White.copy(alpha = 0.55f)
                 )
@@ -155,7 +157,7 @@ fun BentoStatsCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "ĐÃ CHẶN",
+                        text = stringResource(R.string.browser_blocked_badge),
                         style = MaterialTheme.typography.labelSmall.copy(
                             letterSpacing = 1.sp,
                             fontWeight = FontWeight.Bold
@@ -164,7 +166,7 @@ fun BentoStatsCard(
                     )
                     Icon(
                         imageVector = Icons.Default.Refresh,
-                        contentDescription = "Cập nhật rules",
+                        contentDescription = stringResource(R.string.browser_check_rule_updates),
                         tint = if (isCheckingRuleUpdates) Color(0xFF10B981) else Color.White.copy(alpha = 0.4f),
                         modifier = Modifier
                             .size(16.dp)
@@ -182,20 +184,23 @@ fun BentoStatsCard(
                     color = Color.White
                 )
                 Text(
-                    text = "Quảng cáo & Theo dõi",
+                    text = stringResource(R.string.browser_ads_and_trackers),
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.White.copy(alpha = 0.7f)
                 )
             }
-
             Spacer(modifier = Modifier.height(12.dp))
-
             Surface(
                 color = Color.Black.copy(alpha = 0.25f),
                 shape = RoundedCornerShape(8.dp)
             ) {
+                val dbInfo = if (ruleDomainsCount > 0) {
+                    stringResource(R.string.browser_rule_stats_domains, ruleDomainsCount)
+                } else {
+                    stringResource(R.string.browser_rule_stats_local_db)
+                }
                 Text(
-                    text = "Rule v$ruleVersion • ${if (ruleDomainsCount > 0) "$ruleDomainsCount domains" else "Local DB"}",
+                    text = stringResource(R.string.browser_rule_stats_format, ruleVersion, dbInfo),
                     style = MaterialTheme.typography.labelSmall,
                     color = Color.White.copy(alpha = 0.6f),
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
@@ -331,12 +336,12 @@ fun BentoPipCard(
                 }
                 Column(modifier = Modifier.padding(end = 8.dp)) {
                     Text(
-                        text = "Phát Video nổi (PiP)",
+                        text = stringResource(R.string.browser_pip_card_title),
                         style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
                         color = Color.White
                     )
                     Text(
-                        text = "Xem video thu nhỏ khi đa nhiệm ứng dụng khác",
+                        text = stringResource(R.string.browser_pip_card_subtitle),
                         style = MaterialTheme.typography.labelSmall,
                         color = Color.White.copy(alpha = 0.65f),
                         maxLines = 1,
@@ -350,7 +355,7 @@ fun BentoPipCard(
                 shape = RoundedCornerShape(8.dp)
             ) {
                 Text(
-                    text = "BẬT",
+                    text = stringResource(R.string.browser_pip_card_btn),
                     style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                     color = Color(0xFFF472B6),
                     modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
@@ -373,21 +378,21 @@ fun BentoQuickActionsRow(
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         QuickActionButton(
-            label = "Xóa cache",
+            label = stringResource(R.string.browser_action_clear_cache),
             icon = Icons.Default.DeleteOutline,
             color = Color(0xFFEF4444),
             onClick = onClearData,
             modifier = Modifier.weight(1f)
         )
         QuickActionButton(
-            label = "Chia sẻ",
+            label = stringResource(R.string.browser_action_share),
             icon = Icons.Default.Share,
             color = Color(0xFF38BDF8),
             onClick = onShare,
             modifier = Modifier.weight(1f)
         )
         QuickActionButton(
-            label = "Mở ngoài",
+            label = stringResource(R.string.browser_action_open_external),
             icon = Icons.AutoMirrored.Filled.OpenInNew,
             color = Color(0xFFF59E0B),
             onClick = onOpenExternal,

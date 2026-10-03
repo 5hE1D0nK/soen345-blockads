@@ -58,6 +58,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -65,6 +66,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.pwhs.blockads.R
 import app.pwhs.blockads.ui.browser.data.SearchEngine
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -135,7 +137,7 @@ fun SearchSuggestionSheet(
                 },
                 placeholder = {
                     Text(
-                        "Nhập từ khóa hoặc địa chỉ web...",
+                        stringResource(R.string.browser_search_input_hint),
                         style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f))
                     )
                 },
@@ -321,7 +323,11 @@ fun SearchSuggestionSheet(
                         }
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = if (isUrl) "Truy cập trang web" else "Tìm kiếm với ${selectedEngine.displayName}",
+                                text = if (isUrl) {
+                                    stringResource(R.string.browser_search_visit_site)
+                                } else {
+                                    stringResource(R.string.browser_search_with_engine, selectedEngine.displayName)
+                                },
                                 style = MaterialTheme.typography.labelSmall.copy(
                                     color = MaterialTheme.colorScheme.primary,
                                     fontWeight = FontWeight.SemiBold
@@ -346,7 +352,7 @@ fun SearchSuggestionSheet(
             } else {
                 // Quick Shortcuts when search query is empty
                 Text(
-                    text = "Lối tắt phổ biến",
+                    text = stringResource(R.string.browser_search_popular_shortcuts),
                     style = MaterialTheme.typography.labelMedium.copy(
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.primary

@@ -132,9 +132,9 @@ fun CertificateStatusCard(
 
             Text(
                 text = when (certStatus) {
-                    CertStatus.INSTALLED -> "Chứng chỉ CA đã được cài đặt và tin cậy. Lọc quảng cáo nâng cao HTTPS đã sẵn sàng."
-                    CertStatus.CHECKING -> "Đang kiểm tra chứng chỉ trong kho lưu trữ an toàn của thiết bị..."
-                    CertStatus.NOT_INSTALLED, CertStatus.UNKNOWN -> "Cần cài đặt chứng chỉ CA BlockAds để giải mã và loại bỏ quảng cáo trên các kết nối web HTTPS."
+                    CertStatus.INSTALLED -> androidx.compose.ui.res.stringResource(app.pwhs.blockads.R.string.cert_status_installed)
+                    CertStatus.CHECKING -> androidx.compose.ui.res.stringResource(app.pwhs.blockads.R.string.cert_status_checking)
+                    CertStatus.NOT_INSTALLED, CertStatus.UNKNOWN -> androidx.compose.ui.res.stringResource(app.pwhs.blockads.R.string.cert_status_not_installed)
                 },
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -162,14 +162,14 @@ fun CertificateStatusCard(
                             )
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
-                                text = "Kiểm tra lại",
+                                text = androidx.compose.ui.res.stringResource(app.pwhs.blockads.R.string.cert_action_check_again),
                                 style = MaterialTheme.typography.labelMedium
                             )
                         }
 
                         TextButton(onClick = onOpenWizard) {
                             Text(
-                                text = "Cài đặt lại",
+                                text = androidx.compose.ui.res.stringResource(app.pwhs.blockads.R.string.cert_action_reinstall),
                                 style = MaterialTheme.typography.labelMedium
                             )
                             Spacer(modifier = Modifier.width(4.dp))
@@ -197,7 +197,7 @@ fun CertificateStatusCard(
                             shape = RoundedCornerShape(12.dp)
                         ) {
                             Text(
-                                text = "Cài đặt chứng chỉ",
+                                text = androidx.compose.ui.res.stringResource(app.pwhs.blockads.R.string.cert_action_install),
                                 fontWeight = FontWeight.SemiBold
                             )
                             Spacer(modifier = Modifier.width(6.dp))

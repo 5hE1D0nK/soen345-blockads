@@ -1,7 +1,9 @@
 package app.pwhs.blockads.ui.browser.elementrules
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import app.pwhs.blockads.R
 import app.pwhs.blockads.data.dao.ElementRuleDao
 import app.pwhs.blockads.data.entities.ElementRule
 import kotlinx.coroutines.channels.Channel
@@ -14,8 +16,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ElementRulesViewModel(
+    application: Application,
     private val elementRuleDao: ElementRuleDao
-) : ViewModel() {
+) : AndroidViewModel(application) {
 
     private val _uiState = MutableStateFlow(ElementRulesUiState(isLoading = true))
     val uiState: StateFlow<ElementRulesUiState> = _uiState.asStateFlow()
@@ -58,13 +61,21 @@ class ElementRulesViewModel(
             is ElementRulesUiIntent.DeleteRule -> {
                 viewModelScope.launch {
                     elementRuleDao.deleteById(intent.id)
-                    _uiEffect.send(ElementRulesUiEffect.ShowToast("Đã xóa quy tắc"))
+                    _uiEffect.send(
+                        ElementRulesUiEffect.ShowToast(
+                            getApplication<Application>().getString(R.string.element_rules_toast_deleted)
+                        )
+                    )
                 }
             }
             is ElementRulesUiIntent.DeleteAllForDomain -> {
                 viewModelScope.launch {
                     elementRuleDao.deleteAllForDomain(intent.domain)
-                    _uiEffect.send(ElementRulesUiEffect.ShowToast("Đã xóa tất cả quy tắc của ${intent.domain}"))
+                    _uiEffect.send(
+                        ElementRulesUiEffect.ShowToast(
+                            getApplication<Application>().getString(R.string.element_rules_toast_deleted_all, intent.domain)
+                        )
+                    )
                 }
             }
             is ElementRulesUiIntent.SearchQueryChanged -> {

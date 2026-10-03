@@ -42,6 +42,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -162,7 +163,7 @@ private fun HomeTopBar(onOpenMenu: () -> Unit) {
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    text = "Đang bảo vệ",
+                    text = stringResource(R.string.browser_home_protecting),
                     style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
                     color = Color(0xFF10B981)
                 )
@@ -181,7 +182,7 @@ private fun HomeTopBar(onOpenMenu: () -> Unit) {
         ) {
             Icon(
                 imageVector = Icons.Default.MoreVert,
-                contentDescription = "Menu",
+                contentDescription = stringResource(R.string.browser_action_menu),
                 tint = Color.White.copy(alpha = 0.85f),
                 modifier = Modifier.size(20.dp)
             )
@@ -206,7 +207,7 @@ private fun HomeHeroBrand() {
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            text = "Chặn quảng cáo • Phát video trong nền",
+            text = stringResource(R.string.browser_home_hero_tagline),
             style = MaterialTheme.typography.labelSmall.copy(
                 letterSpacing = 0.5.sp,
                 fontSize = 12.sp,
@@ -243,7 +244,7 @@ private fun HomeSearchCapsule(onOpenSearch: () -> Unit) {
             )
 
             Text(
-                text = "Tìm kiếm hoặc nhập địa chỉ web...",
+                text = stringResource(R.string.browser_home_search_hint),
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color.White.copy(alpha = 0.45f),
                 maxLines = 1,
@@ -296,13 +297,13 @@ private fun HomeFeatureBanner(onDismiss: () -> Unit) {
 
                 Column {
                     Text(
-                        text = "Chặn quảng cáo & Phát video nền",
+                        text = stringResource(R.string.browser_home_banner_title),
                         style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
                         color = Color.White
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
-                        text = "Tự động lọc sạch video ads, popups & hỗ trợ phát nổi PiP",
+                        text = stringResource(R.string.browser_home_banner_subtitle),
                         style = MaterialTheme.typography.labelSmall,
                         color = Color.White.copy(alpha = 0.85f)
                     )
@@ -311,7 +312,7 @@ private fun HomeFeatureBanner(onDismiss: () -> Unit) {
 
             Icon(
                 imageVector = Icons.Default.Close,
-                contentDescription = "Đóng",
+                contentDescription = stringResource(R.string.browser_action_close),
                 tint = Color.White.copy(alpha = 0.7f),
                 modifier = Modifier
                     .size(20.dp)

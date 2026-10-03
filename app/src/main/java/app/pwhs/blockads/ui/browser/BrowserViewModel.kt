@@ -6,6 +6,7 @@ import android.webkit.CookieManager
 import android.webkit.WebStorage
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import app.pwhs.blockads.R
 import app.pwhs.blockads.data.dao.ElementRuleDao
 import app.pwhs.blockads.data.entities.ElementRule
 import app.pwhs.blockads.ui.browser.data.SearchEngine
@@ -212,7 +213,8 @@ class BrowserViewModel(
                     _uiState.update { it.copy(isElementPickerActive = false) }
                     val selectors = elementRuleDao.getSelectorsForDomain(cleanDomain)
                     _uiEffect.send(BrowserUiEffect.InjectUserElementRules(selectors))
-                    _uiEffect.send(BrowserUiEffect.ShowToast("Đã chặn phần tử trên $cleanDomain"))
+                    val app = getApplication<Application>()
+                    _uiEffect.send(BrowserUiEffect.ShowToast(app.getString(R.string.browser_element_blocked_on, cleanDomain)))
                 }
             }
             is BrowserUiIntent.NavigateToElementRules -> {
@@ -243,16 +245,26 @@ class BrowserViewModel(
 
             result.fold(
                 onSuccess = { updated ->
+                    val app = getApplication<Application>()
                     val message = if (updated) {
-                        "Đã cập nhật bộ lọc lên phiên bản v${_uiState.value.ruleVersion} (${_uiState.value.ruleDomainsCount} tên miền)"
+                        app.getString(
+                            R.string.browser_rules_updated_format,
+                            _uiState.value.ruleVersion,
+                            _uiState.value.ruleDomainsCount
+                        )
                     } else {
-                        "Bộ lọc trình duyệt đã ở phiên bản mới nhất (v${_uiState.value.ruleVersion})"
+                        app.getString(
+                            R.string.browser_rules_already_latest,
+                            _uiState.value.ruleVersion
+                        )
                     }
                     _uiEffect.send(BrowserUiEffect.ShowToast(message))
                 },
                 onFailure = { error ->
+                    val app = getApplication<Application>()
+                    val errDetail = error.localizedMessage ?: app.getString(R.string.browser_rules_update_error_network)
                     _uiEffect.send(
-                        BrowserUiEffect.ShowToast("Không thể tải bản cập nhật: ${error.localizedMessage ?: "Lỗi kết nối"}")
+                        BrowserUiEffect.ShowToast(app.getString(R.string.browser_rules_update_error, errDetail))
                     )
                 }
             )
@@ -264,12 +276,14 @@ class BrowserViewModel(
             CookieManager.getInstance().removeAllCookies(null)
             CookieManager.getInstance().flush()
             WebStorage.getInstance().deleteAllData()
+            val app = getApplication<Application>()
             viewModelScope.launch {
-                _uiEffect.send(BrowserUiEffect.ShowToast("Đã xóa cookie & bộ nhớ đệm"))
+                _uiEffect.send(BrowserUiEffect.ShowToast(app.getString(R.string.browser_data_cleared)))
             }
         } catch (e: Exception) {
+            val app = getApplication<Application>()
             viewModelScope.launch {
-                _uiEffect.send(BrowserUiEffect.ShowToast("Lỗi khi xóa dữ liệu: ${e.message}"))
+                _uiEffect.send(BrowserUiEffect.ShowToast(app.getString(R.string.browser_data_clear_error, e.message.orEmpty())))
             }
         }
     }

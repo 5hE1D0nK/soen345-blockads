@@ -1,6 +1,8 @@
 package app.pwhs.blockads.utils
 
+import android.content.Context
 import android.os.Build
+import app.pwhs.blockads.R
 import java.util.Locale
 
 /**
@@ -43,83 +45,90 @@ object DeviceManager {
     /**
      * Returns a list of steps tailored to the current device and Android version.
      */
-    fun getInstallSteps(): List<String> = installStepsFor(currentManufacturer, Build.VERSION.SDK_INT)
+    fun getInstallSteps(context: Context): List<String> =
+        installStepsFor(currentManufacturer, Build.VERSION.SDK_INT, context)
 
-    internal fun installStepsFor(manufacturer: Manufacturer, sdk: Int): List<String> {
+    fun getInstallStepResIds(): List<Int> =
+        installStepResIdsFor(currentManufacturer, Build.VERSION.SDK_INT)
+
+    internal fun installStepsFor(manufacturer: Manufacturer, sdk: Int, context: Context): List<String> =
+        installStepResIdsFor(manufacturer, sdk).map { context.getString(it) }
+
+    internal fun installStepResIdsFor(manufacturer: Manufacturer, sdk: Int): List<Int> {
         return when (manufacturer) {
             Manufacturer.SAMSUNG -> when {
                 sdk >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> listOf(
-                    "Mở Cài đặt hệ thống (Settings)",
-                    "Chọn Bảo mật và quyền riêng tư (Security and privacy)",
-                    "Cuộn xuống chọn Cài đặt bảo mật khác (More security settings)",
-                    "Chọn Cài đặt từ bộ nhớ thiết bị (Install from device storage)",
-                    "Chọn Chứng chỉ CA (CA certificate) và xác nhận 'Vẫn cài đặt'",
-                    "Chọn file BlockAds-RootCA.crt vừa tải về"
+                    R.string.device_step_open_settings,
+                    R.string.device_step_samsung_security_privacy,
+                    R.string.device_step_samsung_more_security,
+                    R.string.device_step_samsung_install_from_storage,
+                    R.string.device_step_samsung_ca_cert_confirm,
+                    R.string.device_step_select_downloaded_cert
                 )
                 sdk >= Build.VERSION_CODES.S -> listOf(
-                    "Mở Cài đặt hệ thống (Settings)",
-                    "Chọn Sinh trắc học và bảo mật (Biometrics and security)",
-                    "Chọn Cài đặt bảo mật khác (Other security settings)",
-                    "Chọn Cài đặt từ bộ nhớ thiết bị (Install from device storage)",
-                    "Chọn Chứng chỉ CA (CA certificate) và xác nhận cảnh báo",
-                    "Chọn file BlockAds-RootCA.crt vừa tải về"
+                    R.string.device_step_open_settings,
+                    R.string.device_step_samsung_biometrics,
+                    R.string.device_step_samsung_other_security,
+                    R.string.device_step_samsung_install_from_storage,
+                    R.string.device_step_samsung_ca_cert_warn,
+                    R.string.device_step_select_downloaded_cert
                 )
                 else -> listOf(
-                    "Mở Cài đặt hệ thống (Settings)",
-                    "Chọn Sinh trắc học và bảo mật (Biometrics and security)",
-                    "Chọn Cài đặt bảo mật khác > Cài đặt từ bộ nhớ",
-                    "Chọn Chứng chỉ CA (CA certificate)",
-                    "Chọn file BlockAds-RootCA.crt vừa tải về"
+                    R.string.device_step_open_settings,
+                    R.string.device_step_samsung_biometrics,
+                    R.string.device_step_samsung_other_sec_install_storage,
+                    R.string.device_step_select_ca_cert,
+                    R.string.device_step_select_downloaded_cert
                 )
             }
 
             Manufacturer.GOOGLE, Manufacturer.MOTOROLA -> when {
                 sdk >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> listOf(
-                    "Mở Cài đặt hệ thống (Settings)",
-                    "Chọn Bảo mật & quyền riêng tư (Security & privacy)",
-                    "Chọn Cài đặt bảo mật khác (More security settings)",
-                    "Chọn Mã hóa & thông tin xác thực (Encryption & credentials)",
-                    "Chọn Cài đặt chứng chỉ > Chứng chỉ CA (Install a certificate > CA certificate)",
-                    "Bấm 'Vẫn cài đặt' và chọn file BlockAds-RootCA.crt"
+                    R.string.device_step_open_settings,
+                    R.string.device_step_google_security_privacy,
+                    R.string.device_step_google_more_security,
+                    R.string.device_step_google_encryption_credentials,
+                    R.string.device_step_google_install_ca_cert,
+                    R.string.device_step_google_confirm_and_select
                 )
                 else -> listOf(
-                    "Mở Cài đặt hệ thống (Settings)",
-                    "Chọn Bảo mật (Security) > Mã hóa & thông tin xác thực (Encryption & credentials)",
-                    "Chọn Cài đặt chứng chỉ (Install a certificate)",
-                    "Chọn Chứng chỉ CA (CA certificate) và xác nhận",
-                    "Chọn file BlockAds-RootCA.crt vừa tải về"
+                    R.string.device_step_open_settings,
+                    R.string.device_step_google_security_encryption,
+                    R.string.device_step_google_install_certificate,
+                    R.string.device_step_google_ca_cert_confirm,
+                    R.string.device_step_select_downloaded_cert
                 )
             }
 
             Manufacturer.XIAOMI -> listOf(
-                "Mở Cài đặt (Settings)",
-                "Chọn Mật khẩu & bảo mật (Passwords & security)",
-                "Chọn Quyền riêng tư (Privacy) > Mã hóa & thông tin xác thực",
-                "Chọn Cài đặt chứng chỉ > Chứng chỉ CA (CA certificate)",
-                "Xác nhận cảnh báo và chọn file BlockAds-RootCA.crt"
+                R.string.device_step_xiaomi_open_settings,
+                R.string.device_step_xiaomi_passwords_security,
+                R.string.device_step_xiaomi_privacy_encryption,
+                R.string.device_step_xiaomi_install_ca,
+                R.string.device_step_xiaomi_confirm_select
             )
 
             Manufacturer.OPPO_REALME -> listOf(
-                "Mở Cài đặt (Settings)",
-                "Chọn Bảo mật (Security) > Cài đặt bảo mật khác",
-                "Chọn Lưu trữ thông tin xác thực (Credential storage)",
-                "Chọn Cài đặt từ bộ nhớ thiết bị > Chứng chỉ CA",
-                "Chọn file BlockAds-RootCA.crt vừa tải về"
+                R.string.device_step_xiaomi_open_settings,
+                R.string.device_step_oppo_security_more,
+                R.string.device_step_oppo_credential_storage,
+                R.string.device_step_oppo_install_ca,
+                R.string.device_step_select_downloaded_cert
             )
 
             Manufacturer.VIVO -> listOf(
-                "Mở Cài đặt (Settings)",
-                "Chọn Bảo mật (Security) > Mã hóa & thông tin xác thực",
-                "Chọn Cài đặt chứng chỉ > Chứng chỉ CA",
-                "Chọn file BlockAds-RootCA.crt vừa tải về"
+                R.string.device_step_xiaomi_open_settings,
+                R.string.device_step_vivo_security_encryption,
+                R.string.device_step_vivo_install_ca,
+                R.string.device_step_select_downloaded_cert
             )
 
             else -> listOf(
-                "Mở Cài đặt hệ thống (Settings)",
-                "Tìm kiếm 'Chứng chỉ' hoặc 'Certificate' trong thanh tìm kiếm",
-                "Chọn 'Chứng chỉ CA' hoặc 'Cài đặt từ bộ nhớ'",
-                "Bấm xác nhận 'Vẫn cài đặt' nếu có cảnh báo",
-                "Chọn file BlockAds-RootCA.crt từ thư mục Downloads"
+                R.string.device_step_open_settings,
+                R.string.device_step_generic_search_certificate,
+                R.string.device_step_generic_choose_ca,
+                R.string.device_step_generic_confirm,
+                R.string.device_step_generic_select_downloads
             )
         }
     }

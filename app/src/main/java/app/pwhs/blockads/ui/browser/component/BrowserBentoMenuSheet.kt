@@ -40,7 +40,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import app.pwhs.blockads.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -127,8 +129,8 @@ fun BrowserBentoMenuSheet(
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     BentoToggleCard(
-                        title = "Chặn Quảng cáo",
-                        subtitle = if (adBlockEnabled) "Đang kích hoạt" else "Đã tạm dừng",
+                        title = stringResource(R.string.browser_adblock_title),
+                        subtitle = if (adBlockEnabled) stringResource(R.string.browser_status_active) else stringResource(R.string.browser_status_paused),
                         icon = Icons.Default.Shield,
                         checked = adBlockEnabled,
                         onCheckedChange = { onToggleAdBlock() },
@@ -137,8 +139,8 @@ fun BrowserBentoMenuSheet(
                     )
 
                     BentoToggleCard(
-                        title = "Chặn Popup",
-                        subtitle = if (popupBlockEnabled) "Đang kích hoạt" else "Đã tạm dừng",
+                        title = stringResource(R.string.browser_popup_title),
+                        subtitle = if (popupBlockEnabled) stringResource(R.string.browser_status_active) else stringResource(R.string.browser_status_paused),
                         icon = Icons.AutoMirrored.Filled.OpenInNew,
                         checked = popupBlockEnabled,
                         onCheckedChange = { onTogglePopupBlock() },
@@ -150,8 +152,8 @@ fun BrowserBentoMenuSheet(
 
             // Row 2: Desktop Mode Toggle Card
             BentoToggleCard(
-                title = "Giao diện Máy tính",
-                subtitle = if (isDesktopMode) "Đang dùng User-Agent máy tính" else "Giao diện di động",
+                title = stringResource(R.string.browser_desktop_title),
+                subtitle = if (isDesktopMode) stringResource(R.string.browser_desktop_active) else stringResource(R.string.browser_desktop_inactive),
                 icon = Icons.Default.Computer,
                 checked = isDesktopMode,
                 onCheckedChange = { onToggleDesktopMode() },
@@ -161,11 +163,11 @@ fun BrowserBentoMenuSheet(
 
             // Row 3: Auto-PiP vs Background Audio Mode Toggle
             BentoToggleCard(
-                title = if (isAutoPipEnabled) "Cửa sổ nổi (PiP)" else "Phát âm thanh trong nền",
+                title = if (isAutoPipEnabled) stringResource(R.string.browser_pip_mode_pip) else stringResource(R.string.browser_pip_mode_audio),
                 subtitle = if (isAutoPipEnabled)
-                    "Tự động mở video nổi khi thoát ra màn hình chính"
+                    stringResource(R.string.browser_pip_desc_pip)
                 else
-                    "Chỉ phát âm thanh qua thanh thông báo khi thoát",
+                    stringResource(R.string.browser_pip_desc_audio),
                 icon = if (isAutoPipEnabled) Icons.Default.PictureInPictureAlt else Icons.Default.PlayArrow,
                 checked = isAutoPipEnabled,
                 onCheckedChange = { onToggleAutoPip() },
@@ -197,8 +199,8 @@ fun BrowserBentoMenuSheet(
 
             // Row 5: Block Element CTA
             BentoCtaButton(
-                title = "Chặn phần tử trang",
-                subtitle = "Chạm để ẩn quảng cáo hoặc thành phần khó chịu",
+                title = stringResource(R.string.browser_pick_element_title),
+                subtitle = stringResource(R.string.browser_pick_element_desc),
                 icon = Icons.Default.Block,
                 onClick = {
                     onDismiss()
@@ -208,8 +210,8 @@ fun BrowserBentoMenuSheet(
 
             // Row 6: Manage Rules CTA
             BentoCtaButton(
-                title = "Quản lý quy tắc chặn phần tử",
-                subtitle = "Xem và xóa các phần tử bạn đã chặn",
+                title = stringResource(R.string.browser_manage_rules_title),
+                subtitle = stringResource(R.string.browser_manage_rules_desc),
                 icon = Icons.Default.FilterList,
                 onClick = {
                     onDismiss()
@@ -238,7 +240,7 @@ fun BrowserBentoMenuSheet(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Đóng trình duyệt",
+                    text = stringResource(R.string.browser_exit_title),
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.White.copy(alpha = 0.6f)
                 )

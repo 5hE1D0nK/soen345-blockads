@@ -289,6 +289,7 @@ val appModule = module {
     }
     viewModel {
         app.pwhs.blockads.ui.browser.elementrules.ElementRulesViewModel(
+            application = androidApplication(),
             elementRuleDao = get()
         )
     }

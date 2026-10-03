@@ -1,5 +1,7 @@
 package app.pwhs.blockads.ui.browser
 
+import android.app.Application
+import androidx.test.core.app.ApplicationProvider
 import app.cash.turbine.test
 import app.pwhs.blockads.data.entities.ElementRule
 import app.pwhs.blockads.ui.browser.elementrules.ElementRulesUiEffect
@@ -17,9 +19,14 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@RunWith(RobolectricTestRunner::class)
 class ElementRulesViewModelTest {
+
+    private val application: Application get() = ApplicationProvider.getApplicationContext()
 
     private val dao = FakeElementRuleDao(
         listOf(
@@ -37,7 +44,7 @@ class ElementRulesViewModelTest {
 
     @Test
     fun `loads all rules grouped by domain`() {
-        val vm = ElementRulesViewModel(dao)
+        val vm = ElementRulesViewModel(application, dao)
         val state = vm.uiState.value
         assertFalse(state.isLoading)
         assertEquals(3, state.totalCount)
@@ -47,7 +54,7 @@ class ElementRulesViewModelTest {
 
     @Test
     fun `search filters by domain or selector, case-insensitively`() {
-        val vm = ElementRulesViewModel(dao)
+        val vm = ElementRulesViewModel(application, dao)
 
         vm.processIntent(ElementRulesUiIntent.SearchQueryChanged("VIDEO"))
         assertEquals(listOf(3), vm.uiState.value.rules.map { it.id })
@@ -63,7 +70,7 @@ class ElementRulesViewModelTest {
 
     @Test
     fun `delete removes one rule and toasts`() = runTest {
-        val vm = ElementRulesViewModel(dao)
+        val vm = ElementRulesViewModel(application, dao)
         vm.uiEffect.test {
             vm.processIntent(ElementRulesUiIntent.DeleteRule(2))
             assertTrue(awaitItem() is ElementRulesUiEffect.ShowToast)
@@ -73,7 +80,7 @@ class ElementRulesViewModelTest {
 
     @Test
     fun `delete all for a domain toasts with the domain`() = runTest {
-        val vm = ElementRulesViewModel(dao)
+        val vm = ElementRulesViewModel(application, dao)
         vm.uiEffect.test {
             vm.processIntent(ElementRulesUiIntent.DeleteAllForDomain("news.test"))
             val toast = awaitItem() as ElementRulesUiEffect.ShowToast

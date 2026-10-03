@@ -50,6 +50,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import app.pwhs.blockads.R
 import app.pwhs.blockads.ui.browser.component.BrowserBentoMenuSheet
 import app.pwhs.blockads.ui.browser.component.BrowserBottomOmnibox
 import app.pwhs.blockads.ui.browser.component.BrowserShortcuts
@@ -199,7 +200,7 @@ fun BrowserScreen(
                         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(effect.url))
                         context.startActivity(intent)
                     }.onFailure {
-                        Toast.makeText(context, "Không thể mở ứng dụng ngoài", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, context.getString(R.string.browser_open_external_error), Toast.LENGTH_SHORT).show()
                     }
                 }
                 is BrowserUiEffect.NavigateUrl -> {

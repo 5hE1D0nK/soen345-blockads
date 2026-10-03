@@ -41,7 +41,7 @@ class CertInstallationWizardViewModel(
 
     private val _uiState = MutableStateFlow(
         CertInstallationWizardUiState(
-            installSteps = DeviceManager.getInstallSteps(),
+            installSteps = DeviceManager.getInstallSteps(application),
             brandName = DeviceManager.currentBrandName,
             isRootAvailable = SystemCertificateInstaller.isRootAvailable()
         )
@@ -174,7 +174,7 @@ class CertInstallationWizardViewModel(
 
             if (result.isSuccess) {
                 _uiState.update { it.copy(certStatus = CertStatus.INSTALLED, isCertExported = true) }
-                _uiEffect.emit(CertInstallationWizardUiEffect.ShowSnackbar("Đã cài đặt thành công vào User Store!"))
+                _uiEffect.emit(CertInstallationWizardUiEffect.ShowSnackbar(getApplication<Application>().getString(app.pwhs.blockads.R.string.cert_snackbar_user_store_success)))
                 verifyCert()
             } else {
                 _uiEffect.emit(CertInstallationWizardUiEffect.ShowSnackbar("Root install failed: ${result.exceptionOrNull()?.message}"))
@@ -197,7 +197,7 @@ class CertInstallationWizardViewModel(
 
             if (result.isSuccess) {
                 _uiState.update { it.copy(certStatus = CertStatus.INSTALLED, isCertExported = true) }
-                _uiEffect.emit(CertInstallationWizardUiEffect.ShowSnackbar("Đã tạo Magisk Module! Khởi động lại máy để kích hoạt đầy đủ."))
+                _uiEffect.emit(CertInstallationWizardUiEffect.ShowSnackbar(getApplication<Application>().getString(app.pwhs.blockads.R.string.cert_snackbar_magisk_module_success)))
                 verifyCert()
             } else {
                 _uiEffect.emit(CertInstallationWizardUiEffect.ShowSnackbar("Module install failed: ${result.exceptionOrNull()?.message}"))

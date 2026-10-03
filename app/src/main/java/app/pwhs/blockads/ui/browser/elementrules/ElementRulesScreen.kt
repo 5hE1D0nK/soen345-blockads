@@ -54,12 +54,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import app.pwhs.blockads.R
 import app.pwhs.blockads.data.entities.ElementRule
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
@@ -96,14 +98,14 @@ fun ElementRulesScreen(
                             onValueChange = {
                                 viewModel.processIntent(ElementRulesUiIntent.SearchQueryChanged(it))
                             },
-                            placeholder = { Text("Tìm tên miền hoặc bộ chọn...") },
+                            placeholder = { Text(stringResource(R.string.element_rules_search_hint)) },
                             singleLine = true,
                             trailingIcon = {
                                 if (uiState.searchQuery.isNotEmpty()) {
                                     IconButton(onClick = {
                                         viewModel.processIntent(ElementRulesUiIntent.SearchQueryChanged(""))
                                     }) {
-                                        Icon(Icons.Default.Clear, contentDescription = "Xóa")
+                                        Icon(Icons.Default.Clear, contentDescription = stringResource(R.string.element_rules_clear))
                                     }
                                 }
                             },
@@ -111,7 +113,7 @@ fun ElementRulesScreen(
                         )
                     } else {
                         Text(
-                            text = "Quy tắc chặn phần tử",
+                            text = stringResource(R.string.element_rules_title),
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.SemiBold
                         )
@@ -128,14 +130,14 @@ fun ElementRulesScreen(
                     }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Quay lại"
+                            contentDescription = stringResource(R.string.browser_action_navigate_back)
                         )
                     }
                 },
                 actions = {
                     if (!isSearchActive && uiState.totalCount > 0) {
                         IconButton(onClick = { isSearchActive = true }) {
-                            Icon(Icons.Default.Search, contentDescription = "Tìm kiếm")
+                            Icon(Icons.Default.Search, contentDescription = stringResource(R.string.element_rules_search))
                         }
                     }
                 },
@@ -195,19 +197,19 @@ fun ElementRulesScreen(
     domainToDeleteAll?.let { domain ->
         AlertDialog(
             onDismissRequest = { domainToDeleteAll = null },
-            title = { Text("Xóa tất cả quy tắc?") },
-            text = { Text("Tất cả các phần tử đã chặn trên $domain sẽ được hiển thị lại.") },
+            title = { Text(stringResource(R.string.element_rules_delete_all_title)) },
+            text = { Text(stringResource(R.string.element_rules_delete_all_desc, domain)) },
             confirmButton = {
                 TextButton(onClick = {
                     viewModel.processIntent(ElementRulesUiIntent.DeleteAllForDomain(domain))
                     domainToDeleteAll = null
                 }) {
-                    Text("Xóa", color = MaterialTheme.colorScheme.error)
+                    Text(stringResource(R.string.element_rules_delete), color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { domainToDeleteAll = null }) {
-                    Text("Hủy")
+                    Text(stringResource(R.string.element_rules_cancel))
                 }
             }
         )
@@ -244,12 +246,12 @@ private fun SummaryBanner(ruleCount: Int, domainCount: Int) {
             Spacer(modifier = Modifier.width(12.dp))
             Column {
                 Text(
-                    text = "Đang ẩn $ruleCount phần tử",
+                    text = stringResource(R.string.element_rules_hiding_count, ruleCount),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold
                 )
                 Text(
-                    text = "Áp dụng trên $domainCount trang web khác nhau",
+                    text = stringResource(R.string.element_rules_domains_count, domainCount),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -314,7 +316,7 @@ private fun DomainRulesCard(
                 IconButton(onClick = onDeleteAllForDomain) {
                     Icon(
                         imageVector = Icons.Default.DeleteSweep,
-                        contentDescription = "Xóa tất cả cho tên miền này",
+                        contentDescription = stringResource(R.string.element_rules_delete_domain_content_desc),
                         tint = MaterialTheme.colorScheme.error.copy(alpha = 0.8f),
                         modifier = Modifier.size(20.dp)
                     )
@@ -359,7 +361,7 @@ private fun RuleRow(rule: ElementRule, onDelete: () -> Unit) {
         ) {
             Icon(
                 imageVector = Icons.Default.Delete,
-                contentDescription = "Xóa quy tắc",
+                contentDescription = stringResource(R.string.element_rules_delete_rule_content_desc),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(16.dp)
             )
@@ -389,14 +391,21 @@ private fun EmptyElementRulesView(isSearching: Boolean, modifier: Modifier = Mod
         }
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = if (isSearching) "Không tìm thấy quy tắc" else "Chưa có quy tắc chặn phần tử",
+            text = if (isSearching) {
+                stringResource(R.string.element_rules_empty_searching)
+            } else {
+                stringResource(R.string.element_rules_empty_normal)
+            },
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = if (isSearching) "Thử tìm kiếm với từ khóa khác"
-            else "Khi duyệt web, mở menu và chọn \"Chặn phần tử trang\" để chọn và ẩn bất kỳ quảng cáo hoặc phần tử nào.",
+            text = if (isSearching) {
+                stringResource(R.string.element_rules_empty_searching_desc)
+            } else {
+                stringResource(R.string.element_rules_empty_normal_desc)
+            },
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             lineHeight = 20.sp

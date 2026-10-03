@@ -36,6 +36,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -129,14 +130,14 @@ fun BrowserBottomOmnibox(
                         if (canGoBack) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Quay lại",
+                                contentDescription = stringResource(R.string.browser_action_navigate_back),
                                 modifier = Modifier.size(22.dp),
                                 tint = MaterialTheme.colorScheme.onSurface
                             )
                         } else {
                             Icon(
                                 painter = painterResource(R.drawable.ic_home),
-                                contentDescription = "Trang chủ",
+                                contentDescription = stringResource(R.string.browser_action_home),
                                 modifier = Modifier.size(22.dp),
                                 tint = MaterialTheme.colorScheme.onSurface
                             )
@@ -168,8 +169,9 @@ fun BrowserBottomOmnibox(
                             )
                             Spacer(modifier = Modifier.width(8.dp))
 
+                            val omniboxHint = stringResource(R.string.browser_omnibox_hint)
                             Text(
-                                text = domain.ifEmpty { "Tìm kiếm hoặc nhập URL" },
+                                text = domain.ifEmpty { omniboxHint },
                                 style = MaterialTheme.typography.bodyMedium.copy(
                                     fontWeight = FontWeight.Normal,
                                     fontSize = 14.5.sp
@@ -225,7 +227,7 @@ fun BrowserBottomOmnibox(
                     ) {
                         Icon(
                             imageVector = Icons.Default.PictureInPictureAlt,
-                            contentDescription = "Phát video nổi",
+                            contentDescription = stringResource(R.string.browser_action_pip),
                             modifier = Modifier.size(22.dp),
                             tint = if (isVideoPlaying) Color(0xFFD946EF) else MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -238,7 +240,7 @@ fun BrowserBottomOmnibox(
                     ) {
                         Icon(
                             imageVector = Icons.Default.MoreVert,
-                            contentDescription = "Menu",
+                            contentDescription = stringResource(R.string.browser_action_menu),
                             modifier = Modifier.size(22.dp),
                             tint = MaterialTheme.colorScheme.onSurface
                         )
