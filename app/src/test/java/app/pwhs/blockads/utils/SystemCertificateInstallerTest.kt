@@ -38,7 +38,10 @@ class SystemCertificateInstallerTest {
         .generateCertificate(pem.byteInputStream()) as X509Certificate
 
     @After
-    fun tearDown() = unmockkAll()
+    fun tearDown() {
+        unmockkAll()
+        SystemCertificateInstaller.suBinaryChecker = SystemCertificateInstaller::defaultSuBinaryPresent
+    }
 
     private fun stubShell(grantedRoot: Boolean?, idSucceeds: Boolean, idOut: List<String>) {
         mockkStatic(Shell::class)
@@ -64,6 +67,7 @@ class SystemCertificateInstallerTest {
     @Test
     fun `root is unavailable when denied`() {
         stubShell(grantedRoot = false, idSucceeds = true, idOut = listOf("uid=10234(u0_a234) gid=10234(u0_a234)"))
+        SystemCertificateInstaller.suBinaryChecker = { false }
         assertFalse(SystemCertificateInstaller.isRootAvailable())
     }
 

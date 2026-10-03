@@ -32,7 +32,6 @@ object SystemCertificateInstaller {
     fun isRootAvailable(): Boolean {
         return try {
             if (shell.isAppGrantedRoot() == true) return true
-            if (shell.isAppGrantedRoot() == false) return false
             suBinaryChecker()
         } catch (e: Exception) {
             Timber.w(e, "Failed to check root availability")
@@ -40,8 +39,9 @@ object SystemCertificateInstaller {
         }
     }
 
-    private fun defaultSuBinaryPresent(): Boolean {
-        val paths = System.getenv("PATH")?.split(":") ?: emptyList()
+    internal fun defaultSuBinaryPresent(): Boolean {
+        val paths = (System.getenv("PATH")?.split(":") ?: emptyList())
+            .filter { it.startsWith("/system") || it.startsWith("/product") || it.startsWith("/data") || it.startsWith("/apex") || it.startsWith("/sbin") }
         val standardPaths = listOf(
             "/system/bin",
             "/system/xbin",
@@ -61,17 +61,15 @@ object SystemCertificateInstaller {
         for (dir in allDirs) {
             try {
                 val file = java.io.File(dir, "su")
-                if (file.exists() && file.canExecute()) {
+                if (file.exists()) {
                     return true
                 }
             } catch (_: Exception) { }
         }
-        return try {
-            val process = Runtime.getRuntime().exec(arrayOf("which", "su"))
-            process.waitFor() == 0
-        } catch (_: Exception) {
-            false
-        }
+        try {
+            if (java.io.File("/data/adb/magisk").exists()) return true
+        } catch (_: Exception) { }
+        return false
     }
 
     /**
