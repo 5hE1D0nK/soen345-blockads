@@ -4,6 +4,7 @@ import android.app.PictureInPictureParams
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
+import android.graphics.Rect
 import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
@@ -26,6 +27,11 @@ import app.pwhs.blockads.ui.theme.BlockadsTheme
 import app.pwhs.blockads.utils.LocaleHelper
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+import app.pwhs.blockads.ui.browser.media.BrowserMediaCoordinator
 import org.koin.java.KoinJavaComponent.getKoin
 
 class BrowserActivity : ComponentActivity() {
@@ -59,22 +65,31 @@ class BrowserActivity : ComponentActivity() {
         }
     }
 
+    private val notificationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { /* Permission result handled */ }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
         android.webkit.WebView.setWebContentsDebuggingEnabled(true)
 
+        checkNotificationPermission()
         requestMediaAudioFocus()
 
         val targetUrl = intent.getStringExtra(EXTRA_URL) ?: intent.dataString ?: "https://m.youtube.com"
         _currentUrl.value = targetUrl
+
+        isAutoPipEnabled = getSharedPreferences("browser_settings", Context.MODE_PRIVATE)
+            .getBoolean("auto_pip_enabled", false)
 
         setContent {
             val appPrefs: AppPreferences = getKoin().get()
             val themeMode by appPrefs.themeMode.collectAsState(initial = AppPreferences.THEME_SYSTEM)
             val accentColor by appPrefs.accentColor.collectAsState(initial = AppPreferences.ACCENT_GREEN)
             var showElementRules by remember { mutableStateOf(false) }
+            var autoPipEnabledState by remember { mutableStateOf(isAutoPipEnabled) }
 
             BlockadsTheme(themeMode = themeMode, accentColor = accentColor) {
                 BackHandler(enabled = showElementRules) {
@@ -89,7 +104,30 @@ class BrowserActivity : ComponentActivity() {
                     BrowserScreen(
                         initialUrl = _currentUrl.value,
                         isInPipMode = _isInPipMode.value,
+                        isAutoPipEnabled = autoPipEnabledState,
+                        onToggleAutoPip = {
+                            val newMode = !autoPipEnabledState
+                            autoPipEnabledState = newMode
+                            isAutoPipEnabled = newMode
+                            getSharedPreferences("browser_settings", Context.MODE_PRIVATE)
+                                .edit()
+                                .putBoolean("auto_pip_enabled", newMode)
+                                .apply()
+                            updatePipParams()
+                        },
                         onEnterPip = { enterPipMode() },
+                        onVideoPlaybackChanged = { playing ->
+                            if (isVideoPlaying != playing) {
+                                isVideoPlaying = playing
+                                if (playing) {
+                                    requestMediaAudioFocus()
+                                }
+                                updatePipParams()
+                            }
+                        },
+                        onVideoBoundsChanged = { rect, ratio, playing ->
+                            updateVideoBounds(rect, ratio, playing)
+                        },
                         onCloseBrowser = { finish() },
                         onNavigateToElementRules = { showElementRules = true }
                     )
@@ -99,6 +137,37 @@ class BrowserActivity : ComponentActivity() {
         updatePipParams()
     }
 
+    private var isVideoPlaying = false
+    private var currentSourceRect: Rect? = null
+    private var currentAspectRatio = Rational(16, 9)
+    private var isAutoPipEnabled = false
+
+    fun updateVideoBounds(
+        sourceRect: Rect?,
+        aspectRatio: Rational,
+        playing: Boolean
+    ) {
+        var changed = false
+        if (isVideoPlaying != playing) {
+            isVideoPlaying = playing
+            changed = true
+            if (playing) {
+                requestMediaAudioFocus()
+            }
+        }
+        if (currentSourceRect != sourceRect) {
+            currentSourceRect = sourceRect
+            changed = true
+        }
+        if (currentAspectRatio != aspectRatio) {
+            currentAspectRatio = aspectRatio
+            changed = true
+        }
+        if (changed) {
+            updatePipParams()
+        }
+    }
+
     override fun onResume() {
         super.onResume()
         updatePipParams()
@@ -106,7 +175,9 @@ class BrowserActivity : ComponentActivity() {
 
     override fun onUserLeaveHint() {
         super.onUserLeaveHint()
-        enterPipMode()
+        if (isVideoPlaying && isAutoPipEnabled) {
+            enterPipMode()
+        }
     }
 
     @Suppress("OVERRIDE_DEPRECATION")
@@ -120,26 +191,38 @@ class BrowserActivity : ComponentActivity() {
 
     fun enterPipMode(): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val params = PictureInPictureParams.Builder()
-                .setAspectRatio(Rational(16, 9))
-                .apply {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                        setAutoEnterEnabled(true)
-                    }
+            val builder = PictureInPictureParams.Builder()
+                .setAspectRatio(currentAspectRatio)
+
+            currentSourceRect?.let { rect ->
+                if (rect.width() > 50 && rect.height() > 50) {
+                    builder.setSourceRectHint(rect)
                 }
-                .build()
-            return runCatching { enterPictureInPictureMode(params) }.getOrDefault(false)
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                builder.setAutoEnterEnabled(true)
+            }
+            return runCatching { enterPictureInPictureMode(builder.build()) }.getOrDefault(false)
         }
         return false
     }
 
     private fun updatePipParams() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val params = PictureInPictureParams.Builder()
-                .setAspectRatio(Rational(16, 9))
-                .setAutoEnterEnabled(true)
-                .build()
-            runCatching { setPictureInPictureParams(params) }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val builder = PictureInPictureParams.Builder()
+                .setAspectRatio(currentAspectRatio)
+
+            currentSourceRect?.let { rect ->
+                if (rect.width() > 50 && rect.height() > 50) {
+                    builder.setSourceRectHint(rect)
+                }
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                builder.setAutoEnterEnabled(isVideoPlaying && isAutoPipEnabled)
+            }
+            runCatching { setPictureInPictureParams(builder.build()) }
         }
     }
 
@@ -170,6 +253,17 @@ class BrowserActivity : ComponentActivity() {
         }
     }
 
+    private fun checkNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    this, Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -177,6 +271,9 @@ class BrowserActivity : ComponentActivity() {
             audioFocusRequest?.let { req ->
                 runCatching { audioManager?.abandonAudioFocusRequest(req) }
             }
+        }
+        if (isFinishing) {
+            BrowserMediaCoordinator.stopMedia(this)
         }
     }
 }

@@ -88,8 +88,10 @@
             if (data.playerConfig && data.playerConfig.audioConfig && data.playerConfig.audioConfig.muteOnStart) {
                 delete data.playerConfig.audioConfig.muteOnStart;
             }
-            if (data.messages && data.messages[0] && data.messages[0].youThereRenderer) {
-                delete data.messages[0].youThereRenderer;
+            if (data.messages && Array.isArray(data.messages)) {
+                data.messages = data.messages.filter(function(m) {
+                    return !m || !m.youThereRenderer;
+                });
             }
             if (data.auxiliaryUi && data.auxiliaryUi.messageRenderers) {
                 delete data.auxiliaryUi.messageRenderers.upsellDialogRenderer;
@@ -241,42 +243,43 @@
     window.addEventListener('yt-page-data-updated', cleanFeedAds, { passive: true });
 
     // 12. Picture-in-Picture window management
+    try {
+        var normalStyle = document.getElementById('__blockads_normal_video_style');
+        if (!normalStyle) {
+            normalStyle = document.createElement('style');
+            normalStyle.id = '__blockads_normal_video_style';
+            normalStyle.textContent = 'html:not(.__blockads_pip_active) body #movie_player video, html:not(.__blockads_pip_active) body div.html5-video-player video { top: 0px !important; }';
+            (document.head || document.documentElement).appendChild(normalStyle);
+        }
+    } catch (e) {}
+
     window.__blockads_set_pip = function(enable) {
         window.__blockads_force_pip = enable;
-        var pipBox = document.getElementById('__blockads_pip_box');
-        var v = document.querySelector('video');
-
         if (enable) {
-            if (!v) return;
-            if (!pipBox) {
-                pipBox = document.createElement('div');
-                pipBox.id = '__blockads_pip_box';
-                pipBox.style.cssText = 'position:fixed!important;top:0!important;left:0!important;width:100vw!important;height:100vh!important;z-index:2147483647!important;background:#000!important;display:flex!important;align-items:center!important;justify-content:center!important;margin:0!important;padding:0!important;overflow:hidden!important;';
-                document.body.appendChild(pipBox);
+            document.documentElement.classList.add('__blockads_pip_active');
+            var v = document.querySelector('video');
+            if (v && v.paused) {
+                v.play().catch(function(){});
             }
-            pipBox.style.display = 'flex';
-            if (v.parentElement !== pipBox) {
-                v._blockads_orig_parent = v.parentElement;
-                v._blockads_orig_sibling = v.nextSibling;
-                v._blockads_orig_style = v.style.cssText;
-                pipBox.appendChild(v);
-            }
-            v.style.cssText = 'width:100%!important;height:100%!important;max-width:100vw!important;max-height:100vh!important;object-fit:contain!important;position:static!important;margin:auto!important;display:block!important;background:#000!important;';
         } else {
-            if (pipBox) pipBox.style.display = 'none';
-            if (v && v._blockads_orig_parent) {
-                try {
-                    if (v._blockads_orig_sibling) {
-                        v._blockads_orig_parent.insertBefore(v, v._blockads_orig_sibling);
-                    } else {
-                        v._blockads_orig_parent.appendChild(v);
-                    }
-                    v.style.cssText = v._blockads_orig_style || '';
-                } catch (err) {}
-                delete v._blockads_orig_parent;
-                delete v._blockads_orig_sibling;
-                delete v._blockads_orig_style;
+            document.documentElement.classList.remove('__blockads_pip_active');
+            var v = document.querySelector('video');
+            if (v) {
+                v.style.top = '0px';
+                v.style.left = '0px';
             }
+            var mp = document.querySelector('#movie_player');
+            if (mp) {
+                if (v && !v.paused) {
+                    mp.classList.remove('paused-mode');
+                    mp.classList.add('playing-mode');
+                    mp.classList.add('ytp-autohide-active');
+                    if (typeof mp.playVideo === 'function') {
+                        try { mp.playVideo(); } catch(e) {}
+                    }
+                }
+            }
+            window.dispatchEvent(new Event('resize'));
         }
     };
 })();

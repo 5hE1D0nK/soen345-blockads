@@ -27,6 +27,8 @@ import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.Computer
 import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.PictureInPictureAlt
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -51,6 +53,7 @@ fun BrowserBentoMenuSheet(
     adBlockEnabled: Boolean,
     popupBlockEnabled: Boolean = true,
     isDesktopMode: Boolean,
+    isAutoPipEnabled: Boolean = true,
     ruleVersion: Long,
     ruleDomainsCount: Int,
     isCheckingRuleUpdates: Boolean,
@@ -58,6 +61,7 @@ fun BrowserBentoMenuSheet(
     onToggleAdBlock: () -> Unit,
     onTogglePopupBlock: () -> Unit = {},
     onToggleDesktopMode: () -> Unit,
+    onToggleAutoPip: () -> Unit = {},
     onEnterPip: () -> Unit,
     onClearData: () -> Unit,
     onOpenExternal: () -> Unit,
@@ -160,7 +164,21 @@ fun BrowserBentoMenuSheet(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            // Row 3: Picture-in-Picture Card
+            // Row 3: Auto-PiP vs Background Audio Mode Toggle
+            BentoToggleCard(
+                title = if (isAutoPipEnabled) "Cửa sổ nổi (PiP)" else "Phát âm thanh trong nền",
+                subtitle = if (isAutoPipEnabled)
+                    "Tự động mở video nổi khi thoát ra màn hình chính"
+                else
+                    "Chỉ phát âm thanh qua thanh thông báo khi thoát",
+                icon = if (isAutoPipEnabled) Icons.Default.PictureInPictureAlt else Icons.Default.PlayArrow,
+                checked = isAutoPipEnabled,
+                onCheckedChange = { onToggleAutoPip() },
+                activeColor = Color(0xFFD946EF),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            // Direct PiP action if user wants to enter PiP right now
             BentoPipCard(onEnterPip = {
                 onDismiss()
                 onEnterPip()

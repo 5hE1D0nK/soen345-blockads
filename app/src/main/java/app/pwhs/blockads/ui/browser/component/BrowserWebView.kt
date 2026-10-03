@@ -5,9 +5,11 @@ import android.app.DownloadManager
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.Rect
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
+import android.util.Rational
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.CookieManager
@@ -41,6 +43,8 @@ fun BrowserWebView(
     onPullRefresh: () -> Unit,
     onShowCustomView: (View, WebChromeClient.CustomViewCallback) -> Unit,
     onHideCustomView: () -> Unit,
+    onVideoPlaybackChanged: (Boolean) -> Unit = {},
+    onVideoBoundsChanged: (Rect?, Rational, Boolean) -> Unit = { _, _, _ -> },
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -54,7 +58,6 @@ fun BrowserWebView(
                     ViewGroup.LayoutParams.MATCH_PARENT
                 )
                 setBackgroundColor(android.graphics.Color.BLACK)
-                setLayerType(View.LAYER_TYPE_HARDWARE, null)
 
                 settings.apply {
                     javaScriptEnabled = true
@@ -101,6 +104,84 @@ fun BrowserWebView(
                         }
                     ),
                     "blockadsPickerProxy"
+                )
+
+                // Register video playback monitor for smart PiP auto-enter and source rect hint
+                addJavascriptInterface(
+                    object {
+                        @android.webkit.JavascriptInterface
+                        fun onPlaybackChanged(isPlaying: Boolean) {
+                            webView.post { onVideoPlaybackChanged(isPlaying) }
+                        }
+
+                        @android.webkit.JavascriptInterface
+                        fun updateVideoBounds(
+                            isPlaying: Boolean,
+                            left: Float,
+                            top: Float,
+                            width: Float,
+                            height: Float,
+                            aspectNum: Int,
+                            aspectDen: Int
+                        ) {
+                            webView.post {
+                                onVideoPlaybackChanged(isPlaying)
+                                val location = IntArray(2)
+                                webView.getLocationOnScreen(location)
+                                val density = webView.resources.displayMetrics.density
+                                val screenWidth = webView.resources.displayMetrics.widthPixels
+                                val screenHeight = webView.resources.displayMetrics.heightPixels
+
+                                val leftPx = (left * density).toInt() + location[0]
+                                val topPx = (top * density).toInt() + location[1]
+                                val rightPx = ((left + width) * density).toInt() + location[0]
+                                val bottomPx = ((top + height) * density).toInt() + location[1]
+
+                                val safeRect = if (width > 20f && height > 20f && bottomPx > 0 && topPx < screenHeight) {
+                                    Rect(
+                                        leftPx.coerceIn(0, screenWidth),
+                                        topPx.coerceIn(0, screenHeight),
+                                        rightPx.coerceIn(0, screenWidth),
+                                        bottomPx.coerceIn(0, screenHeight)
+                                    )
+                                } else null
+
+                                val ratio = if (aspectDen > 0) aspectNum.toFloat() / aspectDen.toFloat() else 1.7778f
+                                val safeRatio = when {
+                                    ratio < 0.41841f -> Rational(100, 239)
+                                    ratio > 2.39f -> Rational(239, 100)
+                                    aspectNum > 0 && aspectDen > 0 -> Rational(aspectNum, aspectDen)
+                                    else -> Rational(16, 9)
+                                }
+
+                                onVideoBoundsChanged(safeRect, safeRatio, isPlaying)
+                            }
+                        }
+
+                        @android.webkit.JavascriptInterface
+                        fun updateMediaState(
+                            title: String,
+                            artist: String,
+                            artworkUrl: String,
+                            isPlaying: Boolean,
+                            currentSec: Double,
+                            durationSec: Double
+                        ) {
+                            webView.post {
+                                val host = runCatching { Uri.parse(webView.url ?: uiState.displayUrl).host }.getOrNull().orEmpty()
+                                app.pwhs.blockads.ui.browser.media.BrowserMediaCoordinator.updateMediaState(
+                                    context = context,
+                                    title = title.ifBlank { uiState.displayUrl },
+                                    artist = artist.ifBlank { host },
+                                    artworkUrl = artworkUrl,
+                                    playing = isPlaying,
+                                    posMs = (currentSec * 1000).toLong(),
+                                    durMs = (durationSec * 1000).toLong()
+                                )
+                            }
+                        }
+                    },
+                    "__blockads_video_bridge"
                 )
 
                 webViewClient = object : WebViewClient() {
@@ -151,6 +232,8 @@ fun BrowserWebView(
 
                     override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                         super.onPageStarted(view, url, favicon)
+                        onVideoPlaybackChanged(false)
+                        onVideoBoundsChanged(null, Rational(16, 9), false)
                         url?.let { onIntent(BrowserUiIntent.PageStarted(it)) }
                         if (uiState.adBlockEnabled) {
                             BrowserAdBlocker.injectEarlyScripts(context, view, url)
@@ -164,6 +247,145 @@ fun BrowserWebView(
                         if (uiState.adBlockEnabled) {
                             BrowserAdBlocker.injectLateScripts(context, view, url)
                         }
+                        view?.evaluateJavascript(
+                            """
+                            (function() {
+                                if (window.__blockads_video_bridge_installed) return;
+                                window.__blockads_video_bridge_installed = true;
+                                function reportVideo() {
+                                    if (!window.__blockads_video_bridge) return;
+                                    var vids = document.querySelectorAll('video');
+                                    var activeVid = null;
+                                    for (var i = 0; i < vids.length; i++) {
+                                        var v = vids[i];
+                                        if (!v.paused && !v.ended && v.currentTime > 0) {
+                                            activeVid = v;
+                                            break;
+                                        }
+                                    }
+                                    var ytPlayer = document.querySelector('#movie_player') || document.querySelector('#player');
+                                    var isYtPlaying = false;
+                                    if (ytPlayer && typeof ytPlayer.getPlayerState === 'function') {
+                                        isYtPlaying = (ytPlayer.getPlayerState() === 1);
+                                    }
+                                    var isPlaying = !!activeVid || isYtPlaying;
+                                    var target = activeVid || ytPlayer || (vids.length > 0 ? vids[0] : null);
+                                    if (!target) {
+                                        window.__blockads_video_bridge.onPlaybackChanged(false);
+                                        return;
+                                    }
+                                    var r = target.getBoundingClientRect();
+                                    var vw = (activeVid && activeVid.videoWidth > 0) ? activeVid.videoWidth : r.width;
+                                    var vh = (activeVid && activeVid.videoHeight > 0) ? activeVid.videoHeight : r.height;
+                                    if (ytPlayer && typeof ytPlayer.getVideoAspectRatio === 'function') {
+                                        var ar = ytPlayer.getVideoAspectRatio();
+                                        if (ar > 0) {
+                                            vw = Math.round(1000 * ar);
+                                            vh = 1000;
+                                        }
+                                    }
+                                    if (window.__blockads_video_bridge.updateVideoBounds) {
+                                        window.__blockads_video_bridge.updateVideoBounds(
+                                            isPlaying,
+                                            r.left,
+                                            r.top,
+                                            r.width,
+                                            r.height,
+                                            Math.round(vw),
+                                            Math.round(vh)
+                                        );
+                                    } else {
+                                        window.__blockads_video_bridge.onPlaybackChanged(isPlaying);
+                                    }
+
+                                    try {
+                                        var mediaTitle = '';
+                                        var mediaArtist = '';
+                                        var mediaArt = '';
+                                        if (navigator.mediaSession && navigator.mediaSession.metadata) {
+                                            mediaTitle = navigator.mediaSession.metadata.title || '';
+                                            mediaArtist = navigator.mediaSession.metadata.artist || '';
+                                            var arts = navigator.mediaSession.metadata.artwork;
+                                            if (arts && arts.length > 0) {
+                                                mediaArt = arts[arts.length - 1].src || '';
+                                            }
+                                        }
+                                        if (!mediaTitle) {
+                                            mediaTitle = (document.title || '').replace(/\s*-\s*YouTube$/i, '').trim();
+                                        }
+                                        if (!mediaTitle) {
+                                            var h1 = document.querySelector('.slim-video-metadata-title, h1.title, .video-details h1');
+                                            if (h1) mediaTitle = (h1.textContent || '').trim();
+                                        }
+                                        if (!mediaArtist) {
+                                            var ch = document.querySelector('.ytm-slim-video-metadata-renderer-byline, ytm-badge-and-byline-renderer, .byline, ytm-channel-name');
+                                            mediaArtist = ch ? (ch.textContent || '').trim() : window.location.hostname;
+                                        }
+                                        if (!mediaArt) {
+                                            var m = location.href.match(/(?:v=|shorts\/|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+                                            if (m && m[1]) {
+                                                mediaArt = 'https://i.ytimg.com/vi/' + m[1] + '/hqdefault.jpg';
+                                            } else {
+                                                var og = document.querySelector('meta[property="og:image"], meta[name="twitter:image"], link[rel="image_src"]');
+                                                if (og) mediaArt = og.content || og.href || '';
+                                                else if (activeVid && activeVid.poster) mediaArt = activeVid.poster;
+                                            }
+                                        }
+                                        var mCur = (activeVid && activeVid.currentTime) ? activeVid.currentTime : 0;
+                                        var mDur = (activeVid && isFinite(activeVid.duration)) ? activeVid.duration : 0;
+                                        if (ytPlayer && typeof ytPlayer.getCurrentTime === 'function') {
+                                            if (!mCur) mCur = ytPlayer.getCurrentTime() || 0;
+                                            if (!mDur && typeof ytPlayer.getDuration === 'function') mDur = ytPlayer.getDuration() || 0;
+                                        }
+                                        if (window.__blockads_video_bridge && window.__blockads_video_bridge.updateMediaState) {
+                                            window.__blockads_video_bridge.updateMediaState(
+                                                mediaTitle || 'YouTube',
+                                                mediaArtist || 'BlockAds Browser',
+                                                mediaArt,
+                                                isPlaying,
+                                                mCur,
+                                                mDur
+                                            );
+                                        }
+                                    } catch (e) {}
+                                }
+                                window.__blockads_report_video = reportVideo;
+                                function scheduleReport(delay) {
+                                    if (pauseReportTimer) {
+                                        clearTimeout(pauseReportTimer);
+                                        pauseReportTimer = null;
+                                    }
+                                    if (delay > 0) {
+                                        pauseReportTimer = setTimeout(reportVideo, delay);
+                                    } else {
+                                        reportVideo();
+                                    }
+                                }
+                                document.addEventListener('play', function() { scheduleReport(0); }, true);
+                                document.addEventListener('playing', function() { scheduleReport(0); }, true);
+                                document.addEventListener('pause', function() { scheduleReport(700); }, true);
+                                document.addEventListener('ended', function() { scheduleReport(0); }, true);
+                                document.addEventListener('timeupdate', function() {
+                                    if (!window.__blockads_last_tu || Date.now() - window.__blockads_last_tu > 2000) {
+                                        window.__blockads_last_tu = Date.now();
+                                        reportVideo();
+                                    }
+                                }, true);
+                                window.addEventListener('scroll', function() {
+                                    if (!window.__blockads_last_sc || Date.now() - window.__blockads_last_sc > 400) {
+                                        window.__blockads_last_sc = Date.now();
+                                        reportVideo();
+                                    }
+                                }, { passive: true });
+                                window.addEventListener('resize', reportVideo, { passive: true });
+                                window.addEventListener('yt-navigate-finish', reportVideo, { passive: true });
+                                window.addEventListener('popstate', reportVideo, { passive: true });
+                                setTimeout(reportVideo, 1000);
+                                setTimeout(reportVideo, 3000);
+                            })();
+                            """.trimIndent(),
+                            null
+                        )
                     }
                 }
 

@@ -1,6 +1,7 @@
 package app.pwhs.blockads.ui.browser.component
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -55,17 +56,17 @@ data class QuickShortcut(
     val iconRes: Int? = null,
     val vectorIcon: ImageVector? = null,
     val iconTint: Color = Color.Unspecified,
-    val bgColor: Color
+    val bgColor: Color = Color.Transparent
 )
 
 private val HOME_SHORTCUTS = listOf(
-    QuickShortcut("Google", "https://www.google.com", iconRes = app.pwhs.blockads.R.drawable.ic_brand_google, bgColor = Color.White),
-    QuickShortcut("YouTube", "https://m.youtube.com", iconRes = app.pwhs.blockads.R.drawable.ic_settings_youtube, iconTint = Color.White, bgColor = Color(0xFFFF0000)),
-    QuickShortcut("Facebook", "https://m.facebook.com", iconRes = app.pwhs.blockads.R.drawable.ic_brand_facebook, bgColor = Color(0xFF1877F2)),
-    QuickShortcut("Reddit", "https://www.reddit.com", iconRes = app.pwhs.blockads.R.drawable.ic_reddit, iconTint = Color(0xFFFF4500), bgColor = Color.White),
-    QuickShortcut("TikTok", "https://www.tiktok.com", iconRes = app.pwhs.blockads.R.drawable.ic_brand_tiktok, bgColor = Color.Black),
-    QuickShortcut("X", "https://x.com", iconRes = app.pwhs.blockads.R.drawable.ic_brand_x, bgColor = Color.Black),
-    QuickShortcut("ChatGPT", "https://chatgpt.com", iconRes = app.pwhs.blockads.R.drawable.ic_brand_chatgpt, bgColor = Color(0xFF10A37F)),
+    QuickShortcut("Google", "https://www.google.com", iconRes = app.pwhs.blockads.R.drawable.ic_brand_google),
+    QuickShortcut("YouTube", "https://m.youtube.com", iconRes = app.pwhs.blockads.R.drawable.ic_brand_youtube),
+    QuickShortcut("Facebook", "https://m.facebook.com", iconRes = app.pwhs.blockads.R.drawable.ic_brand_facebook),
+    QuickShortcut("Reddit", "https://www.reddit.com", iconRes = app.pwhs.blockads.R.drawable.ic_brand_reddit),
+    QuickShortcut("TikTok", "https://www.tiktok.com", iconRes = app.pwhs.blockads.R.drawable.ic_brand_tiktok),
+    QuickShortcut("X", "https://x.com", iconRes = app.pwhs.blockads.R.drawable.ic_brand_x),
+    QuickShortcut("ChatGPT", "https://chatgpt.com", iconRes = app.pwhs.blockads.R.drawable.ic_brand_chatgpt),
 )
 
 @Composable
@@ -417,23 +418,22 @@ private fun SpeedDialItem(
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(6.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier.clickable { onClick() }
     ) {
         Box(
             modifier = Modifier
-                .size(56.dp)
-                .clip(RoundedCornerShape(18.dp))
-                .background(shortcut.bgColor)
-                .border(1.dp, Color.White.copy(alpha = 0.1f), RoundedCornerShape(18.dp)),
+                .size(54.dp)
+                .clip(CircleShape)
+                .background(Color(0xFF261D2B))
+                .border(1.dp, Color.White.copy(alpha = 0.08f), CircleShape),
             contentAlignment = Alignment.Center
         ) {
             if (shortcut.iconRes != null) {
-                Icon(
+                Image(
                     painter = androidx.compose.ui.res.painterResource(id = shortcut.iconRes),
                     contentDescription = shortcut.title,
-                    tint = shortcut.iconTint,
-                    modifier = Modifier.size(32.dp)
+                    modifier = Modifier.size(50.dp)
                 )
             } else if (shortcut.vectorIcon != null) {
                 Icon(
@@ -462,15 +462,15 @@ private fun SpeedDialItem(
 private fun AddShortcutItem(modifier: Modifier = Modifier) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(6.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier
     ) {
         Box(
             modifier = Modifier
-                .size(56.dp)
-                .clip(RoundedCornerShape(18.dp))
-                .background(Color(0xFF2C2030))
-                .border(1.dp, Color.White.copy(alpha = 0.15f), RoundedCornerShape(18.dp)),
+                .size(54.dp)
+                .clip(CircleShape)
+                .background(Color(0xFF261D2B))
+                .border(1.dp, Color.White.copy(alpha = 0.12f), CircleShape),
             contentAlignment = Alignment.Center
         ) {
             Icon(

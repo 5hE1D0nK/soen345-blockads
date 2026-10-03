@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
 import android.view.MotionEvent
+import android.view.View
 import android.webkit.WebView
 import androidx.core.view.NestedScrollingChild3
 import androidx.core.view.NestedScrollingChildHelper
@@ -19,6 +20,29 @@ class NestedScrollWebView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = android.R.attr.webViewStyle
 ) : WebView(context, attrs, defStyleAttr), NestedScrollingChild3 {
+
+    override fun dispatchWindowVisibilityChanged(visibility: Int) {
+        // Force VISIBLE to Chromium's AwContents so it never disconnects the media decoder or pauses playback
+        super.dispatchWindowVisibilityChanged(View.VISIBLE)
+    }
+
+    override fun onWindowVisibilityChanged(visibility: Int) {
+        super.onWindowVisibilityChanged(View.VISIBLE)
+    }
+
+    override fun dispatchVisibilityChanged(changedView: View, visibility: Int) {
+        super.dispatchVisibilityChanged(changedView, View.VISIBLE)
+    }
+
+    override fun onVisibilityChanged(changedView: View, visibility: Int) {
+        super.onVisibilityChanged(changedView, View.VISIBLE)
+    }
+
+    override fun getWindowVisibility(): Int = View.VISIBLE
+
+    override fun getVisibility(): Int = View.VISIBLE
+
+    override fun isShown(): Boolean = true
 
     private val childHelper = NestedScrollingChildHelper(this).apply {
         isNestedScrollingEnabled = true

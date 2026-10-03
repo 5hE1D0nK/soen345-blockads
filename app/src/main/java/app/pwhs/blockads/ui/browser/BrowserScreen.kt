@@ -2,13 +2,21 @@ package app.pwhs.blockads.ui.browser
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Rect
 import android.net.Uri
+import android.util.Rational
 import android.view.View
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -32,11 +40,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.pwhs.blockads.ui.browser.component.BrowserBentoMenuSheet
 import app.pwhs.blockads.ui.browser.component.BrowserBottomOmnibox
@@ -57,6 +69,10 @@ fun BrowserScreen(
     initialUrl: String = "https://m.youtube.com",
     isInPipMode: Boolean = false,
     onEnterPip: () -> Unit = {},
+    onVideoPlaybackChanged: (Boolean) -> Unit = {},
+    onVideoBoundsChanged: (Rect?, Rational, Boolean) -> Unit = { _, _, _ -> },
+    isAutoPipEnabled: Boolean = true,
+    onToggleAutoPip: () -> Unit = {},
     onCloseBrowser: () -> Unit,
     onNavigateToElementRules: () -> Unit = {},
     viewModel: BrowserViewModel = koinViewModel(),
@@ -71,8 +87,96 @@ fun BrowserScreen(
     val pullToRefreshState = rememberPullToRefreshState()
     var isRefreshing by remember { mutableStateOf(false) }
 
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                webViewInstance?.onResume()
+                webViewInstance?.evaluateJavascript(
+                    """
+                    (function() {
+                        var vids = document.querySelectorAll('video');
+                        for (var i = 0; i < vids.length; i++) {
+                            var v = vids[i];
+                            if (!v.paused) {
+                                v.style.top = '0px';
+                                v.dispatchEvent(new Event('canplay'));
+                                v.dispatchEvent(new Event('playing'));
+                                v.dispatchEvent(new Event('timeupdate'));
+                                try { v.play().catch(function(){}); } catch(e) {}
+                            }
+                        }
+                        var mp = document.querySelector('#movie_player');
+                        if (mp) {
+                            if (typeof mp.updateLastActiveTime === 'function') {
+                                try { mp.updateLastActiveTime(); } catch(e) {}
+                            }
+                            var anyPlaying = false;
+                            for (var j = 0; j < vids.length; j++) {
+                                if (!vids[j].paused) { anyPlaying = true; break; }
+                            }
+                            if (anyPlaying) {
+                                mp.classList.remove('paused-mode');
+                                mp.classList.add('playing-mode');
+                                mp.classList.add('ytp-autohide-active');
+                                if (typeof mp.playVideo === 'function') {
+                                    try { mp.playVideo(); } catch(e) {}
+                                }
+                                var overlay = document.querySelector('#player-control-overlay');
+                                if (overlay) {
+                                    overlay.classList.remove('fadein');
+                                    overlay.classList.add('fadeout');
+                                }
+                            }
+                        }
+                        var dialogs = document.querySelectorAll('dialog, ytm-dialog-renderer, ytm-you-there-renderer, #dialog-container dialog');
+                        for (var k = 0; k < dialogs.length; k++) {
+                            var d = dialogs[k];
+                            var txt = (d.textContent || '').toLowerCase();
+                            if (txt.includes('video paused') || txt.includes('continue watching') ||
+                                txt.includes('tạm dừng') || txt.includes('tiếp tục xem') ||
+                                d.querySelector('.confirm-dialog-content')) {
+                                var btn = d.querySelector('button');
+                                if (btn) btn.click();
+                                if (typeof d.close === 'function') {
+                                    try { d.close(); } catch(e) {}
+                                }
+                            }
+                        }
+                        window.dispatchEvent(new Event('resize'));
+                    })();
+                    """.trimIndent(),
+                    null
+                )
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
+    LaunchedEffect(webViewInstance) {
+        app.pwhs.blockads.ui.browser.media.BrowserMediaBridge.attach(webViewInstance)
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            app.pwhs.blockads.ui.browser.media.BrowserMediaBridge.detach()
+            app.pwhs.blockads.ui.browser.media.BrowserMediaCoordinator.stopMedia(context)
+        }
+    }
+
     LaunchedEffect(uiState.isLoading) {
         if (!uiState.isLoading) isRefreshing = false
+    }
+
+    LaunchedEffect(uiState.showShortcuts) {
+        if (uiState.showShortcuts) {
+            onVideoPlaybackChanged(false)
+            onVideoBoundsChanged(null, Rational(16, 9), false)
+            app.pwhs.blockads.ui.browser.media.BrowserMediaCoordinator.stopMedia(context)
+        }
     }
 
     LaunchedEffect(initialUrl) {
@@ -181,8 +285,10 @@ fun BrowserScreen(
                     onBack = { webViewInstance?.goBack() },
                     onForward = { webViewInstance?.goForward() },
                     onReload = { webViewInstance?.reload() },
+                    onStop = { webViewInstance?.stopLoading() },
                     onOpenSearch = { viewModel.processIntent(BrowserUiIntent.ToggleSearchSheet(true)) },
-                    onOpenMenu = { viewModel.processIntent(BrowserUiIntent.ToggleBentoMenu(true)) }
+                    onOpenMenu = { viewModel.processIntent(BrowserUiIntent.ToggleBentoMenu(true)) },
+                    onHome = { viewModel.processIntent(BrowserUiIntent.ToggleShortcuts) }
                 )
             }
         },
@@ -225,12 +331,18 @@ fun BrowserScreen(
                     onShowCustomView = { view, callback ->
                         customView = view
                         customViewCallback = callback
+                        onVideoPlaybackChanged(true)
+                        onVideoBoundsChanged(null, Rational(16, 9), true)
                     },
                     onHideCustomView = {
                         customView = null
                         customViewCallback?.onCustomViewHidden()
                         customViewCallback = null
+                        onVideoPlaybackChanged(false)
+                        onVideoBoundsChanged(null, Rational(16, 9), false)
                     },
+                    onVideoPlaybackChanged = onVideoPlaybackChanged,
+                    onVideoBoundsChanged = onVideoBoundsChanged,
                     modifier = Modifier.fillMaxSize()
                 )
             }
@@ -246,8 +358,20 @@ fun BrowserScreen(
                 )
             }
 
-            // Shortcuts Overlay
-            AnimatedVisibility(visible = uiState.showShortcuts && customView == null && !isInPipMode) {
+            // Shortcuts Overlay - animate smoothly from center outwards
+            AnimatedVisibility(
+                visible = uiState.showShortcuts && customView == null && !isInPipMode,
+                enter = fadeIn(animationSpec = tween(220)) + scaleIn(
+                    initialScale = 0.90f,
+                    transformOrigin = TransformOrigin.Center,
+                    animationSpec = tween(220, easing = FastOutSlowInEasing)
+                ),
+                exit = fadeOut(animationSpec = tween(180)) + scaleOut(
+                    targetScale = 0.90f,
+                    transformOrigin = TransformOrigin.Center,
+                    animationSpec = tween(180, easing = FastOutSlowInEasing)
+                )
+            ) {
                 Surface(
                     color = Color.Black,
                     modifier = Modifier.fillMaxSize()
@@ -270,6 +394,7 @@ fun BrowserScreen(
         adBlockEnabled = uiState.adBlockEnabled,
         popupBlockEnabled = uiState.popupBlockEnabled,
         isDesktopMode = uiState.isDesktopMode,
+        isAutoPipEnabled = isAutoPipEnabled,
         ruleVersion = uiState.ruleVersion,
         ruleDomainsCount = uiState.ruleDomainsCount,
         isCheckingRuleUpdates = uiState.isCheckingRuleUpdates,
@@ -288,6 +413,7 @@ fun BrowserScreen(
                 webViewInstance?.reload()
             }
         },
+        onToggleAutoPip = onToggleAutoPip,
         onEnterPip = {
             webViewInstance?.evaluateJavascript(
                 "if (window.__blockads_set_pip) { window.__blockads_set_pip(true); }",

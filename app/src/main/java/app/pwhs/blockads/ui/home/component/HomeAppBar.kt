@@ -127,8 +127,8 @@ fun HomeAppBar(
         actions = {
             IconButton(onClick = { onNavigateToBrowser("https://m.youtube.com") }) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_settings_youtube),
-                    contentDescription = "YouTube Ad-Free",
+                    painter = painterResource(R.drawable.ic_browser),
+                    contentDescription = stringResource(R.string.nav_browser),
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(24.dp)
                 )

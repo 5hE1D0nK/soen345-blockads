@@ -23,6 +23,7 @@
     <string name="cancel">Hủy</string>
     <string name="home_security_threats">Mối đe dọa đã chặn</string>
     <string name="nav_statistics">Thống kê</string>
+    <string name="nav_browser">Trình duyệt</string>
     <string name="accessibility_stat_card">%1$s: %2$s</string>
     <string name="accessibility_navigate_back">Quay lại</string>
     <string name="open_settings">Mở Cài đặt</string>
