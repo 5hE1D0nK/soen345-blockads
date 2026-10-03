@@ -37,11 +37,13 @@ class SystemCertificateInstallerShellTest {
     @Before
     fun setUp() {
         SystemCertificateInstaller.shell = shell
+        SystemCertificateInstaller.suBinaryChecker = { false }
     }
 
     @After
     fun tearDown() {
         SystemCertificateInstaller.shell = LibsuRootShell
+        SystemCertificateInstaller.suBinaryChecker = { false }
     }
 
     @Test
@@ -56,7 +58,7 @@ class SystemCertificateInstallerShellTest {
         shell.respond = { FakeResult(isSuccess = false) }
         assertTrue(SystemCertificateInstaller.installToUserStoreViaRoot(pem).isFailure)
         assertTrue(SystemCertificateInstaller.installToSystemStore(pem).isFailure)
-        assertEquals(listOf(listOf("id"), listOf("id")), shell.batches)
+        assertTrue(shell.batches.isEmpty())
     }
 
     @Test

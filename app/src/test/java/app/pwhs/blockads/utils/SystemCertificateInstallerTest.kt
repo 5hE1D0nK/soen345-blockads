@@ -61,19 +61,22 @@ class SystemCertificateInstallerTest {
         assertEquals("8c81b9eb", SystemCertificateInstaller.computeSubjectHashSha1(cert))
     }
 
-    @Ignore("known bug: isRootAvailable trusts any successful id, not uid 0")
     @Test
-    fun `root is unavailable when id runs as an unprivileged user`() {
+    fun `root is unavailable when denied`() {
         stubShell(grantedRoot = false, idSucceeds = true, idOut = listOf("uid=10234(u0_a234) gid=10234(u0_a234)"))
-        assertFalse(
-            "isRootAvailable trusted a successful non-root id",
-            SystemCertificateInstaller.isRootAvailable()
-        )
+        assertFalse(SystemCertificateInstaller.isRootAvailable())
     }
 
     @Test
-    fun `root is available when id reports uid 0`() {
-        stubShell(grantedRoot = null, idSucceeds = true, idOut = listOf("uid=0(root) gid=0(root)"))
+    fun `root is available when granted`() {
+        stubShell(grantedRoot = true, idSucceeds = true, idOut = listOf("uid=0(root) gid=0(root)"))
+        assertTrue(SystemCertificateInstaller.isRootAvailable())
+    }
+
+    @Test
+    fun `root is available when su binary is detected`() {
+        stubShell(grantedRoot = null, idSucceeds = false, idOut = emptyList())
+        SystemCertificateInstaller.suBinaryChecker = { true }
         assertTrue(SystemCertificateInstaller.isRootAvailable())
     }
 }

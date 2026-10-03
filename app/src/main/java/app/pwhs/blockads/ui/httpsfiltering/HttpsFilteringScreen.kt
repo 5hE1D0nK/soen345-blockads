@@ -78,8 +78,6 @@ fun HttpsFilteringScreen(
     val proxyStartedMsg = stringResource(R.string.https_filtering_started)
     val proxyStoppedMsg = stringResource(R.string.https_filtering_stopped)
 
-    val isRootAvailable = remember { app.pwhs.blockads.utils.SystemCertificateInstaller.isRootAvailable() }
-
     // Re-verify when the user returns from Android's Security Settings.
     // They likely just installed (or removed) the certificate.
     val settingsLauncher = rememberLauncherForActivityResult(
@@ -189,7 +187,6 @@ fun HttpsFilteringScreen(
                 item {
                     CertificateStatusCard(
                         certStatus = certStatus,
-                        isRootAvailable = isRootAvailable,
                         onOpenWizard = onNavigateToWizard,
                         onVerifyCert = { viewModel.verifyCert() }
                     )

@@ -42,7 +42,6 @@ import app.pwhs.blockads.ui.httpsfiltering.CertStatus
 @Composable
 fun CertificateStatusCard(
     certStatus: CertStatus,
-    isRootAvailable: Boolean,
     onOpenWizard: () -> Unit,
     onVerifyCert: () -> Unit,
     modifier: Modifier = Modifier

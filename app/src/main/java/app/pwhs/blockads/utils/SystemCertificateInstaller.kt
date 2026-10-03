@@ -22,11 +22,54 @@ object SystemCertificateInstaller {
     @Volatile
     internal var shell: RootShell = LibsuRootShell
 
+    @Volatile
+    internal var suBinaryChecker: () -> Boolean = ::defaultSuBinaryPresent
+
+    /**
+     * Passively checks if root is available without triggering a root permission prompt.
+     * Root permission is only actively requested during actual certificate installation.
+     */
     fun isRootAvailable(): Boolean {
         return try {
-            shell.isAppGrantedRoot() == true || shell.exec("id").isSuccess
+            if (shell.isAppGrantedRoot() == true) return true
+            if (shell.isAppGrantedRoot() == false) return false
+            suBinaryChecker()
         } catch (e: Exception) {
             Timber.w(e, "Failed to check root availability")
+            false
+        }
+    }
+
+    private fun defaultSuBinaryPresent(): Boolean {
+        val paths = System.getenv("PATH")?.split(":") ?: emptyList()
+        val standardPaths = listOf(
+            "/system/bin",
+            "/system/xbin",
+            "/sbin",
+            "/product/bin",
+            "/apex/com.android.runtime/bin",
+            "/system/sd/xbin",
+            "/system/bin/failsafe",
+            "/data/local/xbin",
+            "/data/local/bin",
+            "/data/local",
+            "/data/adb/ksu/bin",
+            "/data/adb/ap/bin",
+            "/data/adb/magisk"
+        )
+        val allDirs = (paths + standardPaths).distinct()
+        for (dir in allDirs) {
+            try {
+                val file = java.io.File(dir, "su")
+                if (file.exists() && file.canExecute()) {
+                    return true
+                }
+            } catch (_: Exception) { }
+        }
+        return try {
+            val process = Runtime.getRuntime().exec(arrayOf("which", "su"))
+            process.waitFor() == 0
+        } catch (_: Exception) {
             false
         }
     }
