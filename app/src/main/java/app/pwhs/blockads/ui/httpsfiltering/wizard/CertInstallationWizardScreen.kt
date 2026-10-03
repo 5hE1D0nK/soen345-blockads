@@ -125,13 +125,7 @@ fun CertInstallationWizardScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = {
-                        if (uiState.currentStep.ordinal > 0) {
-                            viewModel.processIntent(CertInstallationWizardUiIntent.PrevStep)
-                        } else {
-                            onNavigateBack()
-                        }
-                    }) {
+                    IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.accessibility_navigate_back)
