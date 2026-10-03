@@ -1,7 +1,6 @@
 package app.pwhs.blockads.ui.browser.component
 
 import android.content.Intent
-import android.provider.Settings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,7 +29,6 @@ import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.PictureInPictureAlt
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Shield
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -42,7 +40,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -66,7 +63,6 @@ fun BrowserBentoMenuSheet(
     onClearData: () -> Unit,
     onOpenExternal: () -> Unit,
     onShare: () -> Unit,
-    onHome: () -> Unit,
     onCloseBrowser: () -> Unit,
     onCheckRuleUpdates: () -> Unit,
     onActivateElementPicker: () -> Unit = {},
@@ -76,7 +72,6 @@ fun BrowserBentoMenuSheet(
     if (!isVisible) return
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val context = LocalContext.current
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -184,7 +179,7 @@ fun BrowserBentoMenuSheet(
                 onEnterPip()
             })
 
-            // Row 3: 4 Squircle Quick Action Buttons
+            // Row 4: 3 Squircle Quick Action Buttons
             BentoQuickActionsRow(
                 onClearData = {
                     onDismiss()
@@ -197,14 +192,10 @@ fun BrowserBentoMenuSheet(
                 onOpenExternal = {
                     onDismiss()
                     onOpenExternal()
-                },
-                onHome = {
-                    onDismiss()
-                    onHome()
                 }
             )
 
-            // Row 4: Block Element CTA
+            // Row 5: Block Element CTA
             BentoCtaButton(
                 title = "Chặn phần tử trang",
                 subtitle = "Chạm để ẩn quảng cáo hoặc thành phần khó chịu",
@@ -215,7 +206,7 @@ fun BrowserBentoMenuSheet(
                 }
             )
 
-            // Row 5: Manage Rules CTA
+            // Row 6: Manage Rules CTA
             BentoCtaButton(
                 title = "Quản lý quy tắc chặn phần tử",
                 subtitle = "Xem và xóa các phần tử bạn đã chặn",
@@ -223,19 +214,6 @@ fun BrowserBentoMenuSheet(
                 onClick = {
                     onDismiss()
                     onNavigateToElementRules()
-                }
-            )
-
-            // Row 6: Set as Default Browser CTA
-            BentoCtaButton(
-                title = "Đặt làm trình duyệt mặc định",
-                subtitle = "Bảo vệ liên tục khi mở mọi liên kết",
-                icon = Icons.Default.Star,
-                onClick = {
-                    runCatching {
-                        val intent = Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS)
-                        context.startActivity(intent)
-                    }
                 }
             )
 

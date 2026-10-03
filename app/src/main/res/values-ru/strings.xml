@@ -30,4 +30,5 @@
     <string name="home_connecting_desc_root">Установка Root Proxy…</string>
     <string name="home_disconnecting_desc_root">Остановка Root Proxy…</string>
     <string name="home_paused_trusted_short">Пауза в доверенной сети</string>
+    <string name="nav_browser">Браузер</string>
 </resources>

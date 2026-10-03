@@ -30,4 +30,5 @@
     <string name="home_connecting_desc_root">Estableciendo Root Proxy…</string>
     <string name="home_disconnecting_desc_root">Deteniendo Root Proxy…</string>
     <string name="home_paused_trusted_short">En pausa en red de confianza</string>
+    <string name="nav_browser">Navegador</string>
 </resources>

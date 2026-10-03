@@ -23,11 +23,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.QrCodeScanner
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Shield
-import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -49,6 +48,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.pwhs.blockads.R
 
 data class QuickShortcut(
     val title: String,
@@ -60,13 +60,13 @@ data class QuickShortcut(
 )
 
 private val HOME_SHORTCUTS = listOf(
-    QuickShortcut("Google", "https://www.google.com", iconRes = app.pwhs.blockads.R.drawable.ic_brand_google),
-    QuickShortcut("YouTube", "https://m.youtube.com", iconRes = app.pwhs.blockads.R.drawable.ic_brand_youtube),
-    QuickShortcut("Facebook", "https://m.facebook.com", iconRes = app.pwhs.blockads.R.drawable.ic_brand_facebook),
-    QuickShortcut("Reddit", "https://www.reddit.com", iconRes = app.pwhs.blockads.R.drawable.ic_brand_reddit),
-    QuickShortcut("TikTok", "https://www.tiktok.com", iconRes = app.pwhs.blockads.R.drawable.ic_brand_tiktok),
-    QuickShortcut("X", "https://x.com", iconRes = app.pwhs.blockads.R.drawable.ic_brand_x),
-    QuickShortcut("ChatGPT", "https://chatgpt.com", iconRes = app.pwhs.blockads.R.drawable.ic_brand_chatgpt),
+    QuickShortcut("YouTube", "https://m.youtube.com", iconRes = R.drawable.ic_brand_youtube),
+    QuickShortcut("Google", "https://www.google.com", iconRes = R.drawable.ic_brand_google),
+    QuickShortcut("Facebook", "https://m.facebook.com", iconRes = R.drawable.ic_brand_facebook),
+    QuickShortcut("TikTok", "https://www.tiktok.com", iconRes = R.drawable.ic_brand_tiktok),
+    QuickShortcut("Reddit", "https://www.reddit.com", iconRes = R.drawable.ic_brand_reddit),
+    QuickShortcut("X", "https://x.com", iconRes = R.drawable.ic_brand_x),
+    QuickShortcut("ChatGPT", "https://chatgpt.com", iconRes = R.drawable.ic_brand_chatgpt),
 )
 
 @Composable
@@ -144,7 +144,32 @@ private fun HomeTopBar(onOpenMenu: () -> Unit) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Shield Pro Badge Button
+        // Shield Protection Status Badge
+        Surface(
+            color = Color(0xFF10B981).copy(alpha = 0.15f),
+            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier.clip(RoundedCornerShape(12.dp))
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Shield,
+                    contentDescription = null,
+                    tint = Color(0xFF10B981),
+                    modifier = Modifier.size(16.dp)
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(
+                    text = "Đang bảo vệ",
+                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
+                    color = Color(0xFF10B981)
+                )
+            }
+        }
+
+        // More Menu Button (3 Dots)
         Box(
             modifier = Modifier
                 .size(42.dp)
@@ -155,48 +180,11 @@ private fun HomeTopBar(onOpenMenu: () -> Unit) {
             contentAlignment = Alignment.Center
         ) {
             Icon(
-                imageVector = Icons.Default.Shield,
-                contentDescription = "Shield Pro",
-                tint = Color(0xFF10B981),
+                imageVector = Icons.Default.MoreVert,
+                contentDescription = "Menu",
+                tint = Color.White.copy(alpha = 0.85f),
                 modifier = Modifier.size(20.dp)
             )
-        }
-
-        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            // Scanner Icon Button
-            Box(
-                modifier = Modifier
-                    .size(42.dp)
-                    .clip(RoundedCornerShape(14.dp))
-                    .background(Color(0xFF332438))
-                    .border(1.dp, Color.White.copy(alpha = 0.08f), RoundedCornerShape(14.dp)),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.QrCodeScanner,
-                    contentDescription = "QR Scanner",
-                    tint = Color.White.copy(alpha = 0.85f),
-                    modifier = Modifier.size(20.dp)
-                )
-            }
-
-            // Settings / Tune Button
-            Box(
-                modifier = Modifier
-                    .size(42.dp)
-                    .clip(RoundedCornerShape(14.dp))
-                    .background(Color(0xFF332438))
-                    .border(1.dp, Color.White.copy(alpha = 0.08f), RoundedCornerShape(14.dp))
-                    .clickable { onOpenMenu() },
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Tune,
-                    contentDescription = "Settings",
-                    tint = Color.White.copy(alpha = 0.85f),
-                    modifier = Modifier.size(20.dp)
-                )
-            }
         }
     }
 }
@@ -216,13 +204,15 @@ private fun HomeHeroBrand() {
             ),
             color = Color.White
         )
+        Spacer(modifier = Modifier.height(4.dp))
         Text(
-            text = "Trình duyệt bảo vệ quyền riêng tư",
+            text = "Chặn quảng cáo • Phát video trong nền",
             style = MaterialTheme.typography.labelSmall.copy(
                 letterSpacing = 0.5.sp,
-                fontSize = 11.sp
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Medium
             ),
-            color = Color.White.copy(alpha = 0.45f)
+            color = Color.White.copy(alpha = 0.55f)
         )
     }
 }
@@ -237,70 +227,29 @@ private fun HomeSearchCapsule(onOpenSearch: () -> Unit) {
             .background(Color(0xFF2E2032))
             .border(1.dp, Color.White.copy(alpha = 0.12f), RoundedCornerShape(27.dp))
             .clickable { onOpenSearch() }
-            .padding(horizontal = 14.dp),
+            .padding(horizontal = 16.dp),
         contentAlignment = Alignment.CenterStart
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = null,
+                tint = Color.White.copy(alpha = 0.55f),
+                modifier = Modifier.size(20.dp)
+            )
+
+            Text(
+                text = "Tìm kiếm hoặc nhập địa chỉ web...",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.White.copy(alpha = 0.45f),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f)
-            ) {
-                // VPN / Shield Badge
-                Surface(
-                    color = Color(0xFF10B981).copy(alpha = 0.18f),
-                    shape = RoundedCornerShape(6.dp)
-                ) {
-                    Text(
-                        text = "VPN",
-                        style = MaterialTheme.typography.labelSmall.copy(
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 9.sp
-                        ),
-                        color = Color(0xFF10B981),
-                        modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp)
-                    )
-                }
-
-                // Google G logo placeholder
-                Box(
-                    modifier = Modifier
-                        .size(22.dp)
-                        .background(Color.White, CircleShape),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "G",
-                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                        color = Color(0xFF4285F4)
-                    )
-                }
-
-                Text(
-                    text = "Tìm kiếm hoặc nhập URL...",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.White.copy(alpha = 0.45f),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-
-            // AI Action Badge
-            Surface(
-                color = Color(0xFFD946EF).copy(alpha = 0.25f),
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                Text(
-                    text = "AI",
-                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                    color = Color(0xFFF472B6),
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
-                )
-            }
+            )
         }
     }
 }
@@ -347,15 +296,15 @@ private fun HomeFeatureBanner(onDismiss: () -> Unit) {
 
                 Column {
                     Text(
-                        text = "Bảo vệ 100% không quảng cáo",
+                        text = "Chặn quảng cáo & Phát video nền",
                         style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
                         color = Color.White
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
-                        text = "Lọc sạch video ads, popups & mã theo dõi",
+                        text = "Tự động lọc sạch video ads, popups & hỗ trợ phát nổi PiP",
                         style = MaterialTheme.typography.labelSmall,
-                        color = Color.White.copy(alpha = 0.8f)
+                        color = Color.White.copy(alpha = 0.85f)
                     )
                 }
             }
@@ -397,13 +346,9 @@ private fun HomeSpeedDialGrid(
                         modifier = Modifier.weight(1f)
                     )
                 }
-                // Fill remainder if last row has less than 4
-                if (row.size < 4) {
-                    // Add Button in last available slot
-                    AddShortcutItem(modifier = Modifier.weight(1f))
-                    for (i in (row.size + 1) until 4) {
-                        Spacer(modifier = Modifier.weight(1f))
-                    }
+                // Fill remainder if last row has less than 4 to keep symmetrical grid
+                for (i in row.size until 4) {
+                    Spacer(modifier = Modifier.weight(1f))
                 }
             }
         }
@@ -454,40 +399,6 @@ private fun SpeedDialItem(
             textAlign = TextAlign.Center,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
-        )
-    }
-}
-
-@Composable
-private fun AddShortcutItem(modifier: Modifier = Modifier) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = modifier
-    ) {
-        Box(
-            modifier = Modifier
-                .size(54.dp)
-                .clip(CircleShape)
-                .background(Color(0xFF261D2B))
-                .border(1.dp, Color.White.copy(alpha = 0.12f), CircleShape),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = Icons.Default.Add,
-                contentDescription = "Thêm lối tắt",
-                tint = Color.White.copy(alpha = 0.5f),
-                modifier = Modifier.size(24.dp)
-            )
-        }
-        Text(
-            text = "Thêm",
-            style = MaterialTheme.typography.labelSmall.copy(
-                fontWeight = FontWeight.Medium,
-                fontSize = 11.5.sp
-            ),
-            color = Color.White.copy(alpha = 0.45f),
-            textAlign = TextAlign.Center
         )
     }
 }

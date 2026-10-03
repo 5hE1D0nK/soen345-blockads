@@ -4,9 +4,7 @@ import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,10 +15,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.PictureInPictureAlt
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.Icon
@@ -36,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -53,6 +52,7 @@ fun BrowserBottomOmnibox(
     canGoBack: Boolean = false,
     canGoForward: Boolean = false,
     isDesktopMode: Boolean = false,
+    isVideoPlaying: Boolean = false,
     isVisible: Boolean,
     onBack: () -> Unit = {},
     onForward: () -> Unit = {},
@@ -61,6 +61,7 @@ fun BrowserBottomOmnibox(
     onOpenSearch: () -> Unit,
     onOpenMenu: () -> Unit,
     onHome: () -> Unit = {},
+    onEnterPip: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val domain = remember(displayUrl) {
@@ -114,20 +115,35 @@ fun BrowserBottomOmnibox(
                         .padding(horizontal = 4.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // 1. Home Button (Outline house matching Chrome 1:1)
+                    // 1. Smart Navigation (Back if can go back, else Home to open Shortcuts)
                     IconButton(
-                        onClick = onHome,
+                        onClick = {
+                            if (canGoBack) {
+                                onBack()
+                            } else {
+                                onHome()
+                            }
+                        },
                         modifier = Modifier.size(40.dp)
                     ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_home),
-                            contentDescription = "Home",
-                            modifier = Modifier.size(22.dp),
-                            tint = MaterialTheme.colorScheme.onSurface
-                        )
+                        if (canGoBack) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Quay lại",
+                                modifier = Modifier.size(22.dp),
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
+                        } else {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_home),
+                                contentDescription = "Trang chủ",
+                                modifier = Modifier.size(22.dp),
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
                     }
 
-                    Spacer(modifier = Modifier.width(2.dp))
+                    Spacer(modifier = Modifier.width(4.dp))
 
                     // 2. Chrome Omnibox Pill
                     Surface(
@@ -153,7 +169,7 @@ fun BrowserBottomOmnibox(
                             Spacer(modifier = Modifier.width(8.dp))
 
                             Text(
-                                text = domain.ifEmpty { "Search or type URL" },
+                                text = domain.ifEmpty { "Tìm kiếm hoặc nhập URL" },
                                 style = MaterialTheme.typography.bodyMedium.copy(
                                     fontWeight = FontWeight.Normal,
                                     fontSize = 14.5.sp
@@ -200,48 +216,22 @@ fun BrowserBottomOmnibox(
                         }
                     }
 
-                    Spacer(modifier = Modifier.width(2.dp))
+                    Spacer(modifier = Modifier.width(4.dp))
 
-                    // 3. New Tab "+" Button (Chrome style)
+                    // 3. Quick PiP Button (Highlighted when video is playing)
                     IconButton(
-                        onClick = onHome,
+                        onClick = onEnterPip,
                         modifier = Modifier.size(40.dp)
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = "New Tab",
+                            imageVector = Icons.Default.PictureInPictureAlt,
+                            contentDescription = "Phát video nổi",
                             modifier = Modifier.size(22.dp),
-                            tint = MaterialTheme.colorScheme.onSurface
+                            tint = if (isVideoPlaying) Color(0xFFD946EF) else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
 
-                    // 4. Tab Counter Box "[ 1 ]" (Chrome trademark)
-                    IconButton(
-                        onClick = onHome,
-                        modifier = Modifier.size(40.dp)
-                    ) {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier
-                                .size(19.dp)
-                                .border(
-                                    width = 1.75.dp,
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    shape = RoundedCornerShape(4.5.dp)
-                                )
-                        ) {
-                            Text(
-                                text = "1",
-                                style = MaterialTheme.typography.labelSmall.copy(
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 10.sp
-                                ),
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                        }
-                    }
-
-                    // 5. More Menu Button (3 Dots)
+                    // 4. More Menu Button (3 Dots)
                     IconButton(
                         onClick = onOpenMenu,
                         modifier = Modifier.size(38.dp)

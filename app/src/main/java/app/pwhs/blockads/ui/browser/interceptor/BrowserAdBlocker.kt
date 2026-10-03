@@ -62,11 +62,14 @@ object BrowserAdBlocker {
         val host = url.host?.lowercase(Locale.US) ?: return false
         val fullUrl = url.toString().lowercase(Locale.US)
 
-        // 1. Fast host suffix match (Set contains is O(1))
-        for (suffix in activeHostSuffixes) {
-            if (host == suffix || host.endsWith(".$suffix")) {
+        // 1. Fast host suffix match (O(depth) lookup instead of O(N) loop)
+        var checkHost: String? = host
+        while (checkHost != null) {
+            if (activeHostSuffixes.contains(checkHost)) {
                 return true
             }
+            val dot = checkHost.indexOf('.')
+            checkHost = if (dot != -1) checkHost.substring(dot + 1) else null
         }
 
         // 2. Gambling popunder domain keyword match

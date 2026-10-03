@@ -30,4 +30,5 @@
     <string name="home_connecting_desc_root">กำลังสร้าง Root Proxy…</string>
     <string name="home_disconnecting_desc_root">กำลังหยุด Root Proxy…</string>
     <string name="home_paused_trusted_short">หยุดชั่วคราวบนเครือข่ายที่เชื่อถือได้</string>
+    <string name="nav_browser">เบราว์เซอร์</string>
 </resources>

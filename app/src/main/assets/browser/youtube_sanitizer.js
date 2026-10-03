@@ -215,18 +215,24 @@
         };
     }
 
-    // 11. Safe DOM cleanup for feed and search ads (NO VIDEO TAMPERING)
-    function cleanFeedAds() {
-        try {
-            var banners = document.querySelectorAll(
+    // 11. CSS-based instant ad hiding (Zero CPU overhead)
+    try {
+        var adCss = document.getElementById('__blockads_yt_ad_css');
+        if (!adCss) {
+            adCss = document.createElement('style');
+            adCss.id = '__blockads_yt_ad_css';
+            adCss.textContent = 
                 'ytm-promoted-sparkles-web-renderer, ytm-companion-ad-renderer, ' +
                 'ytm-ad-slot-renderer, ytm-statement-banner-renderer, ' +
-                'ytm-brand-video-singleton-renderer, ytm-in-feed-ad-layout-renderer, #masthead-ad'
-            );
-            for (var i = 0; i < banners.length; i++) {
-                var p = banners[i].closest('ytm-rich-item-renderer, ytm-rich-section-renderer, ytm-item-section-renderer') || banners[i];
-                p.remove();
-            }
+                'ytm-brand-video-singleton-renderer, ytm-in-feed-ad-layout-renderer, #masthead-ad, ' +
+                '.ad-container, .ytp-ad-overlay-container, ytm-promoted-video-renderer { display: none !important; }';
+            (document.head || document.documentElement).appendChild(adCss);
+        }
+    } catch (e) {}
+
+    // Safe DOM cleanup for sponsored cards (runs on navigation & throttled)
+    function cleanFeedAds() {
+        try {
             var badges = document.querySelectorAll('yt-metadata-badge-renderer, ytm-badge-and-byline-renderer, badge-shape, .badge');
             for (var j = 0; j < badges.length; j++) {
                 var bt = (badges[j].textContent || '').trim().toLowerCase();
@@ -238,7 +244,7 @@
         } catch (e) {}
     }
 
-    setInterval(cleanFeedAds, 500);
+    setInterval(cleanFeedAds, 2500);
     window.addEventListener('yt-navigate-finish', cleanFeedAds, { passive: true });
     window.addEventListener('yt-page-data-updated', cleanFeedAds, { passive: true });
 

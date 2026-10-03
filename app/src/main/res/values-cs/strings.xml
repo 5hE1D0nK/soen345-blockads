@@ -30,4 +30,5 @@
     <string name="home_connecting_desc_root">Navazování Root Proxy…</string>
     <string name="home_disconnecting_desc_root">Zastavování Root Proxy…</string>
     <string name="home_paused_trusted_short">Pozastaveno v důvěryhodné síti</string>
+    <string name="nav_browser">Prohlížeč</string>
 </resources>

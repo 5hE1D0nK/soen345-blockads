@@ -137,13 +137,13 @@
         setInterval(function() {
             if (!isUserAction && !userPaused) {
                 var v = document.querySelector('video');
-                var mp = document.querySelector('#movie_player') || document.querySelector('#player');
                 if (v && v.paused && v.currentTime > 0 && !v.ended) {
                     try {
                         v.muted = false;
                         var p = v.play();
                         if (p && typeof p.catch === 'function') {
                             p.catch(function() {
+                                var mp = document.querySelector('#movie_player');
                                 if (mp && typeof mp.playVideo === 'function') {
                                     try { mp.playVideo(); } catch(err) {}
                                 }
@@ -152,7 +152,7 @@
                     } catch(err) {}
                 }
             }
-        }, 800);
+        }, 1500);
 
         // 6. Hook YouTube player pauseVideo API
         function hookMoviePlayer() {
@@ -171,7 +171,8 @@
                 }
             }
         }
-        setInterval(hookMoviePlayer, 500);
+        window.addEventListener('yt-navigate-finish', hookMoviePlayer, { passive: true });
+        setInterval(hookMoviePlayer, 2000);
 
         // 7. Defeat YouTube "Video paused. Continue watching?" (youThereRenderer / inactivity dialogs)
         function preventYouThere() {
@@ -199,14 +200,14 @@
                 try { activePlayer.updateLastActiveTime(); } catch(e) {}
             }
         }
-        setInterval(preventYouThere, 1000);
+        setInterval(preventYouThere, 3500);
 
         // Keep global activity timer fresh
         setInterval(function() {
             try {
                 window.dispatchEvent(new Event('mousemove'));
             } catch (e) {}
-        }, 10000);
+        }, 15000);
 
         // 8. Keep YouTube player UI in sync with actual media playback state
         function syncPlayerState() {
@@ -215,13 +216,11 @@
             if (v && !v.paused && mp && typeof mp.getPlayerState === 'function') {
                 var s = mp.getPlayerState();
                 if (s === 2 || s === 3) {
-                    v.dispatchEvent(new Event('canplay'));
                     v.dispatchEvent(new Event('playing'));
-                    v.dispatchEvent(new Event('timeupdate'));
                 }
             }
         }
-        setInterval(syncPlayerState, 500);
+        setInterval(syncPlayerState, 2500);
 
         // 9. MediaSession action handlers for system controls
         if ('mediaSession' in navigator) {

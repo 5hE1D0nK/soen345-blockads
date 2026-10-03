@@ -366,36 +366,32 @@ fun BentoQuickActionsRow(
     onClearData: () -> Unit,
     onShare: () -> Unit,
     onOpenExternal: () -> Unit,
-    onHome: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         QuickActionButton(
             label = "Xóa cache",
             icon = Icons.Default.DeleteOutline,
             color = Color(0xFFEF4444),
-            onClick = onClearData
+            onClick = onClearData,
+            modifier = Modifier.weight(1f)
         )
         QuickActionButton(
             label = "Chia sẻ",
             icon = Icons.Default.Share,
             color = Color(0xFF38BDF8),
-            onClick = onShare
+            onClick = onShare,
+            modifier = Modifier.weight(1f)
         )
         QuickActionButton(
             label = "Mở ngoài",
             icon = Icons.AutoMirrored.Filled.OpenInNew,
             color = Color(0xFFF59E0B),
-            onClick = onOpenExternal
-        )
-        QuickActionButton(
-            label = "Trang chủ",
-            icon = Icons.Default.Home,
-            color = Color(0xFFA855F7),
-            onClick = onHome
+            onClick = onOpenExternal,
+            modifier = Modifier.weight(1f)
         )
     }
 }
@@ -405,16 +401,18 @@ private fun QuickActionButton(
     label: String,
     icon: ImageVector,
     color: Color,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(6.dp),
-        modifier = Modifier.clickable { onClick() }
+        modifier = modifier.clickable { onClick() }
     ) {
         Box(
             modifier = Modifier
-                .size(52.dp)
+                .fillMaxWidth()
+                .height(52.dp)
                 .clip(RoundedCornerShape(16.dp))
                 .background(Color(0xFF281F30))
                 .border(1.dp, color.copy(alpha = 0.35f), RoundedCornerShape(16.dp)),
@@ -430,7 +428,8 @@ private fun QuickActionButton(
         Text(
             text = label,
             style = MaterialTheme.typography.labelSmall,
-            color = Color.White.copy(alpha = 0.7f)
+            color = Color.White.copy(alpha = 0.7f),
+            maxLines = 1
         )
     }
 }

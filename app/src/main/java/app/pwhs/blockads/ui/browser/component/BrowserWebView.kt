@@ -57,7 +57,7 @@ fun BrowserWebView(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT
                 )
-                setBackgroundColor(android.graphics.Color.BLACK)
+                setLayerType(View.LAYER_TYPE_HARDWARE, null)
 
                 settings.apply {
                     javaScriptEnabled = true
@@ -71,13 +71,10 @@ fun BrowserWebView(
                     setSupportMultipleWindows(true)
                     cacheMode = WebSettings.LOAD_DEFAULT
                     mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
+                    offscreenPreRaster = true
 
                     val defaultUa = userAgentString
                     userAgentString = BrowserAdBlocker.spoofChromeUserAgent(defaultUa)
-
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        isAlgorithmicDarkeningAllowed = true
-                    }
                 }
 
                 val webView = this
@@ -269,9 +266,12 @@ fun BrowserWebView(
                                         isYtPlaying = (ytPlayer.getPlayerState() === 1);
                                     }
                                     var isPlaying = !!activeVid || isYtPlaying;
+                                    window.__blockads_is_video_playing = isPlaying;
                                     var target = activeVid || ytPlayer || (vids.length > 0 ? vids[0] : null);
-                                    if (!target) {
-                                        window.__blockads_video_bridge.onPlaybackChanged(false);
+                                    if (!target || !isPlaying) {
+                                        if (window.__blockads_video_bridge) {
+                                            window.__blockads_video_bridge.onPlaybackChanged(isPlaying);
+                                        }
                                         return;
                                     }
                                     var r = target.getBoundingClientRect();
@@ -366,22 +366,25 @@ fun BrowserWebView(
                                 document.addEventListener('pause', function() { scheduleReport(700); }, true);
                                 document.addEventListener('ended', function() { scheduleReport(0); }, true);
                                 document.addEventListener('timeupdate', function() {
-                                    if (!window.__blockads_last_tu || Date.now() - window.__blockads_last_tu > 2000) {
+                                    if (!window.__blockads_last_tu || Date.now() - window.__blockads_last_tu > 2500) {
                                         window.__blockads_last_tu = Date.now();
                                         reportVideo();
                                     }
                                 }, true);
+                                var scrollTimer = null;
                                 window.addEventListener('scroll', function() {
-                                    if (!window.__blockads_last_sc || Date.now() - window.__blockads_last_sc > 400) {
-                                        window.__blockads_last_sc = Date.now();
-                                        reportVideo();
-                                    }
+                                    if (scrollTimer) clearTimeout(scrollTimer);
+                                    scrollTimer = setTimeout(function() {
+                                        scrollTimer = null;
+                                        if (window.__blockads_is_video_playing) {
+                                            reportVideo();
+                                        }
+                                    }, 1200);
                                 }, { passive: true });
-                                window.addEventListener('resize', reportVideo, { passive: true });
-                                window.addEventListener('yt-navigate-finish', reportVideo, { passive: true });
-                                window.addEventListener('popstate', reportVideo, { passive: true });
-                                setTimeout(reportVideo, 1000);
-                                setTimeout(reportVideo, 3000);
+                                window.addEventListener('resize', function() { scheduleReport(300); }, { passive: true });
+                                window.addEventListener('yt-navigate-finish', function() { scheduleReport(500); }, { passive: true });
+                                window.addEventListener('popstate', function() { scheduleReport(500); }, { passive: true });
+                                setTimeout(reportVideo, 1200);
                             })();
                             """.trimIndent(),
                             null

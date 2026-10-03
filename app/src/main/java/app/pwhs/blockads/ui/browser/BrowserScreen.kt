@@ -86,6 +86,7 @@ fun BrowserScreen(
     var customViewCallback by remember { mutableStateOf<WebChromeClient.CustomViewCallback?>(null) }
     val pullToRefreshState = rememberPullToRefreshState()
     var isRefreshing by remember { mutableStateOf(false) }
+    var isVideoPlaying by remember { mutableStateOf(false) }
 
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
@@ -173,6 +174,7 @@ fun BrowserScreen(
 
     LaunchedEffect(uiState.showShortcuts) {
         if (uiState.showShortcuts) {
+            isVideoPlaying = false
             onVideoPlaybackChanged(false)
             onVideoBoundsChanged(null, Rational(16, 9), false)
             app.pwhs.blockads.ui.browser.media.BrowserMediaCoordinator.stopMedia(context)
@@ -281,6 +283,7 @@ fun BrowserScreen(
                     canGoBack = webViewInstance?.canGoBack() == true,
                     canGoForward = webViewInstance?.canGoForward() == true,
                     isDesktopMode = uiState.isDesktopMode,
+                    isVideoPlaying = isVideoPlaying,
                     isVisible = uiState.isBottomBarVisible,
                     onBack = { webViewInstance?.goBack() },
                     onForward = { webViewInstance?.goForward() },
@@ -288,7 +291,14 @@ fun BrowserScreen(
                     onStop = { webViewInstance?.stopLoading() },
                     onOpenSearch = { viewModel.processIntent(BrowserUiIntent.ToggleSearchSheet(true)) },
                     onOpenMenu = { viewModel.processIntent(BrowserUiIntent.ToggleBentoMenu(true)) },
-                    onHome = { viewModel.processIntent(BrowserUiIntent.ToggleShortcuts) }
+                    onHome = { viewModel.processIntent(BrowserUiIntent.ToggleShortcuts) },
+                    onEnterPip = {
+                        webViewInstance?.evaluateJavascript(
+                            "if (window.__blockads_set_pip) { window.__blockads_set_pip(true); }",
+                            null
+                        )
+                        onEnterPip()
+                    }
                 )
             }
         },
@@ -331,6 +341,7 @@ fun BrowserScreen(
                     onShowCustomView = { view, callback ->
                         customView = view
                         customViewCallback = callback
+                        isVideoPlaying = true
                         onVideoPlaybackChanged(true)
                         onVideoBoundsChanged(null, Rational(16, 9), true)
                     },
@@ -338,10 +349,14 @@ fun BrowserScreen(
                         customView = null
                         customViewCallback?.onCustomViewHidden()
                         customViewCallback = null
+                        isVideoPlaying = false
                         onVideoPlaybackChanged(false)
                         onVideoBoundsChanged(null, Rational(16, 9), false)
                     },
-                    onVideoPlaybackChanged = onVideoPlaybackChanged,
+                    onVideoPlaybackChanged = { playing ->
+                        isVideoPlaying = playing
+                        onVideoPlaybackChanged(playing)
+                    },
                     onVideoBoundsChanged = onVideoBoundsChanged,
                     modifier = Modifier.fillMaxSize()
                 )
@@ -437,7 +452,6 @@ fun BrowserScreen(
             }
             context.startActivity(Intent.createChooser(sendIntent, null))
         },
-        onHome = { viewModel.processIntent(BrowserUiIntent.ToggleShortcuts) },
         onCloseBrowser = onCloseBrowser,
         onCheckRuleUpdates = {
             viewModel.processIntent(BrowserUiIntent.CheckRuleUpdates)
