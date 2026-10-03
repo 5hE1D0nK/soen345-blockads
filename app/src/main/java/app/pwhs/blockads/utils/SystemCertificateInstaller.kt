@@ -110,6 +110,10 @@ object SystemCertificateInstaller {
             return Result.failure(IllegalStateException("Root access is not available"))
         }
 
+        if (shell.cachedShell()?.isRoot == false) {
+            shell.cachedShell()?.close()
+        }
+
         return try {
             val certFactory = CertificateFactory.getInstance("X.509")
             val cert = certFactory.generateCertificate(
@@ -151,6 +155,10 @@ object SystemCertificateInstaller {
     fun installToSystemStore(caPem: String): Result<String> {
         if (!isRootAvailable()) {
             return Result.failure(IllegalStateException("Root access is not available"))
+        }
+
+        if (shell.cachedShell()?.isRoot == false) {
+            shell.cachedShell()?.close()
         }
 
         return try {
