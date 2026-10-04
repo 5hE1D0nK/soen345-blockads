@@ -70,7 +70,6 @@
     <string name="wireguard_config_invalid_text">%1$s. BlockAds stopped rather than run without the tunnel.</string>
     <string name="wireguard_split_dns_placeholder" translatable="false">internal,local,lan,corp</string>
     <string name="wireguard_rename_dialog_title">Rename profile</string>
-    <string name="vpn_network_switch_waiting">Waiting for network to stabilize… %1$ds</string>
     <string name="root_not_available">Root access not available. Please grant permission in your root manager (e.g., Magisk/KernelSU).</string>
     <string name="root_proxy_notification_text">Root Proxy mode active — DNS traffic redirected via iptables</string>
     <string name="root_proxy_start_failed_title">BlockAds failed to start</string>

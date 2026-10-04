@@ -170,9 +170,6 @@
     <string name="settings_show_bottom_nav_labels">Mostrar etiquetas de navegación inferior</string>
     <string name="settings_show_bottom_nav_labels_desc">Mostrar texto debajo de los iconos en la barra de navegación inferior</string>
     <string name="clear_logs_confirm_message">¿Estás seguro de que quieres borrar todos los registros DNS? Esta acción no se puede deshacer.</string>
-    <string name="settings_network_switch_delay">Retraso en el cambio de red</string>
-    <string name="settings_network_switch_delay_desc">Retrasa la reconexión de la VPN después de un cambio de red (útil para Llamadas Wi-Fi)</string>
-    <string name="settings_network_switch_delay_value">Retraso: %1$d segundos</string>
     <string name="settings_root_proxy">Modo Proxy Root</string>
     <string name="settings_root_proxy_desc">Redirigir DNS vía iptables en lugar de VPN (requiere Root)</string>
     <string name="settings_privacy_diagnostics_title">Privacidad &amp; Diagnóstico</string>

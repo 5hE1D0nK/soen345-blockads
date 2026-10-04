@@ -170,9 +170,6 @@
     <string name="settings_community">Communauté</string>
     <string name="settings_reddit_desc">Rejoignez notre communauté sur Reddit</string>
     <string name="settings_telegram_desc">Rejoignez notre discussion sur Telegram</string>
-    <string name="settings_network_switch_delay">Retard au niveau du commutateur réseau</string>
-    <string name="settings_network_switch_delay_desc">Mettre en pause la reconnexion au VPN après un changement de réseau (pratique pour les appels via Wi-Fi)</string>
-    <string name="settings_network_switch_delay_value">Délai : %1$d secondes</string>
     <string name="settings_root_proxy">Mode proxy root</string>
     <string name="settings_root_proxy_desc">Rediriger le DNS via iptables au lieu d\'un VPN (nécessite des droits d\'administrateur)</string>
     <string name="settings_privacy_diagnostics_title">Confidentialité &amp; Diagnostics</string>

@@ -170,9 +170,6 @@
     <string name="settings_community">Comunidade</string>
     <string name="settings_reddit_desc">Junte-se à nossa comunidade no Reddit</string>
     <string name="settings_telegram_desc">Participe do nosso chat no Telegram</string>
-    <string name="settings_network_switch_delay">Atraso na troca de rede</string>
-    <string name="settings_network_switch_delay_desc">Pausar a reconexão da VPN após mudanças de rede (útil para chamadas Wi-Fi)</string>
-    <string name="settings_network_switch_delay_value">Atraso: %1$d segundos</string>
     <string name="settings_root_proxy">Modo Proxy Root</string>
     <string name="settings_root_proxy_desc">Redirecionar DNS via iptables em vez de VPN (requer Root)</string>
     <string name="settings_privacy_diagnostics_title">Privacidade &amp; Diagnóstico</string>

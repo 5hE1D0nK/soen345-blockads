@@ -37,7 +37,6 @@
     <string name="vpn_phase_loading_filters">Loading filter lists…</string>
     <string name="vpn_phase_preparing_dns">Preparing DNS…</string>
     <string name="vpn_phase_establishing">Establishing VPN tunnel…</string>
-    <string name="vpn_network_switch_waiting">In attesa che la rete si stabilizzi… %1$ds</string>
     <string name="vpn_phase_waiting_network">In attesa della rete…</string>
     <string name="wireguard_import_title">Importazione WireGuard</string>
     <string name="wireguard_import_button">Importa .conf</string>

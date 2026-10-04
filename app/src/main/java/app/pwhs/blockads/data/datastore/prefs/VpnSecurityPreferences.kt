@@ -18,9 +18,6 @@ class VpnSecurityPreferences(private val dataStore: DataStore<Preferences>) {
     companion object {
         val KEY_VPN_ENABLED = booleanPreferencesKey("vpn_enabled")
         val KEY_AUTO_RECONNECT = booleanPreferencesKey("auto_reconnect")
-        val KEY_NETWORK_SWITCH_DELAY_ENABLED =
-            booleanPreferencesKey("network_switch_delay_enabled")
-        val KEY_NETWORK_SWITCH_DELAY_SEC = intPreferencesKey("network_switch_delay_sec")
         val KEY_ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
         val KEY_WHITELISTED_APPS = stringSetPreferencesKey("whitelisted_apps")
         val KEY_DAILY_SUMMARY_ENABLED = booleanPreferencesKey("daily_summary_enabled")
@@ -50,13 +47,6 @@ class VpnSecurityPreferences(private val dataStore: DataStore<Preferences>) {
         prefs[KEY_AUTO_RECONNECT] ?: true
     }
 
-    val networkSwitchDelayEnabled: Flow<Boolean> = dataStore.data.map { prefs ->
-        prefs[KEY_NETWORK_SWITCH_DELAY_ENABLED] ?: false
-    }
-
-    val networkSwitchDelaySec: Flow<Int> = dataStore.data.map { prefs ->
-        prefs[KEY_NETWORK_SWITCH_DELAY_SEC] ?: 30
-    }
 
     val onboardingCompleted: Flow<Boolean> = dataStore.data.map { prefs ->
         prefs[KEY_ONBOARDING_COMPLETED] ?: false
@@ -134,13 +124,6 @@ class VpnSecurityPreferences(private val dataStore: DataStore<Preferences>) {
         dataStore.edit { prefs -> prefs[KEY_AUTO_RECONNECT] = enabled }
     }
 
-    suspend fun setNetworkSwitchDelayEnabled(enabled: Boolean) {
-        dataStore.edit { prefs -> prefs[KEY_NETWORK_SWITCH_DELAY_ENABLED] = enabled }
-    }
-
-    suspend fun setNetworkSwitchDelaySec(seconds: Int) {
-        dataStore.edit { prefs -> prefs[KEY_NETWORK_SWITCH_DELAY_SEC] = seconds.coerceIn(5, 120) }
-    }
 
     suspend fun setOnboardingCompleted(completed: Boolean) {
         dataStore.edit { prefs -> prefs[KEY_ONBOARDING_COMPLETED] = completed }

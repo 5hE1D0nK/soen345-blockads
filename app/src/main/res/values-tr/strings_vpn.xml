@@ -46,7 +46,6 @@
     <string name="wireguard_disconnect">Tünel Bağlantısını Kes</string>
     <string name="vpn_conflict_title">Bağlantı Engellendi</string>
     <string name="vpn_conflict_desc">Android aynı anda yalnızca bir VPN bağlantısına izin verir. Şu anda cihazınızda başka bir VPN aktif.\n\nBlockAds\'e bağlanmadan önce lütfen diğer VPN\'in bağlantısını kesin veya Ayarlar\'dan \&quot;Her zaman açık VPN\&quot;i devre dışı bırakın.</string>
-    <string name="vpn_network_switch_waiting">Ağın sabitlenmesi bekleniyor… %1$ds</string>
     <string name="root_not_available">Root erişimi mevcut değil. Lütfen root yöneticinizden (örn. Magisk/KernelSU) izin verin.</string>
     <string name="root_proxy_notification_text">Root Proxy modu aktif — DNS trafiği iptables üzerinden yönlendiriliyor</string>
     <string name="status_disconnecting">Bağlantı kesiliyor</string>

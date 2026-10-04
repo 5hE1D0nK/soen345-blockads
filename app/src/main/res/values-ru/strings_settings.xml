@@ -170,9 +170,6 @@
     <string name="settings_show_bottom_nav_labels">Показывать подписи нижней панели</string>
     <string name="settings_show_bottom_nav_labels_desc">Отображать текст под значками на нижней панели навигации</string>
     <string name="clear_logs_confirm_message">Вы уверены, что хотите очистить все журналы DNS? Это действие нельзя отменить.</string>
-    <string name="settings_network_switch_delay">Задержка при смене сети</string>
-    <string name="settings_network_switch_delay_desc">Приостановить переподключение VPN после смены сети (полезно для вызовов по Wi-Fi)</string>
-    <string name="settings_network_switch_delay_value">Задержка: %1$d сек.</string>
     <string name="settings_root_proxy">Режим Root Proxy</string>
     <string name="settings_root_proxy_desc">Перенаправление DNS через iptables вместо VPN (требуются Root-права)</string>
     <string name="settings_privacy_diagnostics_title">Конфиденциальность &amp; Диагностика</string>

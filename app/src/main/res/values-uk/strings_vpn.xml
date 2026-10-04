@@ -46,7 +46,6 @@
     <string name="wireguard_disconnect">Відключити тунель</string>
     <string name="vpn_conflict_title">З\'єднання заблоковано</string>
     <string name="vpn_conflict_desc">Android дозволяє лише одне активне VPN-з\'єднання одночасно. На вашому пристрої зараз працює інший VPN.\n\nБудь ласка, відключіть інший VPN або вимкніть «Постійний VPN» у Налаштуваннях перед підключенням BlockAds.</string>
-    <string name="vpn_network_switch_waiting">Очікування стабілізації мережі… %1$ds</string>
     <string name="root_not_available">Root-доступ недоступний. Будь ласка, надайте дозвіл у вашому root-менеджері (наприклад, Magisk/KernelSU).</string>
     <string name="root_proxy_notification_text">Режим Root Proxy активний — DNS-трафік переспрямовано через iptables</string>
     <string name="status_disconnecting">Відключення</string>

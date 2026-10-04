@@ -46,7 +46,6 @@
     <string name="wireguard_disconnect">قطع اتصال النفق</string>
     <string name="vpn_conflict_title">تم حظر الاتصال</string>
     <string name="vpn_conflict_desc">يسمح Android باتصال VPN واحد فقط في كل مرة. توجد شبكة VPN أخرى نشطة حاليًا على جهازك.\n\nيُرجى قطع اتصال شبكة VPN الأخرى أولاً أو تعطيل \&quot;VPN قيد التشغيل دائمًا\&quot; في الإعدادات قبل الاتصال بـ BlockAds.</string>
-    <string name="vpn_network_switch_waiting">في انتظار استقرار الشبكة… %1$ds</string>
     <string name="root_not_available">صلاحيات الروت غير متوفرة. يرجى منح الإذن في مدير الروت الخاص بك (مثل Magisk/KernelSU).</string>
     <string name="root_proxy_notification_text">وضع البروكسي بالروت نشط — تم إعادة توجيه حركة مرور DNS عبر iptables</string>
     <string name="status_disconnecting">جاري قطع الاتصال</string>

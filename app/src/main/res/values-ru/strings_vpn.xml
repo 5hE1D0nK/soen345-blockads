@@ -46,7 +46,6 @@
     <string name="wireguard_disconnect">Отключить туннель</string>
     <string name="vpn_conflict_title">Подключение заблокировано</string>
     <string name="vpn_conflict_desc">Android разрешает только одно активное VPN-соединение. В данный момент на вашем устройстве работает другой VPN.\n\nПожалуйста, отключите другой VPN или деактивируйте «Постоянный VPN» в Настройках перед подключением BlockAds.</string>
-    <string name="vpn_network_switch_waiting">Ожидание стабилизации сети… %1$ds</string>
     <string name="root_not_available">Root-доступ недоступен. Пожалуйста, предоставьте разрешение в вашем root-менеджере (например, Magisk/KernelSU).</string>
     <string name="root_proxy_notification_text">Режим Root Proxy активен — DNS-трафик перенаправлен через iptables</string>
     <string name="status_disconnecting">Отключение</string>

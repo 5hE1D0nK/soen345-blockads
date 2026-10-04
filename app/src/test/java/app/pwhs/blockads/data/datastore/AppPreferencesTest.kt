@@ -59,8 +59,6 @@ class AppPreferencesTest {
         with(prefs) {
             assertFalse(vpnEnabled.first())
             assertTrue(autoReconnect.first())
-            assertFalse(networkSwitchDelayEnabled.first())
-            assertEquals(30, networkSwitchDelaySec.first())
             assertFalse(onboardingCompleted.first())
             assertTrue(whitelistedApps.first().isEmpty())
             assertFalse(dailySummaryEnabled.first())
@@ -108,8 +106,6 @@ class AppPreferencesTest {
     @Test
     fun `facade setters write through to the section preferences`() = runTest {
         with(prefs) {
-            setNetworkSwitchDelayEnabled(true)
-            setNetworkSwitchDelaySec(60)
             setOnboardingCompleted(true)
             setWhitelistedApps(setOf("a"))
             toggleWhitelistedApp("b")
@@ -150,8 +146,6 @@ class AppPreferencesTest {
             setExcludeLan(true)
             setAllowAppBypass(true)
 
-            assertTrue(networkSwitchDelayEnabled.first())
-            assertEquals(60, networkSwitchDelaySec.first())
             assertTrue(onboardingCompleted.first())
             assertEquals(setOf("a", "b"), getWhitelistedAppsSnapshot())
             assertTrue(dailySummaryEnabled.first())

@@ -171,9 +171,6 @@
     <string name="settings_show_bottom_nav_labels">إظهار تسميات التنقل السفلي</string>
     <string name="settings_show_bottom_nav_labels_desc">عرض النص أسفل الرموز في شريط التنقل السفلي</string>
     <string name="clear_logs_confirm_message">هل أنت متأكد أنك تريد مسح جميع سجلات DNS؟ لا يمكن التراجع عن هذا الإجراء.</string>
-    <string name="settings_network_switch_delay">تأخير تبديل الشبكة</string>
-    <string name="settings_network_switch_delay_desc">إيقاف إعادة اتصال VPN مؤقتًا بعد تغير الشبكة (مفيد لمكالمات Wi-Fi)</string>
-    <string name="settings_network_switch_delay_value">التأخير: %1$d ثانية</string>
     <string name="settings_root_proxy">وضع البروكسي بصلاحيات الروت</string>
     <string name="settings_root_proxy_desc">إعادة توجيه DNS عبر iptables بدلاً من VPN (يتطلب روت)</string>
     <string name="settings_privacy_diagnostics_title">الخصوصية &amp; التشخيصات</string>

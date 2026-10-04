@@ -46,7 +46,6 @@
     <string name="wireguard_disconnect">터널 연결 해제</string>
     <string name="vpn_conflict_title">연결 차단됨</string>
     <string name="vpn_conflict_desc">Android는 한 번에 하나의 VPN 연결만 허용합니다. 현재 기기에서 다른 VPN이 활성화되어 있습니다.\n\nBlockAds를 연결하기 전에 다른 VPN의 연결을 해제하거나 설정에서 \&quot;항상 켜진 VPN\&quot;을 비활성화하세요.</string>
-    <string name="vpn_network_switch_waiting">네트워크가 안정될 때까지 대기 중… %1$d초</string>
     <string name="root_not_available">Root 권한을 사용할 수 없습니다. 루팅 매니저(예: Magisk/KernelSU)에서 권한을 허용해 주세요.</string>
     <string name="root_proxy_notification_text">Root 프록시 모드 활성화됨 — iptables를 통해 DNS 트래픽이 리디렉션됨</string>
     <string name="status_disconnecting">연결 끊는 중</string>

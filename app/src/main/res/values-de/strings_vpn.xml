@@ -46,7 +46,6 @@
     <string name="wireguard_disconnect">Tunnel trennen</string>
     <string name="vpn_conflict_title">Verbindung blockiert</string>
     <string name="vpn_conflict_desc">Android erlaubt nur eine VPN-Verbindung gleichzeitig. Eine andere VPN-Verbindung ist derzeit auf Ihrem Gerät aktiv.\n\nBitte trennen Sie zuerst das andere VPN oder deaktivieren Sie \&quot;Durchgehend aktives VPN\&quot; in den Einstellungen, bevor Sie BlockAds verbinden.</string>
-    <string name="vpn_network_switch_waiting">Warten auf Netzwerkstabilisierung… %1$ds</string>
     <string name="root_not_available">Root-Zugriff nicht verfügbar. Bitte erteilen Sie die Berechtigung in Ihrem Root-Manager (z. B. Magisk/KernelSU).</string>
     <string name="root_proxy_notification_text">Root-Proxy-Modus aktiv — DNS-Verkehr über iptables umgeleitet</string>
     <string name="status_disconnecting">Wird getrennt</string>

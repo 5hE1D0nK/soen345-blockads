@@ -114,16 +114,12 @@ class SettingsViewModelTest {
         val vm = newVm()
         vm.setAutoReconnect(false)
         vm.setHideFromRecents(true)
-        vm.setNetworkSwitchDelayEnabled(true)
-        vm.setNetworkSwitchDelaySec(15)
         vm.setMilestoneNotificationsEnabled(false)
         vm.setAutoUpdateNotification(AppPreferences.NOTIFICATION_SILENT)
 
         coVerify {
             appPrefs.setAutoReconnect(false)
             appPrefs.setHideFromRecents(true)
-            appPrefs.setNetworkSwitchDelayEnabled(true)
-            appPrefs.setNetworkSwitchDelaySec(15)
             appPrefs.setMilestoneNotificationsEnabled(false)
             appPrefs.setAutoUpdateNotification(AppPreferences.NOTIFICATION_SILENT)
         }

@@ -115,11 +115,6 @@ class SettingsViewModel(
             AppPreferences.DEFAULT_UPSTREAM_DNS
         )
 
-    val networkSwitchDelayEnabled: StateFlow<Boolean> = appPrefs.networkSwitchDelayEnabled
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
-
-    val networkSwitchDelaySec: StateFlow<Int> = appPrefs.networkSwitchDelaySec
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 30)
 
     val routingMode: StateFlow<String> = appPrefs.routingMode
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), AppPreferences.ROUTING_MODE_DIRECT)
@@ -151,13 +146,6 @@ class SettingsViewModel(
         viewModelScope.launch { appPrefs.setHideFromRecents(enabled) }
     }
 
-    fun setNetworkSwitchDelayEnabled(enabled: Boolean) {
-        viewModelScope.launch { appPrefs.setNetworkSwitchDelayEnabled(enabled) }
-    }
-
-    fun setNetworkSwitchDelaySec(seconds: Int) {
-        viewModelScope.launch { appPrefs.setNetworkSwitchDelaySec(seconds) }
-    }
 
     fun setExcludeLan(enabled: Boolean) {
         viewModelScope.launch {

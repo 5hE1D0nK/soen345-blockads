@@ -46,7 +46,6 @@
     <string name="wireguard_empty_desc">הקש על הכפתור למטה כדי לייבא קובץ .conf של WireGuard</string>
     <string name="wireguard_connect">התחבר למנהרה (Tunnel)</string>
     <string name="wireguard_disconnect">נתק מנהרה</string>
-    <string name="vpn_network_switch_waiting">ממתין להתייצבות הרשת… %1$ds</string>
     <string name="root_not_available">גישת Root אינה זמינה. אנא הענק הרשאה במנהל ה-Root שלך (למשל, Magisk/KernelSU).</string>
     <string name="root_proxy_notification_text">מצב Proxy עם Root פעיל — תעבורת ה-DNS מנותבת דרך iptables</string>
     <string name="status_disconnecting">מתנתק</string>

@@ -170,9 +170,6 @@
     <string name="settings_show_bottom_nav_labels">显示底部导航标签</string>
     <string name="settings_show_bottom_nav_labels_desc">在底部导航栏的图标下方显示文字</string>
     <string name="clear_logs_confirm_message">您确定要清除所有 DNS 日志吗？此操作无法撤销。</string>
-    <string name="settings_network_switch_delay">网络切换延迟</string>
-    <string name="settings_network_switch_delay_desc">网络更改后暂停重新连接 VPN（适用于 Wi-Fi 通话）</string>
-    <string name="settings_network_switch_delay_value">延迟：%1$d秒</string>
     <string name="settings_root_proxy">Root 代理模式</string>
     <string name="settings_root_proxy_desc">通过 iptables 而不是 VPN 重定向 DNS（需要 Root）</string>
     <string name="settings_privacy_diagnostics_title">隐私 &amp; 诊断</string>

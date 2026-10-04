@@ -170,9 +170,6 @@
     <string name="settings_show_bottom_nav_labels">แสดงป้ายกำกับการนำทางด้านล่าง</string>
     <string name="settings_show_bottom_nav_labels_desc">แสดงข้อความใต้ไอคอนในแถบการนำทางด้านล่าง</string>
     <string name="clear_logs_confirm_message">คุณแน่ใจหรือไม่ว่าต้องการล้างบันทึก DNS ทั้งหมด? การดำเนินการนี้ไม่สามารถยกเลิกได้</string>
-    <string name="settings_network_switch_delay">หน่วงเวลาสลับเครือข่าย</string>
-    <string name="settings_network_switch_delay_desc">หยุดพักการเชื่อมต่อ VPN ใหม่หลังจากเครือข่ายเปลี่ยน (มีประโยชน์สำหรับการโทรผ่าน Wi-Fi)</string>
-    <string name="settings_network_switch_delay_value">หน่วงเวลา: %1$d วินาที</string>
     <string name="settings_root_proxy">โหมด Root Proxy</string>
     <string name="settings_root_proxy_desc">เปลี่ยนเส้นทาง DNS ผ่าน iptables แทน VPN (ต้องการ Root)</string>
     <string name="settings_privacy_diagnostics_title">ความเป็นส่วนตัว &amp; การวินิจฉัย</string>

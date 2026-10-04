@@ -170,9 +170,6 @@
     <string name="settings_community">קהילה</string>
     <string name="settings_reddit_desc">הצטרף לקהילה שלנו ב-Reddit</string>
     <string name="settings_telegram_desc">הצטרף לצ\'אט שלנו ב-Telegram</string>
-    <string name="settings_network_switch_delay">השהיית החלפת רשת</string>
-    <string name="settings_network_switch_delay_desc">השהה חיבור מחדש של VPN לאחר שינויי רשת (שימושי לשיחות Wi-Fi)</string>
-    <string name="settings_network_switch_delay_value">השהייה: %1$d שניות</string>
     <string name="settings_root_proxy">מצב Proxy עם Root</string>
     <string name="settings_root_proxy_desc">נתב מחדש DNS דרך iptables במקום VPN (דורש Root)</string>
     <string name="settings_privacy_diagnostics_title">פרטיות &amp; אבחון</string>

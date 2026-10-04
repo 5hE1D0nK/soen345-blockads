@@ -170,9 +170,6 @@
     <string name="settings_community">Komunitas</string>
     <string name="settings_reddit_desc">Bergabunglah dengan komunitas kami di Reddit</string>
     <string name="settings_telegram_desc">Bergabunglah dengan obrolan kami di Telegram</string>
-    <string name="settings_network_switch_delay">Penundaan Peralihan Jaringan</string>
-    <string name="settings_network_switch_delay_desc">Jeda penyambungan ulang VPN setelah perubahan jaringan (berguna untuk Panggilan Wi-Fi)</string>
-    <string name="settings_network_switch_delay_value">Penundaan: %1$d detik</string>
     <string name="settings_root_proxy">Mode Proxy Root</string>
     <string name="settings_root_proxy_desc">Alihkan DNS melalui iptables alih-alih VPN (memerlukan Root)</string>
     <string name="settings_privacy_diagnostics_title">Privasi &amp; Diagnostik</string>

@@ -46,7 +46,6 @@
     <string name="wireguard_disconnect">Desconectar Túnel</string>
     <string name="vpn_conflict_title">Conexão Bloqueada</string>
     <string name="vpn_conflict_desc">O Android permite apenas uma conexão VPN por vez. Outra VPN está ativa no seu dispositivo.\n\nPor favor, desconecte a outra VPN primeiro ou desative a \&quot;VPN sempre ativa\&quot; nas Configurações antes de conectar o BlockAds.</string>
-    <string name="vpn_network_switch_waiting">Aguardando a rede estabilizar… %1$ds</string>
     <string name="root_not_available">Acesso Root não disponível. Por favor, conceda a permissão no seu gerenciador root (ex: Magisk/KernelSU).</string>
     <string name="root_proxy_notification_text">Modo Proxy Root ativo — tráfego DNS redirecionado via iptables</string>
     <string name="status_disconnecting">Desconectando</string>

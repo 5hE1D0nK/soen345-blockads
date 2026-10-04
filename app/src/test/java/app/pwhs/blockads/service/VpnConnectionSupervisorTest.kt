@@ -32,8 +32,6 @@ class VpnConnectionSupervisorTest {
     private var idle = true
     private var autoReconnect = true
     private var vpnWasEnabled = true
-    private var delayEnabled = false
-    private var delaySec = 3
     private var interactive = true
 
     private val phases = mutableListOf<String>()
@@ -52,8 +50,6 @@ class VpnConnectionSupervisorTest {
     private val prefs: AppPreferences = mockk {
         every { autoReconnect } answers { flowOf(this@VpnConnectionSupervisorTest.autoReconnect) }
         every { vpnEnabled } answers { flowOf(vpnWasEnabled) }
-        every { networkSwitchDelayEnabled } answers { flowOf(delayEnabled) }
-        every { networkSwitchDelaySec } answers { flowOf(delaySec) }
     }
     private val battery: BatteryMonitor = mockk(relaxed = true)
 
@@ -117,62 +113,17 @@ class VpnConnectionSupervisorTest {
     }
 
     @Test
-    fun `network switch while running tears down, counts down and restarts`() = runTest {
-        delayEnabled = true
-        running = true; idle = false
-        val s = supervisor()
-
-        s.onNetworkAvailable()
-        runCurrent()
-        assertEquals(1, teardowns)
-        advanceTimeBy(2_500)
-        assertEquals(0, starts)
-        settle()
-
-        assertEquals(1, starts)
-        assertEquals(listOf("waiting", "waiting", "waiting", ""), phases)
-        assertEquals(3, notificationUpdates)
-    }
-
-    @Test
-    fun `auto reconnect with the delay enabled counts down before starting`() = runTest {
-        delayEnabled = true; delaySec = 2
-        val s = supervisor()
-        s.onNetworkAvailable()
-        settle()
-        assertEquals(1, starts)
-        assertEquals(0, teardowns)
-        assertEquals(listOf("waiting", "waiting", ""), phases)
-    }
-
-    @Test
-    fun `stop during the countdown cancels the restart`() = runTest {
-        delayEnabled = true
-        running = true; idle = false
-        val s = supervisor()
-        s.onNetworkAvailable()
-        advanceTimeBy(1_500)
-
-        s.cancelNetworkSwitch()
-        settle()
-        assertEquals(1, teardowns)
-        assertEquals(0, starts)
-    }
-
-    @Test
     fun `flapping networks end in a single start`() = runTest {
-        delayEnabled = true
-        running = true; idle = false
+        idle = true; running = false
         val s = supervisor()
 
         s.onNetworkAvailable()
-        advanceTimeBy(500)
+        advanceTimeBy(200)
         s.onNetworkAvailable()
-        advanceTimeBy(1_000)
+        advanceTimeBy(200)
         s.onNetworkAvailable()
         settle()
 
-        assertEquals(1, teardowns)
         assertEquals(1, starts)
     }
 

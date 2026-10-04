@@ -171,9 +171,6 @@ Veri toplama yok. İzleme yok.&quot;</string>
     <string name="settings_show_bottom_nav_labels">Alt Gezinme Etiketlerini Göster</string>
     <string name="settings_show_bottom_nav_labels_desc">Alt gezinme çubuğunda simgelerin altında metin göster</string>
     <string name="clear_logs_confirm_message">Tüm DNS günlüklerini temizlemek istediğinizden emin misiniz? Bu işlem geri alınamaz.</string>
-    <string name="settings_network_switch_delay">Ağ Değiştirme Gecikmesi</string>
-    <string name="settings_network_switch_delay_desc">Ağ değişikliklerinden sonra VPN yeniden bağlantısını duraklat (Wi-Fi Araması için kullanışlıdır)</string>
-    <string name="settings_network_switch_delay_value">Gecikme: %1$d saniye</string>
     <string name="settings_root_proxy">Root Proxy Modu</string>
     <string name="settings_root_proxy_desc">DNS\'i VPN yerine iptables üzerinden yönlendir (Root gerektirir)</string>
     <string name="settings_privacy_diagnostics_title">Gizlilik &amp; Teşhis</string>

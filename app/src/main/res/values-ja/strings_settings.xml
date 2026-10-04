@@ -170,9 +170,6 @@
     <string name="settings_show_bottom_nav_labels">ボトムナビゲーションのラベルを表示</string>
     <string name="settings_show_bottom_nav_labels_desc">ボトムナビゲーションのアイコンの下にテキストを表示する</string>
     <string name="clear_logs_confirm_message">すべてのDNSログを消去してもよろしいですか？この操作は元に戻せません。</string>
-    <string name="settings_network_switch_delay">ネットワーク切り替えの遅延</string>
-    <string name="settings_network_switch_delay_desc">ネットワーク変更後のVPN再接続を一時停止（Wi-Fi通話に便利）</string>
-    <string name="settings_network_switch_delay_value">遅延: %1$d秒</string>
     <string name="settings_root_proxy">Rootプロキシモード</string>
     <string name="settings_root_proxy_desc">VPNの代わりにiptables経由でDNSをリダイレクト（Rootが必要）</string>
     <string name="settings_privacy_diagnostics_title">プライバシー &amp; 診断</string>

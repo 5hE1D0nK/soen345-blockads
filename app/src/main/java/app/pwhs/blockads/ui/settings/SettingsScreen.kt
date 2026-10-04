@@ -59,8 +59,6 @@ fun SettingsScreen(
     onNavigateToDNSProvider: () -> Unit = { },
 ) {
     val autoReconnect by viewModel.autoReconnect.collectAsStateWithLifecycle()
-    val networkSwitchDelayEnabled by viewModel.networkSwitchDelayEnabled.collectAsStateWithLifecycle()
-    val networkSwitchDelaySec by viewModel.networkSwitchDelaySec.collectAsStateWithLifecycle()
     val filterLists by viewModel.filterLists.collectAsStateWithLifecycle()
     val autoUpdateEnabled by viewModel.autoUpdateEnabled.collectAsStateWithLifecycle()
     val autoUpdateFrequency by viewModel.autoUpdateFrequency.collectAsStateWithLifecycle()
@@ -118,16 +116,12 @@ fun SettingsScreen(
             ProtectionSection(
                 autoReconnect = autoReconnect,
                 routingMode = routingMode,
-                networkSwitchDelayEnabled = networkSwitchDelayEnabled,
-                networkSwitchDelaySec = networkSwitchDelaySec,
                 safeSearchEnabled = safeSearchEnabled,
                 youtubeRestrictedMode = youtubeRestrictedMode,
                 dnsResponseType = dnsResponseType,
                 upstreamDNS = upstreamDNS,
                 onSetAutoReconnect = { viewModel.setAutoReconnect(it) },
                 onSetRoutingMode = { viewModel.setRoutingModeEnabled(it) },
-                onSetNetworkSwitchDelayEnabled = { viewModel.setNetworkSwitchDelayEnabled(it) },
-                onSetNetworkSwitchDelaySec = { viewModel.setNetworkSwitchDelaySec(it) },
                 onSetSafeSearchEnabled = { viewModel.setSafeSearchEnabled(it) },
                 onSetYoutubeRestrictedMode = { viewModel.setYoutubeRestrictedMode(it) },
                 onShowDnsResponseTypeDialog = { showDnsResponseTypeDialog = true },

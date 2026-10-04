@@ -170,9 +170,6 @@
     <string name="settings_show_bottom_nav_labels">Zobrazit popisky spodní navigace</string>
     <string name="settings_show_bottom_nav_labels_desc">Zobrazovat text pod ikonami ve spodním navigačním panelu</string>
     <string name="settings_language">Jazyk</string>
-    <string name="settings_network_switch_delay">Zpoždění při změně sítě</string>
-    <string name="settings_network_switch_delay_desc">Pozastavit opětovné připojení VPN po změně sítě (užitečné pro Wi-Fi volání)</string>
-    <string name="settings_network_switch_delay_value">Zpoždění: %1$d sekund</string>
     <string name="settings_root_proxy">Režim Root Proxy</string>
     <string name="settings_root_proxy_desc">Přesměrovat DNS přes iptables místo VPN (vyžaduje Root)</string>
     <string name="settings_privacy_diagnostics_title">Soukromí &amp; Diagnostika</string>

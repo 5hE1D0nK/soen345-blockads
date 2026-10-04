@@ -170,9 +170,6 @@
     <string name="settings_community">Community</string>
     <string name="settings_reddit_desc">Besuchen Sie uns auf Reddit</string>
     <string name="settings_telegram_desc">Chatten Sie mit uns auf Telegram</string>
-    <string name="settings_network_switch_delay">Verzögerung bei Netzwerkwechsel</string>
-    <string name="settings_network_switch_delay_desc">VPN-Neuverbindung nach Netzwerkwechsel pausieren (nützlich für WLAN-Anrufe)</string>
-    <string name="settings_network_switch_delay_value">Verzögerung: %1$d Sekunden</string>
     <string name="settings_root_proxy">Root-Proxy-Modus</string>
     <string name="settings_root_proxy_desc">DNS über iptables statt VPN umleiten (erfordert Root)</string>
     <string name="settings_privacy_diagnostics_title">Datenschutz &amp; Diagnose</string>

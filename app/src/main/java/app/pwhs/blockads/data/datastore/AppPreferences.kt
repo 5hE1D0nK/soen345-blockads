@@ -97,8 +97,6 @@ class AppPreferences internal constructor(
     // ── VPN & Security Flows ─────────────────────────────────────────────
     val vpnEnabled: Flow<Boolean> get() = vpnSecurity.vpnEnabled
     val autoReconnect: Flow<Boolean> get() = vpnSecurity.autoReconnect
-    val networkSwitchDelayEnabled: Flow<Boolean> get() = vpnSecurity.networkSwitchDelayEnabled
-    val networkSwitchDelaySec: Flow<Int> get() = vpnSecurity.networkSwitchDelaySec
     val onboardingCompleted: Flow<Boolean> get() = vpnSecurity.onboardingCompleted
     val whitelistedApps: Flow<Set<String>> get() = vpnSecurity.whitelistedApps
     val dailySummaryEnabled: Flow<Boolean> get() = vpnSecurity.dailySummaryEnabled
@@ -158,8 +156,7 @@ class AppPreferences internal constructor(
         vpnSecurity.setAutoReconnect(enabled)
         directBootPrefs.autoReconnect = enabled
     }
-    suspend fun setNetworkSwitchDelayEnabled(enabled: Boolean) = vpnSecurity.setNetworkSwitchDelayEnabled(enabled)
-    suspend fun setNetworkSwitchDelaySec(seconds: Int) = vpnSecurity.setNetworkSwitchDelaySec(seconds)
+
     suspend fun setOnboardingCompleted(completed: Boolean) = vpnSecurity.setOnboardingCompleted(completed)
     suspend fun setWhitelistedApps(apps: Set<String>) = vpnSecurity.setWhitelistedApps(apps)
     suspend fun toggleWhitelistedApp(packageName: String) = vpnSecurity.toggleWhitelistedApp(packageName)

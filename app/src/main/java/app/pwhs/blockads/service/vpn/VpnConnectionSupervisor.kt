@@ -90,34 +90,10 @@ class VpnConnectionSupervisor(
         networkSwitchJob = scope.launch {
             val autoReconnect = appPrefs.autoReconnect.first()
             val vpnWasEnabled = appPrefs.vpnEnabled.first()
-            val delayEnabled = appPrefs.networkSwitchDelayEnabled.first()
-            val delaySec = appPrefs.networkSwitchDelaySec.first()
-
-            if (delayEnabled && isRunningProvider()) {
-                Timber.d("Network changed while VPN running — pausing for ${delaySec}s")
-                onTearDownForRestart()
-                for (remaining in delaySec downTo 1) {
-                    onPhaseChanged(context.getString(R.string.vpn_network_switch_waiting, remaining))
-                    onUpdateNotification()
-                    delay(1000L)
-                }
-                onPhaseChanged("")
-                onStartVpn()
-                return@launch
-            }
 
             if (autoReconnect && vpnWasEnabled && isIdleProvider()) {
                 Timber.d("Auto-reconnecting VPN after network became available")
-                if (delayEnabled) {
-                    for (remaining in delaySec downTo 1) {
-                        onPhaseChanged(context.getString(R.string.vpn_network_switch_waiting, remaining))
-                        onUpdateNotification()
-                        delay(1000L)
-                    }
-                    onPhaseChanged("")
-                } else {
-                    delay(NETWORK_STABILIZATION_DELAY_MS)
-                }
+                delay(NETWORK_STABILIZATION_DELAY_MS)
                 if (isIdleProvider()) {
                     onStartVpn()
                 }

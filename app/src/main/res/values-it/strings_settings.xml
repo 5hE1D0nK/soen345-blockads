@@ -166,9 +166,6 @@
     <string name="settings_reddit_desc">Unisciti alla nostra community su Reddit</string>
     <string name="settings_telegram_desc">Unisciti alla nostra chat su Telegram</string>
     <string name="settings_detected_doq">DNS-over-QUIC (DoQ)</string>
-    <string name="settings_network_switch_delay">Ritardo cambio di rete</string>
-    <string name="settings_network_switch_delay_desc">Metti in pausa la riconnessione VPN dopo i cambi di rete (utile per le chiamate Wi-Fi)</string>
-    <string name="settings_network_switch_delay_value">Ritardo: %1$d secondi</string>
     <string name="profile_desc_strict_family">Blocco massimo: annunci, tracker, contenuti per adulti &amp; gioco d\'azzardo</string>
     <string name="settings_show_bottom_nav_labels">Mostra etichette di navigazione</string>
     <string name="settings_show_bottom_nav_labels_desc">Mostra il testo sotto le icone nella barra di navigazione inferiore</string>

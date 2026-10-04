@@ -170,9 +170,6 @@
     <string name="settings_community">Спільнота</string>
     <string name="settings_reddit_desc">Приєднуйтесь до нашої спільноти на Reddit</string>
     <string name="settings_telegram_desc">Приєднуйтесь до нашого чату в Telegram</string>
-    <string name="settings_network_switch_delay">Затримка зміни мережі</string>
-    <string name="settings_network_switch_delay_desc">Призупинити перепідключення VPN після зміни мережі (корисно для викликів через Wi-Fi)</string>
-    <string name="settings_network_switch_delay_value">Затримка: %1$d сек.</string>
     <string name="settings_root_proxy">Режим Root Proxy</string>
     <string name="settings_root_proxy_desc">Переспрямування DNS через iptables замість VPN (потрібні Root-права)</string>
     <string name="settings_privacy_diagnostics_title">Конфіденційність &amp; Діагностика</string>

@@ -21,8 +21,6 @@ class VpnSecurityPreferencesTest {
         with(prefs) {
             assertFalse(vpnEnabled.first())
             assertTrue(autoReconnect.first())
-            assertFalse(networkSwitchDelayEnabled.first())
-            assertEquals(30, networkSwitchDelaySec.first())
             assertFalse(onboardingCompleted.first())
             assertEquals(emptySet<String>(), whitelistedApps.first())
             assertFalse(dailySummaryEnabled.first())
@@ -54,7 +52,6 @@ class VpnSecurityPreferencesTest {
         with(prefs) {
             setVpnEnabled(true)
             setAutoReconnect(false)
-            setNetworkSwitchDelayEnabled(true)
             setOnboardingCompleted(true)
             setDailySummaryEnabled(true)
             setMilestoneNotificationsEnabled(true)
@@ -71,7 +68,6 @@ class VpnSecurityPreferencesTest {
 
             assertTrue(vpnEnabled.first())
             assertFalse(autoReconnect.first())
-            assertTrue(networkSwitchDelayEnabled.first())
             assertTrue(onboardingCompleted.first())
             assertTrue(dailySummaryEnabled.first())
             assertTrue(milestoneNotificationsEnabled.first())
@@ -88,15 +84,6 @@ class VpnSecurityPreferencesTest {
         }
     }
 
-    @Test
-    fun `network switch delay is clamped to 5-120 seconds`() = runTest {
-        prefs.setNetworkSwitchDelaySec(1)
-        assertEquals(5, prefs.networkSwitchDelaySec.first())
-        prefs.setNetworkSwitchDelaySec(500)
-        assertEquals(120, prefs.networkSwitchDelaySec.first())
-        prefs.setNetworkSwitchDelaySec(45)
-        assertEquals(45, prefs.networkSwitchDelaySec.first())
-    }
 
     @Test
     fun `whitelisted apps set and toggle`() = runTest {

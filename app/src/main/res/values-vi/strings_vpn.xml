@@ -46,7 +46,6 @@
     <string name="wireguard_disconnect">Ngắt kết nối đường hầm</string>
     <string name="vpn_conflict_title">Kết nối bị chặn</string>
     <string name="vpn_conflict_desc">Android chỉ cho phép một kết nối VPN hoạt động cùng lúc. Một VPN khác đang chạy trên thiết bị của bạn.\n\nVui lòng ngắt kết nối VPN kia hoặc tắt \&quot;VPN luôn bật\&quot; trong Cài đặt trước khi kết nối BlockAds.</string>
-    <string name="vpn_network_switch_waiting">Đang chờ mạng ổn định… %1$ds</string>
     <string name="root_not_available">Không có quyền Root. Vui lòng cấp quyền trong trình quản lý root của bạn (ví dụ: Magisk/KernelSU).</string>
     <string name="root_proxy_notification_text">Chế độ Root Proxy đang hoạt động — lưu lượng DNS được chuyển hướng qua iptables</string>
     <string name="status_disconnecting">Đang ngắt kết nối</string>

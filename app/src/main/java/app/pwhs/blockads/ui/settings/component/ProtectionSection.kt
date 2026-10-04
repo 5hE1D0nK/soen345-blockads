@@ -31,16 +31,12 @@ import app.pwhs.blockads.data.datastore.AppPreferences
 fun ProtectionSection(
     autoReconnect: Boolean,
     routingMode: String,
-    networkSwitchDelayEnabled: Boolean,
-    networkSwitchDelaySec: Int,
     safeSearchEnabled: Boolean,
     youtubeRestrictedMode: Boolean,
     dnsResponseType: String,
     upstreamDNS: String,
     onSetAutoReconnect: (Boolean) -> Unit,
     onSetRoutingMode: (Boolean) -> Unit,
-    onSetNetworkSwitchDelayEnabled: (Boolean) -> Unit,
-    onSetNetworkSwitchDelaySec: (Int) -> Unit,
     onSetSafeSearchEnabled: (Boolean) -> Unit,
     onSetYoutubeRestrictedMode: (Boolean) -> Unit,
     onShowDnsResponseTypeDialog: () -> Unit,
@@ -120,52 +116,7 @@ fun ProtectionSection(
 
                 HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = dividerColor)
 
-                // 6. Network Switch Delay
-                SettingsToggleItem(
-                    iconPainter = painterResource(R.drawable.ic_settings_network_delay),
-                    iconTint = Color(0xFF2563EB),
-                    title = stringResource(R.string.settings_network_switch_delay),
-                    subtitle = stringResource(R.string.settings_network_switch_delay_desc),
-                    isChecked = networkSwitchDelayEnabled,
-                    onCheckedChange = onSetNetworkSwitchDelayEnabled
-                )
-
-                AnimatedVisibility(
-                    visible = networkSwitchDelayEnabled,
-                    enter = expandVertically() + fadeIn(),
-                    exit = shrinkVertically() + fadeOut()
-                ) {
-                    Column(
-                        modifier = Modifier.padding(start = 66.dp, end = 16.dp, bottom = 12.dp)
-                    ) {
-                        Text(
-                            stringResource(
-                                R.string.settings_network_switch_delay_value,
-                                networkSwitchDelaySec
-                            ),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.primary,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            modifier = Modifier.horizontalScroll(rememberScrollState())
-                        ) {
-                            listOf(5, 10, 30, 60, 120).forEach { sec ->
-                                FilterChip(
-                                    selected = networkSwitchDelaySec == sec,
-                                    onClick = { onSetNetworkSwitchDelaySec(sec) },
-                                    label = { Text("${sec}s") }
-                                )
-                            }
-                        }
-                    }
-                }
-
-                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = dividerColor)
-
-                // 7. Safe Search
+                // 6. Safe Search
                 SettingsToggleItem(
                     iconPainter = painterResource(R.drawable.ic_settings_safesearch),
                     iconTint = Color(0xFF059669),

@@ -46,7 +46,6 @@
     <string name="wireguard_disconnect">ตัดการเชื่อมต่ออุโมงค์</string>
     <string name="vpn_conflict_title">การเชื่อมต่อถูกบล็อก</string>
     <string name="vpn_conflict_desc">Android อนุญาตให้มีการเชื่อมต่อ VPN ได้เพียงครั้งละหนึ่งรายการเท่านั้น ขณะนี้มี VPN อื่นเปิดใช้งานบนอุปกรณ์ของคุณ\n\nโปรดยกเลิกการเชื่อมต่อ VPN อื่นก่อน หรือปิดใช้งาน \&quot;VPN ที่เปิดตลอดเวลา\&quot; ในการตั้งค่าก่อนที่จะเชื่อมต่อ BlockAds</string>
-    <string name="vpn_network_switch_waiting">กำลังรอให้เครือข่ายเสถียร… %1$d วินาที</string>
     <string name="root_not_available">ไม่สามารถเข้าถึง Root ได้ โปรดให้สิทธิ์ในเครื่องมือจัดการรูทของคุณ (เช่น Magisk/KernelSU)</string>
     <string name="root_proxy_notification_text">โหมด Root Proxy ทำงานอยู่ — เปลี่ยนเส้นทางข้อมูล DNS ผ่าน iptables แล้ว</string>
     <string name="status_disconnecting">กำลังยกเลิกการเชื่อมต่อ</string>

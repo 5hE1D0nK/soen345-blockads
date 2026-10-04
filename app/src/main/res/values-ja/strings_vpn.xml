@@ -46,7 +46,6 @@
     <string name="wireguard_disconnect">トンネルを切断</string>
     <string name="vpn_conflict_title">接続がブロックされました</string>
     <string name="vpn_conflict_desc">Androidでは同時に1つのVPN接続のみが許可されています。現在、お使いのデバイスで別のVPNがアクティブになっています。\n\nBlockAdsに接続する前に、まず別のVPNを切断するか、設定で「常時接続VPN」を無効にしてください。</string>
-    <string name="vpn_network_switch_waiting">ネットワークの安定化を待機中… %1$d秒</string>
     <string name="root_not_available">Rootアクセスを利用できません。Rootマネージャー（Magisk/KernelSUなど）で権限を付与してください。</string>
     <string name="root_proxy_notification_text">Rootプロキシモードがアクティブです — DNSトラフィックはiptables経由でリダイレクトされています</string>
     <string name="status_disconnecting">切断中</string>

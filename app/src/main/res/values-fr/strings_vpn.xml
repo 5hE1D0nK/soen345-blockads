@@ -46,7 +46,6 @@
     <string name="wireguard_empty_desc">Appuyez sur le bouton ci-dessous pour importer un fichier .conf WireGuard</string>
     <string name="wireguard_connect">Se connecter au tunnel</string>
     <string name="wireguard_disconnect">Déconnecter le tunnel</string>
-    <string name="vpn_network_switch_waiting">En attente de la stabilisation du réseau… %1$ds</string>
     <string name="root_not_available">L\'accès root n\'est pas disponible. Veuillez accorder l\'autorisation dans votre gestionnaire root (par exemple, Magisk/KernelSU).</string>
     <string name="root_proxy_notification_text">Mode proxy root activé — Trafic DNS redirigé via iptables</string>
     <string name="status_disconnecting">Déconnexion</string>
