@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -22,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.pwhs.blockads.R
+import app.pwhs.blockads.ui.component.AppListSkeleton
 import app.pwhs.blockads.ui.firewall.component.FirewallAppItem
 import app.pwhs.blockads.ui.firewall.component.FirewallConfigSheet
 import app.pwhs.blockads.ui.firewall.component.FirewallControlBar
@@ -99,24 +99,7 @@ fun FirewallScreen(
             Spacer(modifier = Modifier.size(6.dp))
 
             if (uiState.isLoading) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        CircularProgressIndicator(
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(40.dp),
-                            strokeWidth = 3.dp
-                        )
-                        Spacer(modifier = Modifier.size(12.dp))
-                        Text(
-                            text = stringResource(R.string.app_management_loading),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = TextSecondary
-                        )
-                    }
-                }
+                AppListSkeleton()
             } else {
                 val filteredApps = uiState.filteredApps
 
