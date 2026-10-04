@@ -239,6 +239,13 @@ object GeoIpLookup {
     }
 
     /**
+     * Returns the centroid coordinates (Latitude, Longitude) for a country code if available.
+     */
+    fun getCentroid(countryCode: String): Pair<Float, Float>? {
+        return COUNTRY_CENTROIDS[countryCode.uppercase()]
+    }
+
+    /**
      * Converts (Latitude, Longitude) into normalized (X, Y) in [0f..1f].
      * Uses standard Equirectangular projection.
      */

@@ -16,10 +16,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Public
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -75,10 +77,29 @@ fun TrafficDestinationsSection(
                 )
                 Spacer(modifier = Modifier.width(10.dp))
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = stringResource(R.string.stats_traffic_destinations_title),
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = stringResource(R.string.stats_traffic_destinations_title),
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                        )
+                        if (totalQueries > 0) {
+                            Surface(
+                                shape = RoundedCornerShape(8.dp),
+                                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.stats_destinations_queries_count, totalQueries),
+                                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                                )
+                            }
+                        }
+                    }
                     Text(
                         text = stringResource(R.string.stats_traffic_destinations_desc),
                         style = MaterialTheme.typography.bodySmall,
@@ -89,12 +110,11 @@ fun TrafficDestinationsSection(
 
             Spacer(modifier = Modifier.height(14.dp))
 
-            // Time Range Filter Chips
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            // Time Range Filter Segmented Buttons (fixed 4-column, no text wrapping)
+            SingleChoiceSegmentedButtonRow(
+                modifier = Modifier.fillMaxWidth()
             ) {
-                DestinationTimeRange.entries.forEach { range ->
+                DestinationTimeRange.entries.forEachIndexed { index, range ->
                     val isSelected = range == selectedRange
                     val labelRes = when (range) {
                         DestinationTimeRange.HOURS_24 -> R.string.stats_destinations_24h
@@ -103,14 +123,20 @@ fun TrafficDestinationsSection(
                         DestinationTimeRange.ALL -> R.string.stats_destinations_all
                     }
 
-                    FilterChip(
+                    SegmentedButton(
                         selected = isSelected,
                         onClick = { onRangeSelected(range) },
-                        label = { Text(text = stringResource(labelRes)) },
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                            selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
-                        )
+                        shape = SegmentedButtonDefaults.itemShape(
+                            index = index,
+                            count = DestinationTimeRange.entries.size
+                        ),
+                        label = {
+                            Text(
+                                text = stringResource(labelRes),
+                                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Medium),
+                                maxLines = 1
+                            )
+                        }
                     )
                 }
             }
