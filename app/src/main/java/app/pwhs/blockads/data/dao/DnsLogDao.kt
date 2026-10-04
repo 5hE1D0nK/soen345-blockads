@@ -281,7 +281,7 @@ interface DnsLogDao {
         FROM dns_logs
         WHERE UPPER(countryCode) = UPPER(:countryCode) AND timestamp > :since
         GROUP BY domain
-        ORDER BY count DESC
+        ORDER BY (CASE WHEN domain LIKE 'TCP %' OR domain LIKE 'UDP %' THEN 1 ELSE 0 END) ASC, count DESC
         LIMIT :limit
         """
     )
@@ -298,7 +298,7 @@ interface DnsLogDao {
         FROM dns_logs
         WHERE UPPER(countryCode) = UPPER(:countryCode)
         GROUP BY domain
-        ORDER BY count DESC
+        ORDER BY (CASE WHEN domain LIKE 'TCP %' OR domain LIKE 'UDP %' THEN 1 ELSE 0 END) ASC, count DESC
         LIMIT :limit
         """
     )

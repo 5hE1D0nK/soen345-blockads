@@ -21,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -31,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import app.pwhs.blockads.R
 import app.pwhs.blockads.data.entities.CountryTopDomain
 import app.pwhs.blockads.data.geoip.GeoIpLookup
+import app.pwhs.blockads.service.IpDomainResolver
 import app.pwhs.blockads.ui.theme.DangerRed
 import app.pwhs.blockads.ui.theme.TextSecondary
 import app.pwhs.blockads.utils.formatCount
@@ -123,6 +125,10 @@ private fun CountryDomainRow(
     item: CountryTopDomain,
     modifier: Modifier = Modifier
 ) {
+    val displayDomain = remember(item.domain) {
+        IpDomainResolver.resolve(item.domain)
+    }
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
@@ -136,7 +142,7 @@ private fun CountryDomainRow(
             modifier = Modifier.width(22.dp)
         )
         Text(
-            text = item.domain,
+            text = displayDomain,
             style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
             color = MaterialTheme.colorScheme.onSurface,
             maxLines = 1,

@@ -215,22 +215,20 @@ class GoTunnelAdapter(
 
             scope.launch(Dispatchers.IO) {
                 try {
-                    // Try to resolve the user-friendly App Name string from the package name
-                    val friendlyAppName = if (packageNameOrAppName.isNotEmpty() && packageNameOrAppName.contains(".")) {
-                        try {
+                    val friendlyAppName = if (packageNameOrAppName.contains(".")) {
+                        runCatching {
                             val pm = context.packageManager
-                            val info = pm.getApplicationInfo(packageNameOrAppName, 0)
-                            pm.getApplicationLabel(info).toString()
-                        } catch (e: Exception) {
-                            packageNameOrAppName
-                        }
+                            pm.getApplicationLabel(pm.getApplicationInfo(packageNameOrAppName, 0)).toString()
+                        }.getOrDefault(packageNameOrAppName)
                     } else {
                         packageNameOrAppName
                     }
 
-                    val countryCode = app.pwhs.blockads.data.geoip.GeoIpLookup.getCountryCode(resolvedIP, domain)
+                    val resolvedDomain = IpDomainResolver.resolve(domain, resolvedIP)
+                    IpDomainResolver.remember(domain, resolvedIP)
+                    val countryCode = app.pwhs.blockads.data.geoip.GeoIpLookup.getCountryCode(resolvedIP, resolvedDomain)
                     val entry = DnsLogEntry(
-                        domain = domain,
+                        domain = resolvedDomain,
                         isBlocked = blocked,
                         queryType = dnsQueryTypeToString(queryType.toInt()),
                         responseTimeMs = responseTimeMs,
