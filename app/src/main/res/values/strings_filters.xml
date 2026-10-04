@@ -19,6 +19,10 @@
     <string name="domain_rules_title">Domain Rules</string>
     <string name="domain_rules_tab_whitelist">Whitelist</string>
     <string name="domain_rules_tab_blocklist">Blocklist</string>
+    <string name="domain_rules_import_desc">Import allowed or blocked domains from hosts file, Adblock syntax, or plain text</string>
+    <string name="paste_from_clipboard">Paste from clipboard</string>
+    <string name="filter_category_starred">Starred</string>
+    <string name="filter_starred_empty">No starred filters yet. Tap the star icon on any filter to pin it here for quick access.</string>
     <string name="filter_setup_title">Filter Setup</string>
     <string name="filter_built_in">Built-in</string>
     <string name="filter_custom">Custom</string>

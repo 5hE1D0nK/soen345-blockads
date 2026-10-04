@@ -13,6 +13,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Shield
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -22,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -38,6 +41,8 @@ fun FilterItem(
     onToggle: () -> Unit,
     onDelete: (() -> Unit)?,
     modifier: Modifier = Modifier,
+    isStarred: Boolean = false,
+    onToggleStar: (() -> Unit)? = null,
     onClick: (() -> Unit)? = null
 ) {
     Row(
@@ -125,6 +130,20 @@ fun FilterItem(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
+        }
+
+        if (onToggleStar != null) {
+            IconButton(
+                onClick = onToggleStar,
+                modifier = Modifier.size(36.dp)
+            ) {
+                Icon(
+                    imageVector = if (isStarred) Icons.Filled.Star else Icons.Outlined.StarOutline,
+                    contentDescription = if (isStarred) "Unstar" else "Star",
+                    tint = if (isStarred) Color(0xFFFFB800) else TextSecondary.copy(alpha = 0.5f),
+                    modifier = Modifier.size(20.dp)
+                )
+            }
         }
 
         if (onDelete != null) {

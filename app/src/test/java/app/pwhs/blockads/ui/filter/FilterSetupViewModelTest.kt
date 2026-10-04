@@ -3,6 +3,8 @@ package app.pwhs.blockads.ui.filter
 import android.app.Application
 import app.cash.turbine.test
 import app.pwhs.blockads.R
+import app.pwhs.blockads.data.datastore.AppPreferences
+import app.pwhs.blockads.data.datastore.prefs.FilterPreferences
 import app.pwhs.blockads.data.dao.FilterListDao
 import app.pwhs.blockads.data.entities.FilterList
 import app.pwhs.blockads.data.entities.ProfileManager
@@ -229,5 +231,17 @@ class FilterSetupViewModelTest {
             vm.updateAllFilters()
             assertEquals(UiEvent.ToastRes(R.string.filter_updated, listOf(5)), awaitItem())
         }
+    }
+
+    @Test
+    fun `toggleStarredFilter calls appPreferences filter toggleStarredFilter`() = runTest {
+        val filterPrefs: FilterPreferences = mockk(relaxed = true)
+        val appPrefs: AppPreferences = mockk {
+            every { filter } returns filterPrefs
+        }
+        val testVm = FilterSetupViewModel(repo, dao, customFilters, profileManager, mockk<Application>(relaxed = true), appPrefs)
+        val filter = FilterList(id = 1, name = "Test", url = "https://example.com/filter.txt")
+        testVm.toggleStarredFilter(filter)
+        coVerify(exactly = 1) { filterPrefs.toggleStarredFilter("https://example.com/filter.txt") }
     }
 }

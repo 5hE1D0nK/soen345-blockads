@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.stringSetPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -19,6 +20,7 @@ class FilterPreferences(private val dataStore: DataStore<Preferences>) {
         val KEY_PROTECTION_LEVEL = stringPreferencesKey("protection_level")
         val KEY_SAFE_SEARCH_ENABLED = booleanPreferencesKey("safe_search_enabled")
         val KEY_YOUTUBE_RESTRICTED_MODE = booleanPreferencesKey("youtube_restricted_mode")
+        val KEY_STARRED_FILTER_URLS = stringSetPreferencesKey("starred_filter_urls")
 
         const val DEFAULT_FILTER_URL =
             "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts"
@@ -115,6 +117,21 @@ class FilterPreferences(private val dataStore: DataStore<Preferences>) {
     suspend fun setYoutubeRestrictedMode(enabled: Boolean) {
         dataStore.edit { prefs ->
             prefs[KEY_YOUTUBE_RESTRICTED_MODE] = enabled
+        }
+    }
+
+    val starredFilterUrls: Flow<Set<String>> = dataStore.data.map { prefs ->
+        prefs[KEY_STARRED_FILTER_URLS] ?: emptySet()
+    }
+
+    suspend fun toggleStarredFilter(url: String) {
+        dataStore.edit { prefs ->
+            val current = prefs[KEY_STARRED_FILTER_URLS] ?: emptySet()
+            prefs[KEY_STARRED_FILTER_URLS] = if (current.contains(url)) {
+                current - url
+            } else {
+                current + url
+            }
         }
     }
 }

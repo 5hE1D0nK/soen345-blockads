@@ -35,4 +35,35 @@ class DomainRuleParserTest {
 
         assertEquals(expected, result)
     }
+
+    @Test
+    fun parseDomains_supportsWildcardPrefixes() {
+        val input = """
+            *.aliyuncsslbintl.com
+            *.transsion-os.com
+            *.appsflyersdk.com
+            whoami.akamai.net
+            updates.push.services.mozilla.com
+            *.gotii.com
+            *.geniex.com
+            *.transsion-os.com
+            *.onesignal.com
+            ||*.example.org^
+        """.trimIndent()
+
+        val result = DomainRuleParser.parseDomains(input)
+        val expected = listOf(
+            "*.aliyuncsslbintl.com",
+            "*.transsion-os.com",
+            "*.appsflyersdk.com",
+            "whoami.akamai.net",
+            "updates.push.services.mozilla.com",
+            "*.gotii.com",
+            "*.geniex.com",
+            "*.onesignal.com",
+            "*.example.org"
+        )
+
+        assertEquals(expected, result)
+    }
 }

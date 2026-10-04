@@ -178,7 +178,8 @@ val appModule = module {
             filterListDao = get(),
             customFilterManager = get(),
             profileManager = get(),
-            application = androidApplication()
+            application = androidApplication(),
+            appPreferences = get()
         )
     }
     viewModel { (filterId: Long) ->

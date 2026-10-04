@@ -2,6 +2,7 @@ package app.pwhs.blockads.ui.filter.data
 
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Block
 import androidx.compose.material.icons.outlined.NotificationsOff
 import androidx.compose.material.icons.outlined.Public
@@ -18,6 +19,7 @@ enum class FilterCategoryTab(
     @StringRes val titleRes: Int,
     val icon: ImageVector
 ) {
+    STARRED(R.string.filter_category_starred, Icons.Filled.Star),
     ADS(R.string.filter_category_ad, Icons.Outlined.Block),
     PRIVACY(R.string.filter_category_privacy, Icons.Outlined.VisibilityOff),
     SOCIAL(R.string.filter_category_social, Icons.Outlined.Share),
@@ -28,7 +30,11 @@ enum class FilterCategoryTab(
     CUSTOM(R.string.filter_custom, Icons.Outlined.Tune)
 }
 
-fun FilterList.matchesCategory(tab: FilterCategoryTab): Boolean {
+fun FilterList.matchesCategory(tab: FilterCategoryTab, starredUrls: Set<String> = emptySet()): Boolean {
+    if (tab == FilterCategoryTab.STARRED) {
+        return starredUrls.contains(url)
+    }
+
     if (!isBuiltIn) {
         return tab == FilterCategoryTab.CUSTOM
     }
@@ -38,6 +44,7 @@ fun FilterList.matchesCategory(tab: FilterCategoryTab): Boolean {
     val lowerUrl = url.lowercase()
 
     return when (tab) {
+        FilterCategoryTab.STARRED -> false
         FilterCategoryTab.CUSTOM -> false
 
         FilterCategoryTab.ANNOYANCES -> {

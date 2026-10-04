@@ -13,6 +13,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -57,6 +58,7 @@ fun FilterSetupScreen(
     val filterLists by viewModel.filteredFilterLists.collectAsStateWithLifecycle()
     val isUpdatingFilter by viewModel.isUpdatingFilter.collectAsStateWithLifecycle()
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
+    val starredUrls by viewModel.starredFilterUrls.collectAsStateWithLifecycle()
 
     var showAddDialog by remember { mutableStateOf(false) }
     var isSearchVisible by remember { mutableStateOf(false) }
@@ -72,9 +74,9 @@ fun FilterSetupScreen(
         }
     }
 
-    val activeCounts = remember(allLists) {
+    val activeCounts = remember(allLists, starredUrls) {
         FilterCategoryTab.entries.associateWith { tab ->
-            allLists.count { it.matchesCategory(tab) && it.isEnabled }
+            allLists.count { it.matchesCategory(tab, starredUrls) && it.isEnabled }
         }
     }
 
@@ -120,7 +122,7 @@ fun FilterSetupScreen(
                 modifier = Modifier.fillMaxSize()
             ) { page ->
                 val currentTab = FilterCategoryTab.entries[page]
-                val tabFilters = filterLists.filter { it.matchesCategory(currentTab) }
+                val tabFilters = filterLists.filter { it.matchesCategory(currentTab, starredUrls) }
 
                 if (currentTab == FilterCategoryTab.CUSTOM) {
                     if (isSearching && tabFilters.isEmpty()) {
@@ -137,11 +139,15 @@ fun FilterSetupScreen(
                                     onDelete = { viewModel.deleteFilterList(it) },
                                     onFilterClick = onNavigateToFilterDetail,
                                     onShowAddDialog = { showAddDialog = true },
-                                    onNavigateToCustomRules = onNavigateToCustomRules
+                                    onNavigateToCustomRules = onNavigateToCustomRules,
+                                    starredUrls = starredUrls,
+                                    onToggleStar = { viewModel.toggleStarredFilter(it) }
                                 )
                             }
                         }
                     }
+                } else if (currentTab == FilterCategoryTab.STARRED && tabFilters.isEmpty() && !isSearching) {
+                    EmptyStarredFilter()
                 } else {
                     if (isSearching && tabFilters.isEmpty()) {
                         EmptyCategorySearch(searchQuery)
@@ -154,7 +160,9 @@ fun FilterSetupScreen(
                                 FilterListCard(
                                     filters = tabFilters,
                                     onToggle = { viewModel.toggleFilterList(it) },
-                                    onFilterClick = onNavigateToFilterDetail
+                                    onFilterClick = onNavigateToFilterDetail,
+                                    starredUrls = starredUrls,
+                                    onToggleStar = { viewModel.toggleStarredFilter(it) }
                                 )
                             }
                         }
@@ -201,6 +209,32 @@ private fun EmptyCategorySearch(
             Text(
                 text = stringResource(R.string.filter_search_no_results, searchQuery),
                 style = MaterialTheme.typography.bodyLarge,
+                color = TextSecondary,
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
+
+@Composable
+private fun EmptyStarredFilter(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(32.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Icon(
+                imageVector = Icons.Default.Star,
+                contentDescription = null,
+                modifier = Modifier.size(56.dp),
+                tint = TextSecondary.copy(alpha = 0.4f)
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = stringResource(R.string.filter_starred_empty),
+                style = MaterialTheme.typography.bodyMedium,
                 color = TextSecondary,
                 textAlign = TextAlign.Center
             )

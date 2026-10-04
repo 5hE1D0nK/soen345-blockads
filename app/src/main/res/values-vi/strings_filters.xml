@@ -139,6 +139,10 @@
     <string name="domain_rules_title">Quy tắc tên miền</string>
     <string name="domain_rules_tab_whitelist">Danh sách trắng</string>
     <string name="domain_rules_tab_blocklist">Danh sách đen</string>
+    <string name="domain_rules_import_desc">Nhập danh sách tên miền cho phép hoặc chặn từ file hosts, cú pháp Adblock hoặc văn bản</string>
+    <string name="paste_from_clipboard">Dán từ bộ nhớ tạm</string>
+    <string name="filter_category_starred">Đã gắn sao</string>
+    <string name="filter_starred_empty">Chưa có bộ lọc nào được gắn sao. Chạm vào ngôi sao trên bất kỳ bộ lọc nào để ghim tại đây.</string>
     <string name="edit_custom_filter">Chỉnh sửa bộ lọc tùy chỉnh</string>
     <string name="filter_name">Tên bộ lọc</string>
     <string name="filter_url_domain">URL/Tên miền của bộ lọc</string>

@@ -50,7 +50,7 @@ import androidx.compose.material.icons.filled.FileUpload
 import app.pwhs.blockads.data.entities.CustomDnsRule
 import app.pwhs.blockads.data.entities.WhitelistDomain
 import app.pwhs.blockads.ui.domainrules.dialog.EditDomainDialog
-import app.pwhs.blockads.ui.domainrules.dialog.ImportDomainsDialog
+import app.pwhs.blockads.ui.domainrules.dialog.ImportDomainsBottomSheet
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -261,7 +261,7 @@ fun DomainRulesScreen(
     }
 
     if (showImportDialog) {
-        ImportDomainsDialog(
+        ImportDomainsBottomSheet(
             initialIsAllow = pagerState.currentPage == 0,
             onDismiss = { showImportDialog = false },
             onImport = { domains, isAllow ->

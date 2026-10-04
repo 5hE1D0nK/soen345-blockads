@@ -20,6 +20,8 @@ fun FilterListCard(
     onToggle: (FilterList) -> Unit,
     onFilterClick: (Long) -> Unit,
     onDelete: ((FilterList) -> Unit)? = null,
+    starredUrls: Set<String> = emptySet(),
+    onToggleStar: ((FilterList) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     if (filters.isEmpty()) return
@@ -39,6 +41,8 @@ fun FilterListCard(
                     filter = filter,
                     onToggle = { onToggle(filter) },
                     onDelete = onDelete?.let { { it(filter) } },
+                    isStarred = starredUrls.contains(filter.url),
+                    onToggleStar = onToggleStar?.let { { it(filter) } },
                     onClick = { onFilterClick(filter.id) }
                 )
                 if (index < filters.lastIndex) {

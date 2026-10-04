@@ -41,7 +41,9 @@ fun CustomTabContent(
     onFilterClick: (Long) -> Unit,
     onShowAddDialog: () -> Unit,
     onNavigateToCustomRules: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    starredUrls: Set<String> = emptySet(),
+    onToggleStar: ((FilterList) -> Unit)? = null
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -71,6 +73,8 @@ fun CustomTabContent(
                             filter = filter,
                             onToggle = { onToggle(filter) },
                             onDelete = { onDelete(filter) },
+                            isStarred = starredUrls.contains(filter.url),
+                            onToggleStar = onToggleStar?.let { { it(filter) } },
                             onClick = { onFilterClick(filter.id) }
                         )
                         if (index < customFilters.lastIndex) {

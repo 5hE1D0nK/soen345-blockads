@@ -2,7 +2,7 @@ package app.pwhs.blockads.ui.domainrules
 
 object DomainRuleParser {
     private val IP_HOSTS_REGEX = Regex("^(?:127\\.0\\.0\\.1|0\\.0\\.0\\.0|::1|::)\\s+(\\S+)")
-    private val DOMAIN_REGEX = Regex("^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$")
+    private val DOMAIN_REGEX = Regex("^(?:\\*\\.)*[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$")
 
     fun parseDomains(content: String): List<String> {
         val result = linkedSetOf<String>()

@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.pwhs.blockads.R
+import app.pwhs.blockads.data.datastore.AppPreferences
 import app.pwhs.blockads.data.entities.FilterList
 import app.pwhs.blockads.data.dao.FilterListDao
 import app.pwhs.blockads.data.repository.CustomFilterManager
@@ -30,6 +31,7 @@ class FilterSetupViewModel(
     private val customFilterManager: CustomFilterManager,
     private val profileManager: ProfileManager,
     private val application: Application,
+    private val appPreferences: AppPreferences? = null
 ) : ViewModel() {
 
     val filterLists: StateFlow<List<FilterList>> = filterListDao.getAll()
@@ -37,6 +39,10 @@ class FilterSetupViewModel(
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
+
+    val starredFilterUrls: StateFlow<Set<String>> = appPreferences?.filter?.starredFilterUrls
+        ?.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptySet())
+        ?: MutableStateFlow<Set<String>>(emptySet()).asStateFlow()
 
     val filteredFilterLists: StateFlow<List<FilterList>> = combine(
         filterLists, _searchQuery
@@ -77,6 +83,12 @@ class FilterSetupViewModel(
             // Recalculate the active domain count immediately even if VPN is stopped
             filterRepo.loadAllEnabledFilters()
             ServiceController.requestRestart(application.applicationContext)
+        }
+    }
+
+    fun toggleStarredFilter(filter: FilterList) {
+        viewModelScope.launch {
+            appPreferences?.filter?.toggleStarredFilter(filter.url)
         }
     }
 
