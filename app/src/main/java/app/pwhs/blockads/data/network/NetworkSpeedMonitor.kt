@@ -2,7 +2,6 @@ package app.pwhs.blockads.data.network
 
 import android.net.TrafficStats
 import android.os.SystemClock
-import app.pwhs.blockads.ui.home.component.MiniBarChartDefaults
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -10,16 +9,20 @@ import kotlinx.coroutines.flow.flow
 data class NetworkSpeed(
     val downloadBps: Long = 0L,
     val uploadBps: Long = 0L,
-    val downloadHistory: List<Float> = MiniBarChartDefaults.TotalQueriesSample,
-    val uploadHistory: List<Float> = MiniBarChartDefaults.BlockedQueriesSample
+    val totalDownloadedBytes: Long = 0L,
+    val totalUploadedBytes: Long = 0L,
+    val downloadHistory: List<Float> = emptyList(),
+    val uploadHistory: List<Float> = emptyList()
 )
 
 object NetworkSpeedMonitor {
     private const val HISTORY_SIZE = 10
 
     fun observeNetworkSpeed(intervalMs: Long = 1000L): Flow<NetworkSpeed> = flow {
-        var lastRx = TrafficStats.getTotalRxBytes()
-        var lastTx = TrafficStats.getTotalTxBytes()
+        val startRx = TrafficStats.getTotalRxBytes()
+        val startTx = TrafficStats.getTotalTxBytes()
+        var lastRx = startRx
+        var lastTx = startTx
         var lastTime = SystemClock.elapsedRealtime()
 
         val rxHistory = ArrayDeque<Long>(HISTORY_SIZE)
@@ -29,6 +32,8 @@ object NetworkSpeedMonitor {
             rxHistory.add(0L)
             txHistory.add(0L)
         }
+
+        emit(NetworkSpeed())
 
         while (true) {
             delay(intervalMs)
@@ -49,6 +54,14 @@ object NetworkSpeedMonitor {
             val rxSpeed = (rxDiff / dt).toLong()
             val txSpeed = (txDiff / dt).toLong()
 
+            val downloaded = if (startRx != TrafficStats.UNSUPPORTED.toLong() && currentRx >= startRx) {
+                currentRx - startRx
+            } else 0L
+
+            val uploaded = if (startTx != TrafficStats.UNSUPPORTED.toLong() && currentTx >= startTx) {
+                currentTx - startTx
+            } else 0L
+
             lastRx = currentRx
             lastTx = currentTx
             lastTime = now
@@ -63,20 +76,20 @@ object NetworkSpeedMonitor {
             val maxTx = txHistory.maxOrNull()?.coerceAtLeast(1L) ?: 1L
 
             val normRx = if (maxRx <= 1024L) {
-                MiniBarChartDefaults.TotalQueriesSample
+                emptyList()
             } else {
                 rxHistory.map {
                     if (it == 0L) 0.15f
-                    else (it.toFloat() / maxRx).coerceIn(0.18f, 1f)
+                    else (it.toFloat() / maxRx).coerceIn(0.18f, 0.85f)
                 }
             }
 
             val normTx = if (maxTx <= 1024L) {
-                MiniBarChartDefaults.BlockedQueriesSample
+                emptyList()
             } else {
                 txHistory.map {
                     if (it == 0L) 0.15f
-                    else (it.toFloat() / maxTx).coerceIn(0.18f, 1f)
+                    else (it.toFloat() / maxTx).coerceIn(0.18f, 0.85f)
                 }
             }
 
@@ -84,6 +97,8 @@ object NetworkSpeedMonitor {
                 NetworkSpeed(
                     downloadBps = rxSpeed,
                     uploadBps = txSpeed,
+                    totalDownloadedBytes = downloaded,
+                    totalUploadedBytes = uploaded,
                     downloadHistory = normRx,
                     uploadHistory = normTx
                 )

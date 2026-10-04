@@ -16,6 +16,8 @@
     <string name="home_protection_uptime">Thời gian bảo vệ</string>
     <string name="home_download_speed">Tốc độ tải xuống</string>
     <string name="home_upload_speed">Tốc độ tải lên</string>
+    <string name="home_downloaded">Đã tải xuống</string>
+    <string name="home_uploaded">Đã tải lên</string>
     <string name="home_chart_24h">24 Giờ</string>
     <string name="home_chart_7d">7 Ngày</string>
     <string name="home_top_blocked">Domain bị chặn nhiều nhất</string>
