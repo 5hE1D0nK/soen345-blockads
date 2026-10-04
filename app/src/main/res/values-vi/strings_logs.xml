@@ -60,4 +60,13 @@
     <string name="stats_destinations_empty">Chưa có dữ liệu điểm đến lưu lượng. Dữ liệu sẽ xuất hiện khi có truy vấn mới.</string>
     <string name="stats_show_more">Xem thêm</string>
     <string name="stats_show_less">Thu gọn</string>
+    <string name="stats_block_reasons_title">Lý do chặn</string>
+    <string name="stats_block_reasons_desc">Các cài đặt Bảo mật, Quyền riêng tư và/hoặc Kiểm soát của phụ huynh đã chặn nhiều truy vấn nhất.</string>
+    <string name="stats_block_reasons_empty">Không có truy vấn nào bị chặn trong khoảng thời gian này.</string>
+    <string name="stats_block_reasons_blocked_count">%d đã chặn</string>
+    <string name="stats_block_reason_custom">Quy tắc tùy chỉnh</string>
+    <string name="stats_block_reason_firewall">Tường lửa ứng dụng</string>
+    <string name="stats_block_reason_security">Bảo vệ an ninh</string>
+    <string name="stats_block_reason_upstream">Máy chủ DNS</string>
+    <string name="stats_block_reason_filter_list">Bộ lọc</string>
 </resources>

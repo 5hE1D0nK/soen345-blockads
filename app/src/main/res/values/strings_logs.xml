@@ -60,4 +60,13 @@
     <string name="stats_destinations_empty">No traffic destination data yet. Queries will appear here as your traffic is analyzed.</string>
     <string name="stats_show_more">Show more</string>
     <string name="stats_show_less">Show less</string>
+    <string name="stats_block_reasons_title">Reasons for Blocking</string>
+    <string name="stats_block_reasons_desc">The Security, Privacy and/or Parental Control settings that blocked the most queries.</string>
+    <string name="stats_block_reasons_empty">No queries were blocked in this time range.</string>
+    <string name="stats_block_reasons_blocked_count">%d blocked</string>
+    <string name="stats_block_reason_custom">Custom Rules</string>
+    <string name="stats_block_reason_firewall">App Firewall</string>
+    <string name="stats_block_reason_security">Security Protection</string>
+    <string name="stats_block_reason_upstream">Upstream DNS</string>
+    <string name="stats_block_reason_filter_list">Filter List</string>
 </resources>

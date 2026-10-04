@@ -1,6 +1,7 @@
 package app.pwhs.blockads.ui.statistics
 
 import app.pwhs.blockads.data.dao.DnsLogDao
+import app.pwhs.blockads.data.dao.FilterListDao
 import app.pwhs.blockads.data.entities.AppStat
 import app.pwhs.blockads.data.entities.TopBlockedDomain
 import app.pwhs.blockads.data.repository.FilterListRepository
@@ -29,6 +30,7 @@ class StatisticsViewModelTest {
     private val midnight = 20_000 * day
     private var now = midnight + day - 60_000 // 23:59 UTC
     private val dao: DnsLogDao = mockk(relaxed = true)
+    private val filterListDao: FilterListDao = mockk(relaxed = true)
 
     @Before
     fun setUp() = TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
@@ -38,7 +40,7 @@ class StatisticsViewModelTest {
 
     @Test
     fun `today counters query from local midnight`() {
-        StatisticsViewModel(dao) { now }
+        StatisticsViewModel(dao, filterListDao) { now }
         verify { dao.getTotalCountSince(midnight) }
         verify { dao.getBlockedCountSince(midnight) }
     }
@@ -51,7 +53,7 @@ class StatisticsViewModelTest {
         every { dao.getBlockedCountSince(any()) } returns flowOf(2)
         every { dao.getTopBlockedDomains(any()) } returns flowOf(listOf(TopBlockedDomain("ads.com", 9)))
         every { dao.getTopApps(any()) } returns flowOf(listOf(AppStat("Chrome", "com.android.chrome", 5, 2)))
-        val vm = StatisticsViewModel(dao) { now }
+        val vm = StatisticsViewModel(dao, filterListDao) { now }
         keepHot(
             vm.totalCount, vm.blockedCount, vm.todayTotal, vm.todayBlocked,
             vm.hourlyStats, vm.dailyStats, vm.weeklyStats, vm.monthlyStats,
@@ -65,7 +67,7 @@ class StatisticsViewModelTest {
     @Ignore("known bug: todayStart is computed once, so 'today' counters keep counting from yesterday after midnight")
     @Test
     fun `today counters roll over at midnight`() = runTest {
-        val vm = StatisticsViewModel(dao) { now }
+        val vm = StatisticsViewModel(dao, filterListDao) { now }
         keepHot(vm.todayTotal)
         now += 120_000
         keepHot(vm.todayTotal)

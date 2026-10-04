@@ -282,6 +282,10 @@ fun HomeApp(
                     StatisticsScreen(
                         onNavigateBack = {
                             safePop(homeStack)
+                        },
+                        onNavigateToFilterDetail = { filterId ->
+                            showBottomBar = false
+                            homeStack.add(FilterDetailKey(filterId))
                         }
                     )
                 }

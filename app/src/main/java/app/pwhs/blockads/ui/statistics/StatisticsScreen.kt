@@ -60,6 +60,7 @@ import app.pwhs.blockads.ui.home.component.WeeklyStatsChart
 import app.pwhs.blockads.ui.statistics.component.TopAppsCard
 import app.pwhs.blockads.ui.statistics.component.TopDomainsCard
 import app.pwhs.blockads.ui.statistics.destinations.TrafficDestinationsSection
+import app.pwhs.blockads.ui.statistics.reasons.BlockReasonsSection
 import app.pwhs.blockads.ui.theme.AccentBlue
 import app.pwhs.blockads.ui.theme.DangerRed
 import app.pwhs.blockads.ui.theme.TextSecondary
@@ -72,7 +73,8 @@ import java.util.Locale
 fun StatisticsScreen(
     modifier: Modifier = Modifier,
     viewModel: StatisticsViewModel = koinViewModel(),
-    onNavigateBack: () -> Unit = { }
+    onNavigateBack: () -> Unit = { },
+    onNavigateToFilterDetail: (Long) -> Unit = { }
 ) {
     val totalCount by viewModel.totalCount.collectAsStateWithLifecycle()
     val blockedCount by viewModel.blockedCount.collectAsStateWithLifecycle()
@@ -86,6 +88,8 @@ fun StatisticsScreen(
     val topApps by viewModel.topApps.collectAsStateWithLifecycle()
     val countryStats by viewModel.countryStats.collectAsStateWithLifecycle()
     val destinationTimeRange by viewModel.destinationTimeRange.collectAsStateWithLifecycle()
+    val blockReasons by viewModel.blockReasons.collectAsStateWithLifecycle()
+    val blockReasonTimeRange by viewModel.blockReasonTimeRange.collectAsStateWithLifecycle()
 
     Scaffold(
         modifier = modifier,
@@ -305,6 +309,15 @@ fun StatisticsScreen(
                 countryStats = countryStats,
                 selectedRange = destinationTimeRange,
                 onRangeSelected = viewModel::setDestinationTimeRange
+            )
+
+            // Reasons for Blocking section (NextDNS style)
+            Spacer(modifier = Modifier.height(20.dp))
+            BlockReasonsSection(
+                reasons = blockReasons,
+                selectedRange = blockReasonTimeRange,
+                onRangeSelected = viewModel::setBlockReasonTimeRange,
+                onFilterClick = onNavigateToFilterDetail
             )
 
             // Top Blocked Domains section

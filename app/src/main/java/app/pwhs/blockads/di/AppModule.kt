@@ -142,7 +142,7 @@ val appModule = module {
             filterListDao = get()
         )
     }
-    viewModel { StatisticsViewModel(dnsLogDao = get()) }
+    viewModel { StatisticsViewModel(dnsLogDao = get(), filterListDao = get()) }
     viewModel {
         LogViewModel(
             dnsLogDao = get(),
