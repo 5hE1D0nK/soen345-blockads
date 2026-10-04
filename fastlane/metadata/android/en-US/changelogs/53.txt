@@ -1,0 +1,8 @@
+• Traffic Destinations world map with per-country top domains
+• "Reasons for Blocking" stats by filter list
+• TCP/UDP connections now resolve to real domain names
+• Filter screen split into category tabs, larger filter catalog
+• Refreshed Logs screen UI with new filter bar and app filter
+• Refreshed Firewall screen UI with quick block/unblock controls
+• New animated nav icon and shimmer loading for app lists
+• Fixed crash when touching the stats chart
