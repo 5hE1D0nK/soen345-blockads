@@ -68,6 +68,7 @@ import app.pwhs.blockads.ui.home.component.HomeActivityChart
 import app.pwhs.blockads.ui.home.component.MilestoneBottomSheet
 import app.pwhs.blockads.ui.home.component.PowerButton
 import app.pwhs.blockads.ui.home.component.RecentBlockedSection
+import app.pwhs.blockads.ui.home.component.MiniBarChartDefaults
 import app.pwhs.blockads.ui.home.component.StatCard
 import app.pwhs.blockads.ui.home.component.TopBlockedSection
 import app.pwhs.blockads.ui.home.data.RecentLogFilter
@@ -249,6 +250,12 @@ fun HomeScreen(
 
 
             // Stats cards
+            val totalChartData = remember(hourlyStats) {
+                MiniBarChartDefaults.createSparklineData(hourlyStats, isBlocked = false)
+            }
+            val blockedChartData = remember(hourlyStats) {
+                MiniBarChartDefaults.createSparklineData(hourlyStats, isBlocked = true)
+            }
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -263,6 +270,8 @@ fun HomeScreen(
                     label = stringResource(R.string.total_queries),
                     value = formatCount(totalCount),
                     color = MaterialTheme.colorScheme.secondary,
+                    chartData = totalChartData,
+                    showChevron = true,
                     onClick = { onNavigateToLogScreen(LogFilterStatus.ALL) }
                 )
                 StatCard(
@@ -273,6 +282,8 @@ fun HomeScreen(
                     label = stringResource(R.string.blocked_queries),
                     value = formatCount(blockedCount),
                     color = DangerRed,
+                    chartData = blockedChartData,
+                    showChevron = true,
                     onClick = { onNavigateToLogScreen(LogFilterStatus.BLOCKED) }
                 )
             }

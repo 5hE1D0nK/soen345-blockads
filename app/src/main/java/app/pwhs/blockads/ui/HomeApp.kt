@@ -18,16 +18,19 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -130,56 +133,64 @@ fun HomeApp(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         bottomBar = {
             if (!showBottomBar) return@Scaffold
-            NavigationBar(
-                windowInsets = WindowInsets.navigationBars,
-                containerColor = MaterialTheme.colorScheme.surface,
-                contentColor = MaterialTheme.colorScheme.onSurface
+            CompositionLocalProvider(
+                LocalDensity provides Density(
+                    density = LocalDensity.current.density,
+                    fontScale = 1f
+                )
             ) {
-                bottomBarScreens.forEach { screen ->
-                    NavigationBarItem(
-                        selected = currentBackStack == when (screen) {
-                            BottomBarScreen.Home -> homeStack
-                            BottomBarScreen.FilterSetup -> filterStack
-                            BottomBarScreen.Firewall -> firewallStack
-                            BottomBarScreen.DomainRule -> domainRuleStack
-                            BottomBarScreen.Settings -> settingsStack
-                        },
-                        onClick = {
-                            currentTab = screen
-                        },
-                        icon = {
-                            if (screen == BottomBarScreen.Firewall && firewallEnabled) {
-                                app.pwhs.blockads.ui.component.BurningFireIcon(
-                                    contentDescription = stringResource(screen.labelRes)
-                                )
-                            } else {
-                                Icon(
-                                    painter = painterResource(screen.icon),
-                                    contentDescription = stringResource(screen.labelRes),
-                                    modifier = Modifier.size(24.dp)
-                                )
-                            }
-                        },
-                        label = if (showBottomNavLabels) {
-                            {
-                                Text(
-                                    text = stringResource(screen.labelRes),
-                                    textAlign = TextAlign.Center,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    style = LocalTextStyle.current.copy(
-                                        fontSize = 12.sp
+                NavigationBar(
+                    windowInsets = WindowInsets.navigationBars,
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    contentColor = MaterialTheme.colorScheme.onSurface
+                ) {
+                    bottomBarScreens.forEach { screen ->
+                        NavigationBarItem(
+                            selected = currentBackStack == when (screen) {
+                                BottomBarScreen.Home -> homeStack
+                                BottomBarScreen.FilterSetup -> filterStack
+                                BottomBarScreen.Firewall -> firewallStack
+                                BottomBarScreen.DomainRule -> domainRuleStack
+                                BottomBarScreen.Settings -> settingsStack
+                            },
+                            onClick = {
+                                currentTab = screen
+                            },
+                            icon = {
+                                if (screen == BottomBarScreen.Firewall && firewallEnabled) {
+                                    app.pwhs.blockads.ui.component.BurningFireIcon(
+                                        contentDescription = stringResource(screen.labelRes)
                                     )
-                                )
-                            }
-                        } else null,
-                        alwaysShowLabel = showBottomNavLabels,
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = MaterialTheme.colorScheme.primary,
-                            selectedTextColor = MaterialTheme.colorScheme.primary,
-                            indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+                                } else {
+                                    Icon(
+                                        painter = painterResource(screen.icon),
+                                        contentDescription = stringResource(screen.labelRes),
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                }
+                            },
+                            label = if (showBottomNavLabels) {
+                                {
+                                    Text(
+                                        text = stringResource(screen.labelRes),
+                                        textAlign = TextAlign.Center,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                        style = LocalTextStyle.current.copy(
+                                            fontSize = 10.5.sp,
+                                            letterSpacing = (-0.2).sp
+                                        )
+                                    )
+                                }
+                            } else null,
+                            alwaysShowLabel = showBottomNavLabels,
+                            colors = NavigationBarItemDefaults.colors(
+                                selectedIconColor = MaterialTheme.colorScheme.primary,
+                                selectedTextColor = MaterialTheme.colorScheme.primary,
+                                indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+                            )
                         )
-                    )
+                    }
                 }
             }
         }
