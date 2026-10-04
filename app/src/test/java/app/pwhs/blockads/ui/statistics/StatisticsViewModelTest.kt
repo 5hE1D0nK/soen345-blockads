@@ -64,6 +64,23 @@ class StatisticsViewModelTest {
         assertEquals("Chrome", vm.topApps.value.single().appName)
     }
 
+    @Test
+    fun `countryTopDomains emits empty when no country selected and queries DAO when selected`() = runTest {
+        val topList = listOf(app.pwhs.blockads.data.entities.CountryTopDomain("google.com", 20, 2))
+        every { dao.getCountryTopDomainsSince("US", any()) } returns flowOf(topList)
+        val vm = StatisticsViewModel(dao, filterListDao) { now }
+        keepHot(vm.countryTopDomains, vm.selectedCountryIso)
+
+        assertEquals(emptyList<app.pwhs.blockads.data.entities.CountryTopDomain>(), vm.countryTopDomains.value)
+        assertEquals(null, vm.selectedCountryIso.value)
+
+        vm.selectCountry("US")
+        assertEquals("US", vm.selectedCountryIso.value)
+        assertEquals("google.com", vm.countryTopDomains.value.single().domain)
+        assertEquals(20, vm.countryTopDomains.value.single().count)
+        assertEquals(2, vm.countryTopDomains.value.single().blockedCount)
+    }
+
     @Ignore("known bug: todayStart is computed once, so 'today' counters keep counting from yesterday after midnight")
     @Test
     fun `today counters roll over at midnight`() = runTest {
@@ -74,3 +91,4 @@ class StatisticsViewModelTest {
         verify { dao.getTotalCountSince(midnight + day) }
     }
 }
+

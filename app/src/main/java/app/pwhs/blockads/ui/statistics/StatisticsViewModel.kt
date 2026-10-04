@@ -7,6 +7,7 @@ import app.pwhs.blockads.data.dao.FilterListDao
 import app.pwhs.blockads.data.entities.AppStat
 import app.pwhs.blockads.data.entities.BlockReasonStat
 import app.pwhs.blockads.data.entities.CountryStat
+import app.pwhs.blockads.data.entities.CountryTopDomain
 import app.pwhs.blockads.data.entities.DailyStat
 import app.pwhs.blockads.data.entities.HourlyStat
 import app.pwhs.blockads.data.entities.MonthlyStat
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import java.util.Calendar
 
@@ -40,6 +42,9 @@ class StatisticsViewModel(
     private val _destinationTimeRange = MutableStateFlow(DestinationTimeRange.HOURS_24)
     val destinationTimeRange: StateFlow<DestinationTimeRange> = _destinationTimeRange.asStateFlow()
 
+    private val _selectedCountryIso = MutableStateFlow<String?>(null)
+    val selectedCountryIso: StateFlow<String?> = _selectedCountryIso.asStateFlow()
+
     @OptIn(ExperimentalCoroutinesApi::class)
     val countryStats: StateFlow<List<CountryStat>> = _destinationTimeRange.flatMapLatest { range ->
         if (range == DestinationTimeRange.ALL) {
@@ -50,8 +55,29 @@ class StatisticsViewModel(
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val countryTopDomains: StateFlow<List<CountryTopDomain>> = combine(
+        _destinationTimeRange,
+        _selectedCountryIso
+    ) { range, iso ->
+        range to iso
+    }.flatMapLatest { (range, iso) ->
+        if (iso.isNullOrBlank()) {
+            flowOf(emptyList())
+        } else if (range == DestinationTimeRange.ALL) {
+            dnsLogDao.getAllCountryTopDomains(iso)
+        } else {
+            val since = clock() - range.hours * 3600_000L
+            dnsLogDao.getCountryTopDomainsSince(iso, since)
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
     fun setDestinationTimeRange(range: DestinationTimeRange) {
         _destinationTimeRange.value = range
+    }
+
+    fun selectCountry(iso: String?) {
+        _selectedCountryIso.value = iso
     }
 
     private val _blockReasonTimeRange = MutableStateFlow(DestinationTimeRange.HOURS_24)

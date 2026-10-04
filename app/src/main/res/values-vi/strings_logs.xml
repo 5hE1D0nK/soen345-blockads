@@ -69,4 +69,6 @@
     <string name="stats_block_reason_security">Bảo vệ an ninh</string>
     <string name="stats_block_reason_upstream">Máy chủ DNS</string>
     <string name="stats_block_reason_filter_list">Bộ lọc</string>
+    <string name="stats_country_top_domains_title">Tên miền hàng đầu tại %s</string>
+    <string name="stats_country_top_domains_empty">Không có tên miền nào được ghi nhận cho quốc gia này</string>
 </resources>

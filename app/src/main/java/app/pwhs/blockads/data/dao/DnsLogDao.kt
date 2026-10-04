@@ -7,6 +7,7 @@ import androidx.room.Query
 import app.pwhs.blockads.data.entities.AppStat
 import app.pwhs.blockads.data.entities.BlockReasonRawStat
 import app.pwhs.blockads.data.entities.CountryStat
+import app.pwhs.blockads.data.entities.CountryTopDomain
 import app.pwhs.blockads.data.entities.DailyStat
 import app.pwhs.blockads.data.entities.TopBlockedDomain
 import app.pwhs.blockads.data.entities.DnsLogEntry
@@ -272,4 +273,37 @@ interface DnsLogDao {
         """
     )
     fun getAllBlockReasonStats(): Flow<List<BlockReasonRawStat>>
+
+    @Query(
+        """
+        SELECT domain, COUNT(*) AS count,
+               SUM(CASE WHEN isBlocked = 1 THEN 1 ELSE 0 END) AS blockedCount
+        FROM dns_logs
+        WHERE UPPER(countryCode) = UPPER(:countryCode) AND timestamp > :since
+        GROUP BY domain
+        ORDER BY count DESC
+        LIMIT :limit
+        """
+    )
+    fun getCountryTopDomainsSince(
+        countryCode: String,
+        since: Long,
+        limit: Int = 10
+    ): Flow<List<CountryTopDomain>>
+
+    @Query(
+        """
+        SELECT domain, COUNT(*) AS count,
+               SUM(CASE WHEN isBlocked = 1 THEN 1 ELSE 0 END) AS blockedCount
+        FROM dns_logs
+        WHERE UPPER(countryCode) = UPPER(:countryCode)
+        GROUP BY domain
+        ORDER BY count DESC
+        LIMIT :limit
+        """
+    )
+    fun getAllCountryTopDomains(
+        countryCode: String,
+        limit: Int = 10
+    ): Flow<List<CountryTopDomain>>
 }

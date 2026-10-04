@@ -2,6 +2,10 @@ package app.pwhs.blockads.ui.statistics.destinations
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -36,6 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.pwhs.blockads.R
 import app.pwhs.blockads.data.entities.CountryStat
+import app.pwhs.blockads.data.entities.CountryTopDomain
 import app.pwhs.blockads.ui.statistics.DestinationTimeRange
 
 /**
@@ -46,9 +51,11 @@ fun TrafficDestinationsSection(
     countryStats: List<CountryStat>,
     selectedRange: DestinationTimeRange,
     onRangeSelected: (DestinationTimeRange) -> Unit,
+    selectedCountryIso: String? = null,
+    countryTopDomains: List<CountryTopDomain> = emptyList(),
+    onCountrySelected: (String?) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    var selectedCountryIso by remember { mutableStateOf<String?>(null) }
     var isExpanded by remember { mutableStateOf(false) }
 
     val totalQueries = remember(countryStats) { countryStats.sumOf { it.count } }
@@ -147,8 +154,26 @@ fun TrafficDestinationsSection(
             WorldMapCanvas(
                 countryStats = countryStats,
                 selectedCountryIso = selectedCountryIso,
-                onCountrySelected = { selectedCountryIso = it }
+                onCountrySelected = onCountrySelected
             )
+
+            // Top Domains for selected country
+            AnimatedVisibility(
+                visible = selectedCountryIso != null,
+                enter = fadeIn() + expandVertically(),
+                exit = fadeOut() + shrinkVertically()
+            ) {
+                selectedCountryIso?.let { iso ->
+                    Column {
+                        Spacer(modifier = Modifier.height(12.dp))
+                        CountryTopDomainsCard(
+                            countryCode = iso,
+                            domains = countryTopDomains,
+                            onDismiss = { onCountrySelected(null) }
+                        )
+                    }
+                }
+            }
 
             Spacer(modifier = Modifier.height(14.dp))
 
@@ -168,7 +193,9 @@ fun TrafficDestinationsSection(
                             totalCount = totalQueries,
                             isSelected = stat.countryCode.equals(selectedCountryIso, ignoreCase = true),
                             onClick = {
-                                selectedCountryIso = if (selectedCountryIso == stat.countryCode) null else stat.countryCode
+                                onCountrySelected(
+                                    if (stat.countryCode.equals(selectedCountryIso, ignoreCase = true)) null else stat.countryCode
+                                )
                             }
                         )
                     }

@@ -69,4 +69,6 @@
     <string name="stats_block_reason_security">Security Protection</string>
     <string name="stats_block_reason_upstream">Upstream DNS</string>
     <string name="stats_block_reason_filter_list">Filter List</string>
+    <string name="stats_country_top_domains_title">Top Domains in %s</string>
+    <string name="stats_country_top_domains_empty">No domain queries recorded for this country</string>
 </resources>

@@ -88,6 +88,8 @@ fun StatisticsScreen(
     val topApps by viewModel.topApps.collectAsStateWithLifecycle()
     val countryStats by viewModel.countryStats.collectAsStateWithLifecycle()
     val destinationTimeRange by viewModel.destinationTimeRange.collectAsStateWithLifecycle()
+    val selectedCountryIso by viewModel.selectedCountryIso.collectAsStateWithLifecycle()
+    val countryTopDomains by viewModel.countryTopDomains.collectAsStateWithLifecycle()
     val blockReasons by viewModel.blockReasons.collectAsStateWithLifecycle()
     val blockReasonTimeRange by viewModel.blockReasonTimeRange.collectAsStateWithLifecycle()
 
@@ -308,7 +310,10 @@ fun StatisticsScreen(
             TrafficDestinationsSection(
                 countryStats = countryStats,
                 selectedRange = destinationTimeRange,
-                onRangeSelected = viewModel::setDestinationTimeRange
+                onRangeSelected = viewModel::setDestinationTimeRange,
+                selectedCountryIso = selectedCountryIso,
+                countryTopDomains = countryTopDomains,
+                onCountrySelected = viewModel::selectCountry
             )
 
             // Reasons for Blocking section (NextDNS style)
