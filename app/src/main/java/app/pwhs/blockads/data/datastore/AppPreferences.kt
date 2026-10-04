@@ -40,6 +40,7 @@ class AppPreferences internal constructor(
         const val THEME_SYSTEM = AppearancePreferences.THEME_SYSTEM
         const val THEME_DARK = AppearancePreferences.THEME_DARK
         const val THEME_LIGHT = AppearancePreferences.THEME_LIGHT
+        const val THEME_OLED = AppearancePreferences.THEME_OLED
 
         const val ACCENT_GREEN = AppearancePreferences.ACCENT_GREEN
         const val ACCENT_BLUE = AppearancePreferences.ACCENT_BLUE

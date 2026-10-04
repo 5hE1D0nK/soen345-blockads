@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Contrast
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.SettingsBrightness
@@ -39,6 +40,7 @@ fun ThemeSelectionCard(
         Triple(R.string.settings_theme_system, Icons.Default.SettingsBrightness, AppPreferences.THEME_SYSTEM),
         Triple(R.string.settings_theme_light, Icons.Default.LightMode, AppPreferences.THEME_LIGHT),
         Triple(R.string.settings_theme_dark, Icons.Default.DarkMode, AppPreferences.THEME_DARK),
+        Triple(R.string.settings_theme_oled, Icons.Default.Contrast, AppPreferences.THEME_OLED),
     )
 
     val badgeTint = Color(0xFF2563EB)

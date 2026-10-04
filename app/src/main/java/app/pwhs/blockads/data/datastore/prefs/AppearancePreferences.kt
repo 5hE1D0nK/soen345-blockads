@@ -19,6 +19,7 @@ class AppearancePreferences(private val dataStore: DataStore<Preferences>) {
         const val THEME_SYSTEM = "system"
         const val THEME_DARK = "dark"
         const val THEME_LIGHT = "light"
+        const val THEME_OLED = "oled"
 
         const val ACCENT_GREEN = "green"
         const val ACCENT_BLUE = "blue"

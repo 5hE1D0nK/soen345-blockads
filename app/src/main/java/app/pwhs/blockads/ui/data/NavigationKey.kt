@@ -32,7 +32,10 @@ data object SettingsKey : NavKey
 data object StatisticsKey : NavKey
 
 @Serializable
-data class LogsKey(val filterStatus: LogFilterStatus = LogFilterStatus.ALL) : NavKey
+data class LogsKey(
+    val filterStatus: LogFilterStatus = LogFilterStatus.ALL,
+    val searchQuery: String = ""
+) : NavKey
 
 @Serializable
 data object ProfileKey : NavKey

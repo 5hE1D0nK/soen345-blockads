@@ -3,6 +3,7 @@ package app.pwhs.blockads.utils
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.os.Build
 import app.pwhs.blockads.service.AdBlockVpnService
 import app.pwhs.blockads.service.VpnState
 import kotlinx.coroutines.launch
@@ -19,6 +20,13 @@ object VpnUtils {
      * (state == STOPPING) to avoid a false-positive conflict dialog.
      */
     fun isOtherVpnActive(context: Context): Boolean {
+        // Android allows dual VPNs in Work Profiles / Samsung Secure Folder (one in primary, one in managed profile).
+        // Skip conflict warning when running inside a managed profile.
+        val userManager = context.getSystemService(Context.USER_SERVICE) as? android.os.UserManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && userManager != null && runCatching { userManager.isManagedProfile }.getOrDefault(false)) {
+            return false
+        }
+
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeNetwork = connectivityManager.activeNetwork
         val allNetworks = connectivityManager.allNetworks.toMutableList()

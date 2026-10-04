@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -121,8 +122,17 @@ class FirewallViewModel(
             _isLoading.value = true
             val apps = withContext(Dispatchers.IO) {
                 val pm = application.applicationContext.packageManager
-                pm.getInstalledApplications(PackageManager.GET_META_DATA or PackageManager.MATCH_UNINSTALLED_PACKAGES)
-                    .filter { it.packageName != application.applicationContext.packageName }
+                val existingBlockedPackages = runCatching {
+                    firewallRuleDao.getAll().first().map { it.packageName }.toSet()
+                }.getOrDefault(emptySet())
+
+                pm.getInstalledApplications(PackageManager.GET_META_DATA)
+                    .filter { appInfo ->
+                        val isSelf = appInfo.packageName == application.applicationContext.packageName
+                        if (isSelf) return@filter false
+                        val hasInternet = hasInternetPermission(pm, appInfo.packageName)
+                        (appInfo.enabled && hasInternet) || existingBlockedPackages.contains(appInfo.packageName)
+                    }
                     .map { appInfo ->
                         val isSystem = (appInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0
                         AppInfoData(
@@ -136,6 +146,15 @@ class FirewallViewModel(
             }
             _installedApps.value = apps
             _isLoading.value = false
+        }
+    }
+
+    private fun hasInternetPermission(pm: PackageManager, packageName: String): Boolean {
+        return try {
+            val pkgInfo = pm.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS)
+            pkgInfo.requestedPermissions?.contains(android.Manifest.permission.INTERNET) == true
+        } catch (_: Exception) {
+            false
         }
     }
 

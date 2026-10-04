@@ -22,12 +22,14 @@ import androidx.compose.ui.unit.dp
 import app.pwhs.blockads.R
 import app.pwhs.blockads.data.entities.TopBlockedDomain
 import app.pwhs.blockads.ui.theme.DangerRed
+import androidx.compose.foundation.clickable
 import app.pwhs.blockads.ui.theme.TextSecondary
 import app.pwhs.blockads.utils.formatCount
 
 @Composable
 fun TopBlockedSection(
     topBlockedDomains: List<TopBlockedDomain>,
+    onDomainClick: (TopBlockedDomain) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     if (topBlockedDomains.isEmpty()) return
@@ -57,6 +59,7 @@ fun TopBlockedSection(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .clickable { onDomainClick(entry) }
                             .padding(horizontal = 16.dp, vertical = 10.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {

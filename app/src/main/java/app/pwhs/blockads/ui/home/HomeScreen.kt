@@ -70,11 +70,20 @@ import app.pwhs.blockads.ui.home.component.PowerButton
 import app.pwhs.blockads.ui.home.component.RecentBlockedSection
 import app.pwhs.blockads.ui.home.component.StatCard
 import app.pwhs.blockads.ui.home.component.TopBlockedSection
+import app.pwhs.blockads.ui.home.data.RecentLogFilter
 import app.pwhs.blockads.ui.theme.AccentBlue
 import app.pwhs.blockads.ui.theme.DangerRed
 import app.pwhs.blockads.ui.theme.SecurityOrange
 import app.pwhs.blockads.ui.logs.data.LogFilterStatus
 import app.pwhs.blockads.ui.theme.TextSecondary
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.widget.Toast
+import app.pwhs.blockads.ui.event.UiEventEffect
+import app.pwhs.blockads.ui.home.component.BlockedDomainActionSheet
+import app.pwhs.blockads.ui.home.component.HomeStatusHeader
+import app.pwhs.blockads.ui.home.component.PrivateDnsWarningCard
 import app.pwhs.blockads.utils.AppConstants.AVG_AD_SIZE_KB
 import app.pwhs.blockads.utils.VpnUtils
 import app.pwhs.blockads.utils.formatCount
@@ -95,6 +104,7 @@ fun HomeScreen(
     viewModel: HomeViewModel = koinViewModel(),
     onNavigateToStatisticsScreen: () -> Unit = {},
     onNavigateToLogScreen: (LogFilterStatus) -> Unit = {},
+    onNavigateToLogsWithQuery: (String) -> Unit = {},
     onNavigateToProfileScreen: () -> Unit = {},
     onNavigateToBrowser: (String) -> Unit = {},
 ) {
@@ -107,6 +117,7 @@ fun HomeScreen(
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val filterLoadFailed by viewModel.filterLoadFailed.collectAsStateWithLifecycle()
     val recentBlocked by viewModel.recentBlocked.collectAsStateWithLifecycle()
+    val recentFilter by viewModel.recentFilter.collectAsStateWithLifecycle()
     val hourlyStats by viewModel.hourlyStats.collectAsStateWithLifecycle()
     val dailyStats by viewModel.dailyStats.collectAsStateWithLifecycle()
     val milestoneReached by viewModel.milestoneReached.collectAsStateWithLifecycle()
@@ -114,6 +125,7 @@ fun HomeScreen(
     val protectionUptimeMs by viewModel.protectionUptimeMs.collectAsStateWithLifecycle()
     val activeProfile by viewModel.activeProfile.collectAsStateWithLifecycle()
     val securityFilterIds by viewModel.securityFilterIds.collectAsStateWithLifecycle()
+    val whitelistedDomains by viewModel.whitelistedDomains.collectAsStateWithLifecycle()
     val routingMode by viewModel.routingMode.collectAsStateWithLifecycle()
     val privateDnsWarning by viewModel.privateDnsWarning.collectAsStateWithLifecycle()
     val pausedByTrusted by viewModel.pausedByTrusted.collectAsStateWithLifecycle()
@@ -121,6 +133,9 @@ fun HomeScreen(
     // Show the trusted-network paused state only while actually off.
     val showTrustedPause = pausedByTrusted && !vpnEnabled && !vpnConnecting && !vpnStopping
     val context = LocalContext.current
+    var selectedBlockedDomain by remember { mutableStateOf<SelectedBlockedDomain?>(null) }
+
+    UiEventEffect(viewModel.events)
 
     LaunchedEffect(Unit) {
         viewModel.preloadFilter()
@@ -152,120 +167,19 @@ fun HomeScreen(
 
             // Private DNS warning — DoT bypasses BlockAds filtering (#145)
             if (privateDnsWarning) {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.errorContainer
-                    )
-                ) {
-                    Row(
-                        modifier = Modifier.padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Warning,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onErrorContainer
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Column {
-                            Text(
-                                text = stringResource(R.string.private_dns_warning_title),
-                                style = MaterialTheme.typography.titleSmall,
-                                color = MaterialTheme.colorScheme.onErrorContainer
-                            )
-                            Text(
-                                text = stringResource(R.string.private_dns_warning_text),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onErrorContainer
-                            )
-                        }
-                    }
-                }
+                PrivateDnsWarningCard()
             }
-
-            // Status text
-            Text(
-                text = when {
-                    vpnStopping -> stringResource(R.string.status_disconnecting)
-                    vpnConnecting -> stringResource(R.string.status_connecting)
-                    vpnEnabled -> stringResource(R.string.status_protected)
-                    showTrustedPause -> stringResource(R.string.status_paused)
-                    else -> stringResource(R.string.status_unprotected)
-                },
-                style = MaterialTheme.typography.headlineMedium,
-                color = when {
-                    vpnStopping -> SecurityOrange
-                    vpnConnecting -> AccentBlue
-                    vpnEnabled -> MaterialTheme.colorScheme.primary
-                    showTrustedPause -> SecurityOrange
-                    else -> DangerRed
-                },
-                fontWeight = FontWeight.Bold
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
 
             val isRootMode = routingMode == AppPreferences.ROUTING_MODE_ROOT
-            Text(
-                text = when {
-                    vpnStopping -> stringResource(if (isRootMode) R.string.home_disconnecting_desc_root else R.string.home_disconnecting_desc)
-                    vpnConnecting -> stringResource(if (isRootMode) R.string.home_connecting_desc_root else R.string.home_connecting_desc)
-                    vpnEnabled -> stringResource(R.string.home_protected_desc)
-                    showTrustedPause -> stringResource(R.string.home_paused_trusted_short)
-                    else -> stringResource(R.string.home_unprotected_desc)
-                },
-                style = MaterialTheme.typography.bodyMedium,
-                color = TextSecondary,
-                textAlign = TextAlign.Center,
+            HomeStatusHeader(
+                vpnStopping = vpnStopping,
+                vpnConnecting = vpnConnecting,
+                vpnEnabled = vpnEnabled,
+                showTrustedPause = showTrustedPause,
+                isRootMode = isRootMode,
+                pausedTrustedSsid = pausedTrustedSsid,
+                routingMode = routingMode
             )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            if (showTrustedPause) {
-                // Trusted-network pill: shows which Wi-Fi paused BlockAds.
-                Row(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(MaterialTheme.colorScheme.secondaryContainer)
-                        .padding(horizontal = 12.dp, vertical = 6.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Wifi,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Text(
-                        text = pausedTrustedSsid.ifEmpty { stringResource(R.string.trusted_networks_paused_title) },
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSecondaryContainer,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                }
-            } else {
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(MaterialTheme.colorScheme.primaryContainer)
-                        .padding(horizontal = 10.dp, vertical = 4.dp)
-                ) {
-                    Text(
-                        text = when (routingMode) {
-                            AppPreferences.ROUTING_MODE_ROOT -> "Root Proxy Mode"
-                            AppPreferences.ROUTING_MODE_WIREGUARD -> "WireGuard Mode"
-                            else -> "Local VPN Mode"
-                        },
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                }
-            }
 
             Spacer(modifier = Modifier.height(12.dp))
             Button(
@@ -453,12 +367,32 @@ fun HomeScreen(
             )
 
             // Top blocked domains
-            TopBlockedSection(topBlockedDomains = topBlockedDomains)
+            TopBlockedSection(
+                topBlockedDomains = topBlockedDomains,
+                onDomainClick = { entry ->
+                    selectedBlockedDomain = SelectedBlockedDomain(
+                        domain = entry.domain,
+                        count = entry.count
+                    )
+                }
+            )
 
             // Recent blocked domains
             RecentBlockedSection(
                 recentBlocked = recentBlocked,
-                securityFilterIds = securityFilterIds
+                securityFilterIds = securityFilterIds,
+                currentFilter = recentFilter,
+                onFilterChange = { viewModel.setRecentFilter(it) },
+                onViewAllClick = { onNavigateToLogScreen(LogFilterStatus.ALL) },
+                onEntryClick = { entry ->
+                    selectedBlockedDomain = SelectedBlockedDomain(
+                        domain = entry.domain,
+                        appName = entry.appName,
+                        packageName = entry.packageName,
+                        blockedBy = entry.blockedBy,
+                        isBlocked = entry.isBlocked
+                    )
+                }
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -470,5 +404,53 @@ fun HomeScreen(
                 onDismiss = { viewModel.dismissMilestoneDialog(milestone) }
             )
         }
+
+        selectedBlockedDomain?.let { target ->
+            val isWhitelisted = whitelistedDomains.contains(target.domain.lowercase())
+            BlockedDomainActionSheet(
+                domain = target.domain,
+                isWhitelisted = isWhitelisted,
+                isBlocked = target.isBlocked,
+                count = target.count,
+                appName = target.appName,
+                packageName = target.packageName,
+                onDismiss = { selectedBlockedDomain = null },
+                onToggleWhitelist = {
+                    if (isWhitelisted) {
+                        viewModel.removeFromWhitelist(target.domain)
+                    } else {
+                        viewModel.addToWhitelist(target.domain)
+                    }
+                    selectedBlockedDomain = null
+                },
+                onAddWildcardWhitelist = {
+                    viewModel.addWildcardWhitelist(target.domain)
+                    selectedBlockedDomain = null
+                },
+                onAddToCustomBlockRules = {
+                    viewModel.addToCustomBlockRules(target.domain)
+                    selectedBlockedDomain = null
+                },
+                onCopyDomain = {
+                    val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                    clipboard.setPrimaryClip(ClipData.newPlainText("domain", target.domain))
+                    Toast.makeText(context, R.string.domain_copied, Toast.LENGTH_SHORT).show()
+                    selectedBlockedDomain = null
+                },
+                onViewInLogs = {
+                    selectedBlockedDomain = null
+                    onNavigateToLogsWithQuery(target.domain)
+                }
+            )
+        }
     }
 }
+
+private data class SelectedBlockedDomain(
+    val domain: String,
+    val count: Int? = null,
+    val appName: String = "",
+    val packageName: String = "",
+    val blockedBy: String = "",
+    val isBlocked: Boolean = true
+)

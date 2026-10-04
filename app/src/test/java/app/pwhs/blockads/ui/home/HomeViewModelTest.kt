@@ -2,9 +2,11 @@ package app.pwhs.blockads.ui.home
 
 import android.app.Application
 import androidx.test.core.app.ApplicationProvider
+import app.pwhs.blockads.data.dao.CustomDnsRuleDao
 import app.pwhs.blockads.data.dao.DnsLogDao
 import app.pwhs.blockads.data.dao.FilterListDao
 import app.pwhs.blockads.data.dao.ProtectionProfileDao
+import app.pwhs.blockads.data.dao.WhitelistDomainDao
 import app.pwhs.blockads.data.datastore.AppPreferences
 import app.pwhs.blockads.data.entities.FilterList
 import app.pwhs.blockads.data.repository.FilterListRepository
@@ -72,6 +74,7 @@ class HomeViewModelTest {
         every { domainCountFlow } returns this@HomeViewModelTest.domainCount
         every { domainCount } answers { this@HomeViewModelTest.domainCount.value }
     }
+
     private val filterListDao: FilterListDao = mockk(relaxed = true) {
         every { getAll() } returns flowOf(
             listOf(
@@ -80,8 +83,21 @@ class HomeViewModelTest {
             )
         )
     }
+    private val whitelistDomainDao: WhitelistDomainDao = mockk(relaxed = true) {
+        every { getAll() } returns flowOf(emptyList())
+    }
+    private val customDnsRuleDao: CustomDnsRuleDao = mockk(relaxed = true)
+
     private val vm by lazy {
-        HomeViewModel(appPrefs, dnsLogDao, repo, mockk<ProtectionProfileDao>(relaxed = true), filterListDao)
+        HomeViewModel(
+            appPrefs,
+            dnsLogDao,
+            repo,
+            mockk<ProtectionProfileDao>(relaxed = true),
+            filterListDao,
+            whitelistDomainDao,
+            customDnsRuleDao
+        )
     }
 
     @Before

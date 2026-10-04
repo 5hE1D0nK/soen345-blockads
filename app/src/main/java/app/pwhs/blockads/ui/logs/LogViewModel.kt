@@ -34,8 +34,10 @@ import kotlinx.coroutines.launch
 import java.io.PrintWriter
 import java.text.SimpleDateFormat
 import java.util.Locale
-
+import app.pwhs.blockads.data.dao.FirewallRuleDao
 import app.pwhs.blockads.data.datastore.AppPreferences
+import app.pwhs.blockads.data.entities.FirewallRule
+import app.pwhs.blockads.service.ServiceController
 
 class LogViewModel(
     private val dnsLogDao: DnsLogDao,
@@ -45,6 +47,7 @@ class LogViewModel(
     private val filterListRepository: FilterListRepository,
     private val appPrefs: AppPreferences,
     private val application: Application,
+    private val firewallRuleDao: FirewallRuleDao? = null,
     private val clock: () -> Long = System::currentTimeMillis,
 ) : AndroidViewModel(application) {
 
@@ -86,6 +89,23 @@ class LogViewModel(
 
     val appNames: StateFlow<List<String>> = dnsLogDao.getDistinctAppNames()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val blockedFirewallPackages: StateFlow<Set<String>> = (firewallRuleDao?.getAll() ?: MutableStateFlow(emptyList()))
+        .map { list -> list.map { it.packageName }.toSet() }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptySet())
+
+    fun toggleAppFirewall(packageName: String) {
+        if (packageName.isBlank() || firewallRuleDao == null) return
+        viewModelScope.launch {
+            val existing = firewallRuleDao.getByPackageName(packageName)
+            if (existing != null) {
+                firewallRuleDao.deleteByPackageName(packageName)
+            } else {
+                firewallRuleDao.insert(FirewallRule(packageName = packageName))
+            }
+            ServiceController.requestRestart(application.applicationContext)
+        }
+    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val logs: StateFlow<List<DnsLogEntry>> = combine(

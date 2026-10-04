@@ -64,6 +64,7 @@ import org.koin.androidx.compose.koinViewModel
 fun LogsScreen(
     modifier: Modifier = Modifier,
     initialFilterStatus: LogFilterStatus = LogFilterStatus.ALL,
+    initialSearchQuery: String = "",
     viewModel: LogViewModel = koinViewModel(),
     onNavigateBack: () -> Unit = { }
 ) {
@@ -79,7 +80,7 @@ fun LogsScreen(
     val whitelistedDomains by viewModel.whitelistedDomains.collectAsStateWithLifecycle()
     val recordDnsLogs by viewModel.recordDnsLogs.collectAsStateWithLifecycle()
 
-    var isSearchVisible by remember { mutableStateOf(false) }
+    var isSearchVisible by remember { mutableStateOf(initialSearchQuery.isNotEmpty()) }
     var showAppFilterSheet by remember { mutableStateOf(false) }
     var selectedEntry by remember { mutableStateOf<DnsLogEntry?>(null) }
     var showClearConfirm by remember { mutableStateOf(false) }
@@ -93,6 +94,13 @@ fun LogsScreen(
     LaunchedEffect(initialFilterStatus) {
         if (initialFilterStatus != LogFilterStatus.ALL) {
             viewModel.setFilterStatus(initialFilterStatus)
+        }
+    }
+
+    LaunchedEffect(initialSearchQuery) {
+        if (initialSearchQuery.isNotEmpty()) {
+            viewModel.setSearchQuery(initialSearchQuery)
+            isSearchVisible = true
         }
     }
 

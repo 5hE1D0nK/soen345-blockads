@@ -208,6 +208,10 @@ fun HomeApp(
                             showBottomBar = false
                             homeStack.add(LogsKey(filterStatus))
                         },
+                        onNavigateToLogsWithQuery = { domain ->
+                            showBottomBar = false
+                            homeStack.add(LogsKey(searchQuery = domain))
+                        },
                         onNavigateToStatisticsScreen = {
                             showBottomBar = false
                             homeStack.add(StatisticsKey)
@@ -292,6 +296,7 @@ fun HomeApp(
                 entry<LogsKey> {
                     LogsScreen(
                         initialFilterStatus = it.filterStatus,
+                        initialSearchQuery = it.searchQuery,
                         onNavigateBack = {
                             safePop(homeStack)
                         }

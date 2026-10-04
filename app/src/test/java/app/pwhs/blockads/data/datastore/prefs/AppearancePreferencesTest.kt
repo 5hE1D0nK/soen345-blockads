@@ -35,6 +35,9 @@ class AppearancePreferencesTest {
         assertEquals("pt-BR", prefs.appLanguage.first())
         assertEquals(AppearancePreferences.ACCENT_DYNAMIC, prefs.accentColor.first())
         assertFalse(prefs.showBottomNavLabels.first())
+
+        prefs.setThemeMode(AppearancePreferences.THEME_OLED)
+        assertEquals(AppearancePreferences.THEME_OLED, prefs.themeMode.first())
     }
 
     @Test

@@ -2,6 +2,7 @@ package app.pwhs.blockads.di
 
 import app.pwhs.blockads.BuildConfig
 import app.pwhs.blockads.data.AppDatabase
+import app.pwhs.blockads.data.dao.FirewallRuleDao
 import app.pwhs.blockads.data.datastore.AppPreferences
 import app.pwhs.blockads.data.entities.ProfileManager
 import app.pwhs.blockads.data.remote.FilterDownloadManager
@@ -139,7 +140,9 @@ val appModule = module {
             dnsLogDao = get(),
             filterRepo = get(),
             profileDao = get(),
-            filterListDao = get()
+            filterListDao = get(),
+            whitelistDomainDao = get(),
+            customDnsRuleDao = get()
         )
     }
     viewModel { StatisticsViewModel(dnsLogDao = get(), filterListDao = get()) }
@@ -151,7 +154,8 @@ val appModule = module {
             customDnsRuleDao = get(),
             filterListRepository = get(),
             appPrefs = get(),
-            application = androidApplication()
+            application = androidApplication(),
+            firewallRuleDao = get()
         )
     }
     viewModel {

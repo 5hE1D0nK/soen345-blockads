@@ -50,6 +50,12 @@ class FakeWhitelistDomainDao(initial: List<WhitelistDomain> = emptyList()) : Whi
         val stored = if (domain.id == 0) domain.copy(id = (domains.value.maxOfOrNull { it.id } ?: 0) + 1) else domain
         domains.value = domains.value.filterNot { it.id == stored.id } + stored
     }
+    override suspend fun insertAll(domains: List<WhitelistDomain>) {
+        domains.forEach { insert(it) }
+    }
+    override suspend fun update(domain: WhitelistDomain) {
+        domains.value = this.domains.value.map { if (it.id == domain.id) domain else it }
+    }
     override suspend fun delete(domain: WhitelistDomain) {
         domains.value = domains.value.filterNot { it.id == domain.id }
     }
