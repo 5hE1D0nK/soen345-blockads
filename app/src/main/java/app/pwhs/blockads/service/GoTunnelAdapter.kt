@@ -228,6 +228,7 @@ class GoTunnelAdapter(
                         packageNameOrAppName
                     }
 
+                    val countryCode = app.pwhs.blockads.data.geoip.GeoIpLookup.getCountryCode(resolvedIP, domain)
                     val entry = DnsLogEntry(
                         domain = domain,
                         isBlocked = blocked,
@@ -237,7 +238,8 @@ class GoTunnelAdapter(
                         packageName = packageNameOrAppName,
                         resolvedIp = resolvedIP,
                         blockedBy = blockedBy,
-                        timestamp = System.currentTimeMillis(),
+                        countryCode = countryCode,
+                        timestamp = System.currentTimeMillis()
                     )
                     dnsLogDao.insert(entry)
                 } catch (e: Exception) {
@@ -450,7 +452,6 @@ class GoTunnelAdapter(
             Timber.e(e, "Failed to load cosmetic CSS for engine")
             engine.setCosmeticCSS("")
         }
-
         try {
             val js = TunnelRuleLoader.loadScriptletsJs(context)
             engine.setScriptletsRuntime(js)
@@ -461,11 +462,7 @@ class GoTunnelAdapter(
 
         try {
             val sp = filterRepo.getScriptletsPath()
-            if (sp != null && java.io.File(sp).exists()) {
-                engine.setScriptletRulesFromFile(sp)
-            } else {
-                engine.setScriptletRules("")
-            }
+            if (sp != null && java.io.File(sp).exists()) engine.setScriptletRulesFromFile(sp) else engine.setScriptletRules("")
         } catch (e: Exception) {
             Timber.e(e, "Failed to load scriptlet rules for engine")
             engine.setScriptletRules("")
@@ -474,9 +471,7 @@ class GoTunnelAdapter(
         try {
             val patterns = TunnelRuleLoader.loadAdPathPatterns(context)
             engine.setAdPathPatterns(patterns)
-            if (patterns.isNotEmpty()) {
-                Timber.d("Ad path patterns loaded: ${patterns.lines().size} patterns")
-            }
+            if (patterns.isNotEmpty()) Timber.d("Ad path patterns loaded: ${patterns.lines().size} patterns")
         } catch (e: Exception) {
             Timber.e(e, "Failed to load ad path patterns for engine")
             engine.setAdPathPatterns("")

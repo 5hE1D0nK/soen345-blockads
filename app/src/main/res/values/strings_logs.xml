@@ -50,4 +50,13 @@
     <string name="log_pause_recording">Pause recording</string>
     <string name="log_resume_recording">Resume recording</string>
     <string name="log_recording_paused_notice">DNS logging is currently paused</string>
+    <string name="stats_traffic_destinations_title">Traffic Destinations</string>
+    <string name="stats_traffic_destinations_desc">Estimated destination countries based on your DNS queries</string>
+    <string name="stats_destinations_24h">24 Hours</string>
+    <string name="stats_destinations_7d">7 Days</string>
+    <string name="stats_destinations_30d">30 Days</string>
+    <string name="stats_destinations_all">All Time</string>
+    <string name="stats_destinations_empty">No traffic destination data yet. Queries will appear here as your traffic is analyzed.</string>
+    <string name="stats_show_more">Show more</string>
+    <string name="stats_show_less">Show less</string>
 </resources>

@@ -57,11 +57,13 @@ import app.pwhs.blockads.ui.home.component.MonthlyStatsChart
 import app.pwhs.blockads.ui.home.component.StatCard
 import app.pwhs.blockads.ui.home.component.StatsChart
 import app.pwhs.blockads.ui.home.component.WeeklyStatsChart
+import app.pwhs.blockads.ui.statistics.component.TopAppsCard
+import app.pwhs.blockads.ui.statistics.component.TopDomainsCard
+import app.pwhs.blockads.ui.statistics.destinations.TrafficDestinationsSection
 import app.pwhs.blockads.ui.theme.AccentBlue
 import app.pwhs.blockads.ui.theme.DangerRed
 import app.pwhs.blockads.ui.theme.TextSecondary
 import app.pwhs.blockads.utils.formatCount
-import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import org.koin.androidx.compose.koinViewModel
 import java.util.Locale
 
@@ -82,6 +84,8 @@ fun StatisticsScreen(
     val monthlyStats by viewModel.monthlyStats.collectAsStateWithLifecycle()
     val topBlockedDomains by viewModel.topBlockedDomains.collectAsStateWithLifecycle()
     val topApps by viewModel.topApps.collectAsStateWithLifecycle()
+    val countryStats by viewModel.countryStats.collectAsStateWithLifecycle()
+    val destinationTimeRange by viewModel.destinationTimeRange.collectAsStateWithLifecycle()
 
     Scaffold(
         modifier = modifier,
@@ -295,10 +299,17 @@ fun StatisticsScreen(
                 }
             }
 
+            // Traffic Destinations section
+            Spacer(modifier = Modifier.height(20.dp))
+            TrafficDestinationsSection(
+                countryStats = countryStats,
+                selectedRange = destinationTimeRange,
+                onRangeSelected = viewModel::setDestinationTimeRange
+            )
+
             // Top Blocked Domains section
             if (topBlockedDomains.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(20.dp))
-
                 Text(
                     text = stringResource(R.string.home_top_blocked),
                     style = MaterialTheme.typography.labelMedium,
@@ -306,53 +317,12 @@ fun StatisticsScreen(
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.padding(start = 4.dp, bottom = 8.dp)
                 )
-
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surface
-                    ),
-                    shape = RoundedCornerShape(16.dp)
-                ) {
-                    Column(modifier = Modifier.padding(vertical = 4.dp)) {
-                        topBlockedDomains.forEachIndexed { index, entry ->
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp, vertical = 10.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = "${index + 1}",
-                                    style = MaterialTheme.typography.labelMedium,
-                                    color = TextSecondary,
-                                    fontWeight = FontWeight.Bold,
-                                    modifier = Modifier.width(24.dp)
-                                )
-                                Text(
-                                    text = entry.domain,
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onBackground,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    modifier = Modifier.weight(1f)
-                                )
-                                Text(
-                                    text = formatCount(entry.count),
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = DangerRed,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                            }
-                        }
-                    }
-                }
+                TopDomainsCard(domains = topBlockedDomains)
             }
 
             // Per-App Statistics section
             if (topApps.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(20.dp))
-
                 Text(
                     text = stringResource(R.string.stats_per_app),
                     style = MaterialTheme.typography.labelMedium,
@@ -360,104 +330,7 @@ fun StatisticsScreen(
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.padding(start = 4.dp, bottom = 8.dp)
                 )
-
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surface
-                    ),
-                    shape = RoundedCornerShape(16.dp)
-                ) {
-                    Column(modifier = Modifier.padding(vertical = 4.dp)) {
-                        topApps.forEachIndexed { index, app ->
-                            val context = LocalContext.current
-                            val appIcon: Drawable? =
-                                androidx.compose.runtime.remember(app.packageName) {
-                                    if (app.packageName.isNotEmpty() && app.packageName.contains(".")) {
-                                        try {
-                                            context.packageManager.getApplicationIcon(app.packageName)
-                                        } catch (e: Exception) {
-                                            null
-                                        }
-                                    } else null
-                                }
-
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp, vertical = 10.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = "${index + 1}",
-                                    style = MaterialTheme.typography.labelMedium,
-                                    color = TextSecondary,
-                                    fontWeight = FontWeight.Bold,
-                                    modifier = Modifier.width(24.dp)
-                                )
-                                Spacer(modifier = Modifier.width(4.dp))
-                                if (appIcon != null) {
-                                    Image(
-                                        painter = rememberDrawablePainter(drawable = appIcon),
-                                        contentDescription = app.appName,
-                                        modifier = Modifier
-                                            .size(28.dp)
-                                            .clip(RoundedCornerShape(6.dp))
-                                    )
-                                } else {
-                                    Box(
-                                        modifier = Modifier
-                                            .size(28.dp)
-                                            .clip(CircleShape)
-                                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Text(
-                                            text = app.appName.take(1).uppercase(),
-                                            style = MaterialTheme.typography.labelMedium,
-                                            color = MaterialTheme.colorScheme.primary,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                    }
-                                }
-                                Spacer(modifier = Modifier.width(12.dp))
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text(
-                                        text = app.appName,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onBackground,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
-                                    if (app.packageName.isNotEmpty()) {
-                                        Text(
-                                            text = app.packageName,
-                                            style = MaterialTheme.typography.labelSmall,
-                                            color = TextSecondary,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
-                                        )
-                                    }
-                                }
-                                Column(horizontalAlignment = Alignment.End) {
-                                    Text(
-                                        text = formatCount(app.totalQueries),
-                                        style = MaterialTheme.typography.labelMedium,
-                                        color = MaterialTheme.colorScheme.primary,
-                                        fontWeight = FontWeight.SemiBold
-                                    )
-                                    if (app.blockedQueries > 0) {
-                                        Text(
-                                            text = "${formatCount(app.blockedQueries)} blocked",
-                                            style = MaterialTheme.typography.labelSmall,
-                                            color = DangerRed
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                TopAppsCard(apps = topApps)
             }
 
             Spacer(modifier = Modifier.height(24.dp))

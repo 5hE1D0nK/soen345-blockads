@@ -10,8 +10,13 @@ import app.pwhs.blockads.data.entities.HourlyStat
 import app.pwhs.blockads.data.entities.MonthlyStat
 import app.pwhs.blockads.data.entities.TopBlockedDomain
 import app.pwhs.blockads.data.entities.WeeklyStat
+import app.pwhs.blockads.data.entities.CountryStat
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import java.util.Calendar
 
@@ -27,6 +32,23 @@ class StatisticsViewModel(
         set(Calendar.SECOND, 0)
         set(Calendar.MILLISECOND, 0)
     }.timeInMillis
+
+    private val _destinationTimeRange = MutableStateFlow(DestinationTimeRange.HOURS_24)
+    val destinationTimeRange: StateFlow<DestinationTimeRange> = _destinationTimeRange.asStateFlow()
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val countryStats: StateFlow<List<CountryStat>> = _destinationTimeRange.flatMapLatest { range ->
+        if (range == DestinationTimeRange.ALL) {
+            dnsLogDao.getAllCountryStats()
+        } else {
+            val since = clock() - range.hours * 3600_000L
+            dnsLogDao.getCountryStatsSince(since)
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    fun setDestinationTimeRange(range: DestinationTimeRange) {
+        _destinationTimeRange.value = range
+    }
 
     val totalCount: StateFlow<Int> = dnsLogDao.getTotalCount()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)

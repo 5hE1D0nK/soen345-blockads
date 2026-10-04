@@ -55,6 +55,9 @@ class BlockAdsApplication : Application() {
             if (appPreferences.dailySummaryEnabled.first()) {
                 DailySummaryScheduler.scheduleDailySummary(this@BlockAdsApplication)
             }
+
+            // Warm up GeoIP database on IO thread
+            app.pwhs.blockads.data.geoip.GeoIpLookup.init(this@BlockAdsApplication)
         }
 
         // Trusted Wi-Fi networks (#197): auto-pause/resume on SSID change.

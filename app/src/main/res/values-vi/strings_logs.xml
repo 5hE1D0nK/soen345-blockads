@@ -50,4 +50,13 @@
     <string name="log_pause_recording">Tạm dừng ghi log</string>
     <string name="log_resume_recording">Tiếp tục ghi log</string>
     <string name="log_recording_paused_notice">Đang tạm dừng ghi nhật ký DNS</string>
+    <string name="stats_traffic_destinations_title">Điểm đến lưu lượng truy cập</string>
+    <string name="stats_traffic_destinations_desc">Các quốc gia đích ước tính dựa trên truy vấn DNS của bạn</string>
+    <string name="stats_destinations_24h">24 Giờ</string>
+    <string name="stats_destinations_7d">7 Ngày</string>
+    <string name="stats_destinations_30d">30 Ngày</string>
+    <string name="stats_destinations_all">Tất cả</string>
+    <string name="stats_destinations_empty">Chưa có dữ liệu điểm đến lưu lượng. Dữ liệu sẽ xuất hiện khi có truy vấn mới.</string>
+    <string name="stats_show_more">Xem thêm</string>
+    <string name="stats_show_less">Thu gọn</string>
 </resources>

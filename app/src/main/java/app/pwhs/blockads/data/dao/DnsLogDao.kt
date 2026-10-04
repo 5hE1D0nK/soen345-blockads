@@ -4,9 +4,10 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import app.pwhs.blockads.data.entities.AppStat
+import app.pwhs.blockads.data.entities.CountryStat
 import app.pwhs.blockads.data.entities.DailyStat
 import app.pwhs.blockads.data.entities.TopBlockedDomain
-import app.pwhs.blockads.data.entities.AppStat
 import app.pwhs.blockads.data.entities.DnsLogEntry
 import app.pwhs.blockads.data.entities.HourlyStat
 import app.pwhs.blockads.data.entities.MonthlyStat
@@ -226,4 +227,26 @@ interface DnsLogDao {
         """
     )
     fun getBlockedByReasonSince(reason: String, since: Long): Flow<List<DnsLogEntry>>
+
+    @Query(
+        """
+        SELECT countryCode, COUNT(*) AS count
+        FROM dns_logs
+        WHERE countryCode != '' AND timestamp > :since
+        GROUP BY countryCode
+        ORDER BY count DESC
+        """
+    )
+    fun getCountryStatsSince(since: Long): Flow<List<CountryStat>>
+
+    @Query(
+        """
+        SELECT countryCode, COUNT(*) AS count
+        FROM dns_logs
+        WHERE countryCode != ''
+        GROUP BY countryCode
+        ORDER BY count DESC
+        """
+    )
+    fun getAllCountryStats(): Flow<List<CountryStat>>
 }

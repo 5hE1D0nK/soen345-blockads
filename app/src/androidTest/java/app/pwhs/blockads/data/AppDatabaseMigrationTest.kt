@@ -67,6 +67,6 @@ class AppDatabaseMigrationTest {
 
     private companion object {
         const val DB = "migration-test"
-        const val LATEST = 14
+        const val LATEST = 15
     }
 }
