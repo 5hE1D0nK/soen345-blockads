@@ -205,11 +205,12 @@ class RootProxyService : Service() {
                 val primary = appPrefs.upstreamDns.first()
                 val fallback = appPrefs.fallbackDns.first()
                 val dohUrl = appPrefs.dohUrl.first()
+                val odohRelayUrl = appPrefs.odohRelayUrl.first()
                 val safeSearch = appPrefs.safeSearchEnabled.first()
                 val youtubeSafe = appPrefs.youtubeRestrictedMode.first()
                 val responseType = appPrefs.dnsResponseType.first()
 
-                goTunnelAdapter.configureDns(protocol, primary, fallback, dohUrl)
+                goTunnelAdapter.configureDns(protocol, primary, fallback, dohUrl, odohRelayUrl)
                 goTunnelAdapter.configureSafeSearch(safeSearch, youtubeSafe)
                 goTunnelAdapter.setBlockResponseType(responseType)
 

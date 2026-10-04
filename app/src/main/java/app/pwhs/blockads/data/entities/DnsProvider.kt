@@ -9,7 +9,8 @@ data class DnsProvider(
     val ipAddress: String,
     val dohUrl: String? = null,
     val description: String,
-    @DrawableRes val iconRes: Int? = null
+    @DrawableRes val iconRes: Int? = null,
+    val odohRelayUrl: String? = null
 )
 
 enum class DnsCategory {
@@ -45,6 +46,16 @@ object DnsProviders {
         ipAddress = "1.1.1.1",
         dohUrl = "https://cloudflare-dns.com/dns-query",
         description = "Privacy-focused, fastest DNS resolver"
+    )
+
+    val CLOUDFLARE_ODOH = DnsProvider(
+        id = "cloudflare_odoh",
+        name = "Cloudflare (ODoH)",
+        category = DnsCategory.PRIVACY,
+        ipAddress = "1.1.1.1",
+        dohUrl = "https://odoh.cloudflare-dns.com/dns-query",
+        odohRelayUrl = "https://odoh-relay.edgecompute.app/",
+        description = "Oblivious DoH separating IP from DNS queries via Fastly relay"
     )
 
     val ADGUARD = DnsProvider(
@@ -114,6 +125,7 @@ object DnsProviders {
         SYSTEM,
         ADGUARD,
         CLOUDFLARE,
+        CLOUDFLARE_ODOH,
         CLOUDFLARE_FAMILY,
         GOOGLE,
         MULLVAD,

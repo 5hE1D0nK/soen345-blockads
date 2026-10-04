@@ -88,6 +88,7 @@ type Engine struct
 	method Engine.SetFirewallChecker(checker FirewallChecker)
 	method Engine.SetLogCallback(cb LogCallback)
 	method Engine.SetMitmAllowedUIDs(uidsCsv string)
+	method Engine.SetODoHRelay(relayURL string)
 	method Engine.SetOutboundAdapter(adapter OutboundAdapter)
 	method Engine.SetSafeSearch(enabled bool)
 	method Engine.SetScriptletRules(content string)
@@ -150,6 +151,7 @@ var ParseWgConfigJSON func(jsonStr string) (*internal/wireguard.WgConfig, error)
 const ProtocolDoH internal/dns.DNSProtocol = 1
 const ProtocolDoQ internal/dns.DNSProtocol = 3
 const ProtocolDoT internal/dns.DNSProtocol = 2
+const ProtocolODoH internal/dns.DNSProtocol = 4
 const ProtocolPlain internal/dns.DNSProtocol = 0
 const ProtocolTCP untyped int = 6
 const ProtocolUDP untyped int = 17
@@ -159,6 +161,7 @@ type Resolver = internal/dns.Resolver
 	method Resolver.MatchesSplitZone(domain string) bool
 	method Resolver.Resolve(rawQuery []byte) ([]byte, error)
 	method Resolver.ResolveARecord(domain string, dnsServer string) (net.IP, error)
+	method Resolver.SetODoHRelay(relayURL string)
 	method Resolver.SetSplitDNS(dnsServer string, zones []string)
 	method Resolver.Shutdown()
 	method Resolver.SplitDNS() string

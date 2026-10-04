@@ -110,12 +110,16 @@ class SettingsViewModel(
     val milestoneNotificationsEnabled: StateFlow<Boolean> = appPrefs.milestoneNotificationsEnabled
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
 
-    val upstreamDns: StateFlow<String> = appPrefs.upstreamDns
-        .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5000),
-            AppPreferences.DEFAULT_UPSTREAM_DNS
-        )
+    val upstreamDns: StateFlow<String> = kotlinx.coroutines.flow.combine(
+        appPrefs.dnsProviderId,
+        appPrefs.upstreamDns
+    ) { id, upstream ->
+        if (id == AppPreferences.CUSTOM_DNS_PROVIDER_ID) {
+            upstream
+        } else {
+            app.pwhs.blockads.data.entities.DnsProviders.getById(id ?: "")?.name ?: upstream
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), AppPreferences.DEFAULT_UPSTREAM_DNS)
 
 
     val routingMode: StateFlow<String> = appPrefs.routingMode

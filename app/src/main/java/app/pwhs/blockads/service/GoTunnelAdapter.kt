@@ -49,8 +49,12 @@ class GoTunnelAdapter(
         primary: String,
         fallback: String,
         dohUrl: String,
+        odohRelayUrl: String = "",
     ) {
         engine.setDNS(protocol, primary, fallback, dohUrl)
+        if (protocol.equals("ODOH", ignoreCase = true) || odohRelayUrl.isNotEmpty()) {
+            engine.setODoHRelay(odohRelayUrl)
+        }
     }
 
     /**
@@ -429,12 +433,7 @@ class GoTunnelAdapter(
      * Paths are CSV-formatted strings (e.g., "path1,path2,path3").
      */
     fun updateTries() {
-        engine.setTries(
-            filterRepo.getAdTriePath(),
-            filterRepo.getSecurityTriePath(),
-            filterRepo.getAdBloomPath(),
-            filterRepo.getSecurityBloomPath()
-        )
+        engine.setTries(filterRepo.getAdTriePath(), filterRepo.getSecurityTriePath(), filterRepo.getAdBloomPath(), filterRepo.getSecurityBloomPath())
     }
 
     /**

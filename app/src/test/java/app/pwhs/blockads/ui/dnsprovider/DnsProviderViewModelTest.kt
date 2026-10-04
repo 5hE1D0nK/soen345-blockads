@@ -102,6 +102,18 @@ class DnsProviderViewModelTest {
     }
 
     @Test
+    fun `selecting an ODoH provider stores its relay url and restarts`() = runTest {
+        hot()
+        vm.onIntent(DnsProviderUiIntent.SelectProvider(DnsProviders.CLOUDFLARE_ODOH))
+        assertEquals("cloudflare_odoh", providerId.value)
+        assertEquals("1.1.1.1", upstream.value)
+        assertEquals(DnsProtocol.ODOH, protocol.value)
+        assertEquals("https://odoh.cloudflare-dns.com/dns-query", doh.value)
+        assertEquals("https://odoh-relay.edgecompute.app/", odohRelay.value)
+        verify { ServiceController.requestRestart(any()) }
+    }
+
+    @Test
     fun `selecting a quic provider uses DoQ and a plain provider uses plain DNS`() = runTest {
         hot()
         vm.onIntent(DnsProviderUiIntent.SelectProvider(DnsProviders.QUAD9_DOQ))

@@ -122,7 +122,11 @@ class DnsProviderViewModel(
             appPrefs.setDnsProviderId(provider.id)
             appPrefs.setUpstreamDns(provider.ipAddress)
 
-            if (provider.dohUrl != null) {
+            if (provider.odohRelayUrl != null && provider.dohUrl != null) {
+                appPrefs.setDnsProtocol(DnsProtocol.ODOH)
+                appPrefs.setDohUrl(provider.dohUrl)
+                appPrefs.setOdohRelayUrl(provider.odohRelayUrl)
+            } else if (provider.dohUrl != null) {
                 if (provider.dohUrl.startsWith("quic://", ignoreCase = true)) {
                     appPrefs.setDnsProtocol(DnsProtocol.DOQ)
                 } else {

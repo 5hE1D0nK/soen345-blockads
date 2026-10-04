@@ -30,7 +30,8 @@ data class StartupConfig(
     val youtubeRestrictedMode: Boolean,
     val firewallEnabled: Boolean,
     val dnsProviderId: String?,
-    val firewallManager: FirewallManager?
+    val firewallManager: FirewallManager?,
+    val odohRelayUrl: String = ""
 )
 
 class VpnEngineCoordinator(
@@ -59,6 +60,7 @@ class VpnEngineCoordinator(
             val d8 = async { appPrefs.youtubeRestrictedMode.first() }
             val d9 = async { appPrefs.firewallEnabled.first() }
             val d10 = async { appPrefs.dnsProviderId.first() }
+            val d11 = async { appPrefs.odohRelayUrl.first() }
 
             val firewallEnabled = d9.await()
             val fwManager = if (firewallEnabled) {
@@ -81,7 +83,8 @@ class VpnEngineCoordinator(
                 youtubeRestrictedMode = d8.await(),
                 firewallEnabled = firewallEnabled,
                 dnsProviderId = d10.await(),
-                firewallManager = fwManager
+                firewallManager = fwManager,
+                odohRelayUrl = d11.await()
             )
         }
     }
@@ -106,7 +109,8 @@ class VpnEngineCoordinator(
             protocol = finalDnsProtocol,
             primary = finalUpstreamDns,
             fallback = config.fallbackDns,
-            dohUrl = config.dohUrl
+            dohUrl = config.dohUrl,
+            odohRelayUrl = config.odohRelayUrl
         )
         goTunnelAdapter.setBlockResponseType(config.dnsResponseType)
         goTunnelAdapter.configureSafeSearch(config.safeSearchEnabled, config.youtubeRestrictedMode)
@@ -158,11 +162,13 @@ class VpnEngineCoordinator(
             Timber.d("Network LinkProperties changed, hot-reloading System DNS: $primary")
             val fallback = appPrefs.fallbackDns.first()
             val dohUrl = appPrefs.dohUrl.first()
+            val odohRelayUrl = appPrefs.odohRelayUrl.first()
             goTunnelAdapter.configureDns(
                 protocol = "PLAIN",
                 primary = primary,
                 fallback = fallback,
-                dohUrl = dohUrl
+                dohUrl = dohUrl,
+                odohRelayUrl = odohRelayUrl
             )
         }
     }

@@ -46,6 +46,7 @@ class VpnEngineCoordinatorTest {
         every { youtubeRestrictedMode } returns flowOf(false)
         every { firewallEnabled } answers { flowOf(this@VpnEngineCoordinatorTest.firewallEnabled) }
         every { dnsProviderId } answers { flowOf(providerId) }
+        every { odohRelayUrl } returns flowOf("")
         every { splitDnsZones } returns flowOf("lan")
         every { getSelectedBrowsersSnapshot() } returns setOf("com.android.chrome")
         coEvery { getWhitelistedAppsSnapshot() } returns setOf("com.bank")
@@ -79,6 +80,7 @@ class VpnEngineCoordinatorTest {
         upstreamDns = "1.1.1.1", fallbackDns = "9.9.9.9", dnsResponseType = "REFUSED", dnsProtocol = DnsProtocol.DOT,
         dohUrl = "", whitelistedApps = emptySet(), safeSearchEnabled = false, youtubeRestrictedMode = true,
         firewallEnabled = false, dnsProviderId = providerId, firewallManager = null,
+        odohRelayUrl = ""
     )
 
     @Test
@@ -110,7 +112,7 @@ class VpnEngineCoordinatorTest {
     @Test
     fun `engine gets the configured DNS, block response, safe search and split zones`() = runTest {
         coordinator.configureEngine(adapter, config())
-        verify { adapter.configureDns("DOT", "1.1.1.1", "9.9.9.9", "") }
+        verify { adapter.configureDns("DOT", "1.1.1.1", "9.9.9.9", "", "") }
         verify { adapter.setBlockResponseType("REFUSED") }
         verify { adapter.configureSafeSearch(false, true) }
         verify { adapter.setSplitDNSZones("lan") }
@@ -119,11 +121,11 @@ class VpnEngineCoordinatorTest {
     @Test
     fun `system provider uses the network's resolver over plain DNS`() = runTest {
         coordinator.configureEngine(adapter, config(providerId = "system"))
-        verify { adapter.configureDns("PLAIN", "192.168.1.1", "9.9.9.9", "") }
+        verify { adapter.configureDns("PLAIN", "192.168.1.1", "9.9.9.9", "", "") }
 
         systemDns = emptyList()
         coordinator.configureEngine(adapter, config(providerId = "system"))
-        verify { adapter.configureDns("PLAIN", "8.8.8.8", "9.9.9.9", "") }
+        verify { adapter.configureDns("PLAIN", "8.8.8.8", "9.9.9.9", "", "") }
     }
 
     @Test
@@ -156,13 +158,13 @@ class VpnEngineCoordinatorTest {
     @Test
     fun `link changes hot-reload DNS only for the system provider`() = runTest {
         coordinator.handleLinkPropertiesChanged(adapter, linkProps(listOf("10.0.0.1")))
-        verify(exactly = 0) { adapter.configureDns(any(), any(), any(), any()) }
+        verify(exactly = 0) { adapter.configureDns(any(), any(), any(), any(), any()) }
 
         providerId = "system"
         coordinator.handleLinkPropertiesChanged(adapter, linkProps(listOf("10.0.0.1")))
-        verify { adapter.configureDns("PLAIN", "10.0.0.1", "9.9.9.9", "https://dns.test/q") }
+        verify { adapter.configureDns("PLAIN", "10.0.0.1", "9.9.9.9", "https://dns.test/q", "") }
         coordinator.handleLinkPropertiesChanged(adapter, null)
-        verify { adapter.configureDns("PLAIN", "8.8.8.8", "9.9.9.9", "https://dns.test/q") }
+        verify { adapter.configureDns("PLAIN", "8.8.8.8", "9.9.9.9", "https://dns.test/q", "") }
     }
 
     @Test
@@ -173,6 +175,27 @@ class VpnEngineCoordinatorTest {
         domainCount.value = 120
         runCurrent()
         verify(exactly = 1) { adapter.updateTries() }
+    }
+
+    @Test
+    fun `odoh provider passes odohRelayUrl to adapter`() = runTest {
+        val odohConfig = StartupConfig(
+            upstreamDns = "1.1.1.1", fallbackDns = "9.9.9.9", dnsResponseType = "REFUSED",
+            dnsProtocol = DnsProtocol.ODOH, dohUrl = "https://odoh.cloudflare-dns.com/dns-query",
+            whitelistedApps = emptySet(), safeSearchEnabled = false, youtubeRestrictedMode = false,
+            firewallEnabled = false, dnsProviderId = "custom", firewallManager = null,
+            odohRelayUrl = "https://odoh-relay.edgecompute.app/"
+        )
+        coordinator.configureEngine(adapter, odohConfig)
+        verify {
+            adapter.configureDns(
+                "ODOH",
+                "1.1.1.1",
+                "9.9.9.9",
+                "https://odoh.cloudflare-dns.com/dns-query",
+                "https://odoh-relay.edgecompute.app/"
+            )
+        }
     }
 
     @Ignore("every VPN restart adds another domainCountFlow collector, so one change reloads the tries N times")

@@ -20,6 +20,7 @@ const (
 	ProtocolDoH
 	ProtocolDoT
 	ProtocolDoQ
+	ProtocolODoH
 )
 
 // ParseProtocol converts a string to DNSProtocol.
@@ -31,6 +32,8 @@ func ParseProtocol(s string) DNSProtocol {
 		return ProtocolDoT
 	case "DOQ":
 		return ProtocolDoQ
+	case "ODOH":
+		return ProtocolODoH
 	default:
 		return ProtocolPlain
 	}
@@ -43,6 +46,8 @@ type Resolver struct {
 	primaryServer   string
 	fallbackServer  string
 	dohURL          string
+	odohRelayURL    string
+	odohCache       odohConfigCache
 	protocol        DNSProtocol
 	protectSocketFn func(fd int) bool
 
@@ -50,7 +55,7 @@ type Resolver struct {
 	splitDNS   string
 	splitZones []string
 
-	// HTTP client for DoH (reusable)
+	// HTTP client for DoH and ODoH (reusable)
 	httpClient *http.Client
 	// QUIC connection for DoQ (reusable)
 	quicMu     sync.Mutex
@@ -108,6 +113,13 @@ func (r *Resolver) Configure(protocol DNSProtocol, primary, fallback, dohURL str
 	if protocol != ProtocolDoQ {
 		r.resetQUICConn()
 	}
+}
+
+// SetODoHRelay configures the relay URL for Oblivious DoH (RFC 9230).
+func (r *Resolver) SetODoHRelay(relayURL string) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	r.odohRelayURL = relayURL
 }
 
 // SetSplitDNS configures split-DNS zones and their upstream DNS server.
@@ -228,6 +240,11 @@ func (r *Resolver) query(rawQuery []byte, protocol DNSProtocol, server, dohURL s
 		return r.queryDoT(rawQuery, server)
 	case ProtocolDoQ:
 		return r.queryDoQ(rawQuery, server)
+	case ProtocolODoH:
+		r.mu.RLock()
+		relayURL := r.odohRelayURL
+		r.mu.RUnlock()
+		return r.queryODoH(rawQuery, dohURL, relayURL)
 	default:
 		return r.queryPlain(rawQuery, server)
 	}

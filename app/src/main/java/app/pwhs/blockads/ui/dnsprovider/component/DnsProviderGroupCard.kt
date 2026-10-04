@@ -68,8 +68,13 @@ fun DnsProviderGroupCard(
 
                             Spacer(modifier = Modifier.width(8.dp))
 
+                            val isOdoh = provider.odohRelayUrl != null
+                            val isDoq = provider.dohUrl?.startsWith("quic://", ignoreCase = true) == true
+                            val isDoh = provider.dohUrl != null && !isDoq && !isOdoh
+
                             // Protocol Badge
                             val (badgeText, badgeBg, badgeTextColor) = when {
+                                isOdoh -> Triple("ODoH", Color(0xFF8B5CF6).copy(alpha = 0.15f), Color(0xFF7C3AED))
                                 isDoq -> Triple("DoQ", Color(0xFFF59E0B).copy(alpha = 0.15f), Color(0xFFD97706))
                                 isDoh -> Triple(stringResource(R.string.dns_doh_badge), MaterialTheme.colorScheme.primaryContainer, MaterialTheme.colorScheme.onPrimaryContainer)
                                 else -> Triple("Plain", MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.onSurfaceVariant)

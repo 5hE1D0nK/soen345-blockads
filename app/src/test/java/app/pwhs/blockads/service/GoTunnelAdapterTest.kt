@@ -53,6 +53,13 @@ class GoTunnelAdapterTest {
     }
 
     @Test
+    fun `configureDns with ODOH calls setODoHRelay`() {
+        f.adapter.configureDns("ODOH", "1.1.1.1", "8.8.8.8", "https://odoh.test/q", "https://relay.test/p")
+        verify { f.engine.setDNS("ODOH", "1.1.1.1", "8.8.8.8", "https://odoh.test/q") }
+        verify { f.engine.setODoHRelay("https://relay.test/p") }
+    }
+
+    @Test
     fun `direct mode starts the full-tunnel engine without the TCP stack`() {
         f.adapter.start(f.tunFd)
         verify { f.engine.setUseTcpStack(false) }

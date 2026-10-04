@@ -61,6 +61,7 @@ class RootProxyServiceShellTest {
         every { upstreamDns } returns flowOf("1.1.1.1")
         every { fallbackDns } returns flowOf("9.9.9.9")
         every { dohUrl } returns flowOf("")
+        every { odohRelayUrl } returns flowOf("")
         every { safeSearchEnabled } returns flowOf(false)
         every { youtubeRestrictedMode } returns flowOf(false)
         every { dnsResponseType } returns flowOf("NXDOMAIN")

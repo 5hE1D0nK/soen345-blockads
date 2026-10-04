@@ -62,6 +62,7 @@ class AdBlockVpnServiceShellTest {
         every { dnsResponseType } returns flowOf("NXDOMAIN")
         every { dnsProtocol } returns flowOf(DnsProtocol.PLAIN)
         every { dohUrl } returns flowOf("")
+        every { odohRelayUrl } returns flowOf("")
         every { safeSearchEnabled } returns flowOf(false)
         every { youtubeRestrictedMode } returns flowOf(false)
         every { firewallEnabled } returns flowOf(false)
