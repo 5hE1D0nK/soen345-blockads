@@ -112,6 +112,24 @@ object DnsProviders {
         description = "Cloudflare DNS with malware and adult content blocking"
     )
 
+    val DNSBUNKER = DnsProvider(
+        id = "dnsbunker",
+        name = "DNSBunker",
+        category = DnsCategory.PRIVACY,
+        ipAddress = "185.250.250.61",
+        dohUrl = "https://dnsbunker.org/dns-query",
+        description = "Encrypted DNS from Germany with Hagezi ad, tracker & threat blocking"
+    )
+
+    val DNSBUNKER_DOQ = DnsProvider(
+        id = "dnsbunker_doq",
+        name = "DNSBunker (DoQ)",
+        category = DnsCategory.PRIVACY,
+        ipAddress = "185.250.250.61",
+        dohUrl = "quic://dnsbunker.org",
+        description = "DNS over QUIC from Germany with Hagezi ad & threat blocking"
+    )
+
     val MULLVAD = DnsProvider(
         id = "mullvad",
         name = "Mullvad DNS",
@@ -127,6 +145,8 @@ object DnsProviders {
         CLOUDFLARE,
         CLOUDFLARE_ODOH,
         CLOUDFLARE_FAMILY,
+        DNSBUNKER,
+        DNSBUNKER_DOQ,
         GOOGLE,
         MULLVAD,
         OPENDNS,

@@ -74,6 +74,9 @@ class EntityModelsTest {
         assertEquals(ids.distinct(), ids)
         assertTrue(DnsProviders.ALL_PROVIDERS.all { url -> url.dohUrl.let { it == null || it.startsWith("https://") || it.startsWith("quic://") } })
         assertEquals("quad9", DnsProviders.getByIp("9.9.9.9")?.id)
+        assertEquals(DnsProviders.DNSBUNKER, DnsProviders.getById("dnsbunker"))
+        assertEquals(DnsProviders.DNSBUNKER_DOQ, DnsProviders.getById("dnsbunker_doq"))
+        assertEquals(DnsProviders.DNSBUNKER, DnsProviders.getByIp("185.250.250.61"))
     }
 
     @Test

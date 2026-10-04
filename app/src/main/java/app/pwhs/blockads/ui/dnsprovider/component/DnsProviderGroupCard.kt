@@ -58,6 +58,10 @@ fun DnsProviderGroupCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
+                        val isOdoh = provider.odohRelayUrl != null
+                        val isDoq = provider.dohUrl?.startsWith("quic://", ignoreCase = true) == true
+                        val isDoh = provider.dohUrl != null && !isDoq && !isOdoh
+
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
                                 text = provider.name,
@@ -67,10 +71,6 @@ fun DnsProviderGroupCard(
                             )
 
                             Spacer(modifier = Modifier.width(8.dp))
-
-                            val isOdoh = provider.odohRelayUrl != null
-                            val isDoq = provider.dohUrl?.startsWith("quic://", ignoreCase = true) == true
-                            val isDoh = provider.dohUrl != null && !isDoq && !isOdoh
 
                             // Protocol Badge
                             val (badgeText, badgeBg, badgeTextColor) = when {
@@ -101,8 +101,8 @@ fun DnsProviderGroupCard(
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
 
-                        // Only show raw IP for plain UDP DNS (avoids confusing users on DoH)
-                        if (!isDoh && !isDoq && provider.ipAddress != "0.0.0.0") {
+                        // Only show raw IP for plain UDP DNS (avoids confusing users on DoH/DoQ/ODoH)
+                        if (!isDoh && !isDoq && !isOdoh && provider.ipAddress != "0.0.0.0") {
                             Spacer(modifier = Modifier.height(2.dp))
                             Text(
                                 text = provider.ipAddress,
