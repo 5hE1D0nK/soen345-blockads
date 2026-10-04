@@ -40,7 +40,8 @@ fun NetworkSpeedSection(
             label = stringResource(R.string.home_downloaded),
             value = formatDataSize(networkSpeed.totalDownloadedBytes / 1024),
             color = DownloadCyan,
-            chartPoints = networkSpeed.downloadHistory
+            chartPoints = networkSpeed.downloadHistory,
+            bobDirection = 1
         )
         TrafficCard(
             modifier = Modifier
@@ -50,7 +51,8 @@ fun NetworkSpeedSection(
             label = stringResource(R.string.home_uploaded),
             value = formatDataSize(networkSpeed.totalUploadedBytes / 1024),
             color = UploadPurple,
-            chartPoints = networkSpeed.uploadHistory
+            chartPoints = networkSpeed.uploadHistory,
+            bobDirection = -1
         )
     }
 }
