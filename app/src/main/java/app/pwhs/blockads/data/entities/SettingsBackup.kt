@@ -21,6 +21,7 @@ data class SettingsBackup(
     val firewallEnabled: Boolean = false,
     val filterLists: List<FilterListBackup> = emptyList(),
     val whitelistDomains: List<String> = emptyList(),
+    val blocklistDomains: List<String> = emptyList(),
     val whitelistedApps: List<String> = emptyList(),
     val customRules: List<String> = emptyList(),
     val firewallRules: List<FirewallRuleBackup> = emptyList()

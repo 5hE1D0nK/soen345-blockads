@@ -200,7 +200,7 @@ fun BrowserScreen(
                         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(effect.url))
                         context.startActivity(intent)
                     }.onFailure {
-                        Toast.makeText(context, context.getString(R.string.browser_open_external_error), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, R.string.browser_open_external_error, Toast.LENGTH_SHORT).show()
                     }
                 }
                 is BrowserUiEffect.NavigateUrl -> {

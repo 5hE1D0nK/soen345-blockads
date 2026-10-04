@@ -31,9 +31,9 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun AppItemSkeleton(
     brush: Brush,
+    modifier: Modifier = Modifier,
     titleWidth: Dp = 130.dp,
-    subtitleWidth: Dp = 90.dp,
-    modifier: Modifier = Modifier
+    subtitleWidth: Dp = 90.dp
 ) {
     Card(
         modifier = modifier
@@ -97,8 +97,8 @@ fun AppItemSkeleton(
  */
 @Composable
 fun AppListSkeleton(
-    itemCount: Int = 8,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    itemCount: Int = 8
 ) {
     val brush = rememberShimmerBrush()
     val titleWidths = listOf(140.dp, 110.dp, 160.dp, 125.dp, 150.dp, 105.dp, 135.dp, 120.dp)

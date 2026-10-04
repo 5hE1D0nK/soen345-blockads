@@ -14,11 +14,13 @@ import app.pwhs.blockads.data.dao.FirewallRuleDao
 import app.pwhs.blockads.data.dao.ProtectionProfileDao
 import app.pwhs.blockads.data.dao.WhitelistDomainDao
 import app.pwhs.blockads.data.datastore.AppPreferences
+import app.pwhs.blockads.data.entities.CustomDnsRule
 import app.pwhs.blockads.data.entities.FilterList
 import app.pwhs.blockads.data.entities.FilterListBackup
 import app.pwhs.blockads.data.entities.FirewallRule
 import app.pwhs.blockads.data.entities.FirewallRuleBackup
 import app.pwhs.blockads.data.entities.ProfileManager
+import app.pwhs.blockads.data.entities.RuleType
 import app.pwhs.blockads.data.entities.SettingsBackup
 import app.pwhs.blockads.data.entities.WhitelistDomain
 import app.pwhs.blockads.data.repository.FilterListRepository
@@ -306,9 +308,16 @@ class SettingsViewModel(
                     filterLists = filterListDao.getAllSync().map { f ->
                         FilterListBackup(name = f.name, url = f.url, isEnabled = f.isEnabled)
                     },
-                    whitelistDomains = whitelistDomainDao.getAllDomains(),
+                    whitelistDomains = whitelistDomainDao.getAllDomains()
+                        .map { it.trim().lowercase() }
+                        .filter { it.isNotBlank() }
+                        .distinct(),
+                    blocklistDomains = customDnsRuleDao.getBlockDomains()
+                        .map { it.trim().lowercase() }
+                        .filter { it.isNotBlank() }
+                        .distinct(),
                     whitelistedApps = appPrefs.getWhitelistedAppsSnapshot().toList(),
-                    customRules = customDnsRuleDao.getAll().map { it.rule },
+                    customRules = customDnsRuleDao.getAll().map { it.rule }.distinct(),
                     firewallRules = firewallRuleDao.getEnabledRules().map { r ->
                         FirewallRuleBackup(
                             packageName = r.packageName,
@@ -391,8 +400,28 @@ class SettingsViewModel(
 
                 // Whitelist domains — only add new
                 backup.whitelistDomains.forEach { domain ->
-                    if (whitelistDomainDao.exists(domain) == 0) {
-                        whitelistDomainDao.insert(WhitelistDomain(domain = domain))
+                    val clean = domain.trim().lowercase()
+                    if (clean.isNotBlank() && whitelistDomainDao.exists(clean) == 0) {
+                        whitelistDomainDao.insert(WhitelistDomain(domain = clean))
+                    }
+                }
+
+                // Blocklist domains — support dedicated blocklistDomains list
+                val existingRules = customDnsRuleDao.getAll().map { it.rule }.toSet()
+                backup.blocklistDomains.forEach { domain ->
+                    val clean = domain.trim().lowercase()
+                    if (clean.isNotBlank()) {
+                        val ruleText = "||$clean^"
+                        if (ruleText !in existingRules && customDnsRuleDao.exists(ruleText) == 0) {
+                            customDnsRuleDao.insert(
+                                CustomDnsRule(
+                                    rule = ruleText,
+                                    ruleType = RuleType.BLOCK,
+                                    domain = clean,
+                                    isEnabled = true
+                                )
+                            )
+                        }
                     }
                 }
 
@@ -401,10 +430,11 @@ class SettingsViewModel(
                 appPrefs.setWhitelistedApps(current + backup.whitelistedApps.toSet())
 
                 // Custom rules — parse and add (avoid duplicates)
-                val existingRules = customDnsRuleDao.getAll().map { it.rule }.toSet()
+                val updatedRules = customDnsRuleDao.getAll().map { it.rule }.toSet()
                 backup.customRules.forEach { ruleText ->
-                    if (ruleText !in existingRules) {
-                        val rule = CustomRuleParser.parseRule(ruleText)
+                    val trimmed = ruleText.trim()
+                    if (trimmed.isNotBlank() && trimmed !in updatedRules) {
+                        val rule = CustomRuleParser.parseRule(trimmed)
                         if (rule != null) {
                             customDnsRuleDao.insert(rule)
                         }
@@ -441,6 +471,10 @@ class SettingsViewModel(
                 } else {
                     profileManager.saveActiveProfileFilterUrls()
                 }
+
+                // Refresh in-memory whitelist and custom rules cache
+                filterRepo.loadWhitelist()
+                filterRepo.loadCustomRules()
 
                 _events.toast(R.string.filter_settings_imported)
                 requestVpnRestart()

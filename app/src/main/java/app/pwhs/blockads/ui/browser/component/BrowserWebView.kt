@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.net.toUri
 import app.pwhs.blockads.R
 import app.pwhs.blockads.ui.browser.BrowserUiIntent
 import app.pwhs.blockads.ui.browser.BrowserUiState
@@ -49,6 +50,7 @@ fun BrowserWebView(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+    val appContext = context.applicationContext
 
     AndroidView(
         factory = { ctx ->
@@ -452,9 +454,9 @@ fun BrowserWebView(
                 setDownloadListener { downloadUrl, userAgent, contentDisposition, mimetype, _ ->
                     try {
                         val fileName = extractFileName(downloadUrl, contentDisposition, mimetype)
-                        val request = DownloadManager.Request(Uri.parse(downloadUrl)).apply {
+                        val request = DownloadManager.Request(downloadUrl.toUri()).apply {
                             setTitle(fileName)
-                            setDescription(context.getString(R.string.browser_download_desc, fileName))
+                            setDescription(appContext.getString(R.string.browser_download_desc, fileName))
                             setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
                             setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName)
                             addRequestHeader("User-Agent", userAgent)
@@ -462,13 +464,13 @@ fun BrowserWebView(
                                 if (cookie.isNotBlank()) addRequestHeader("Cookie", cookie)
                             }
                         }
-                        val dm = context.getSystemService(Context.DOWNLOAD_SERVICE) as? DownloadManager
+                        val dm = appContext.getSystemService(Context.DOWNLOAD_SERVICE) as? DownloadManager
                         dm?.enqueue(request)
-                        Toast.makeText(context, context.getString(R.string.browser_download_started, fileName), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(appContext, appContext.getString(R.string.browser_download_started, fileName), Toast.LENGTH_SHORT).show()
                     } catch (e: Exception) {
                         Timber.e(e, "DownloadManager failed for url: %s", downloadUrl)
                         runCatching {
-                            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(downloadUrl)))
+                            context.startActivity(Intent(Intent.ACTION_VIEW, downloadUrl.toUri()))
                         }
                     }
                 }

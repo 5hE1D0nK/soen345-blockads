@@ -15,8 +15,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.dp
 
 /**
@@ -26,9 +25,9 @@ import androidx.compose.ui.unit.dp
 fun rememberShimmerBrush(
     durationMillis: Int = 1300
 ): Brush {
-    val configuration = LocalConfiguration.current
-    val density = LocalDensity.current
-    val widthPx = with(density) { configuration.screenWidthDp.dp.toPx() }
+    val windowInfo = LocalWindowInfo.current
+    val containerWidth = windowInfo.containerSize.width.toFloat()
+    val widthPx = if (containerWidth > 0f) containerWidth else 1000f
 
     val transition = rememberInfiniteTransition(label = "shimmer_transition")
     val translateAnim by transition.animateFloat(
