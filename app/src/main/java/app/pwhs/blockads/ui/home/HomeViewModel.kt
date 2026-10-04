@@ -18,6 +18,8 @@ import app.pwhs.blockads.service.AdBlockVpnService
 import app.pwhs.blockads.service.VpnState
 import app.pwhs.blockads.service.RootProxyService
 import app.pwhs.blockads.data.datastore.AppPreferences
+import app.pwhs.blockads.data.network.NetworkSpeed
+import app.pwhs.blockads.data.network.NetworkSpeedMonitor
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -122,6 +124,9 @@ class HomeViewModel(
     fun setRecentFilter(filter: RecentLogFilter) {
         _recentFilter.value = filter
     }
+
+    val networkSpeed: StateFlow<NetworkSpeed> = NetworkSpeedMonitor.observeNetworkSpeed()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), NetworkSpeed())
 
     val hourlyStats: StateFlow<List<HourlyStat>> = dnsLogDao.getHourlyStats()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())

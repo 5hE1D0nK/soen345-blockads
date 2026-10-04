@@ -59,6 +59,13 @@ fun formatDataSize(kilobytes: Long): String = when {
     else -> String.format(Locale.getDefault(), "%.1f GB", kilobytes / (1024f * 1024f))
 }
 
+fun formatSpeed(bytesPerSec: Long): String = when {
+    bytesPerSec < 1024 -> "$bytesPerSec B/s"
+    bytesPerSec < 1024 * 1024 -> String.format(Locale.getDefault(), "%.1f KB/s", bytesPerSec / 1024f)
+    bytesPerSec < 1024 * 1024 * 1024 -> String.format(Locale.getDefault(), "%.1f MB/s", bytesPerSec / (1024f * 1024f))
+    else -> String.format(Locale.getDefault(), "%.1f GB/s", bytesPerSec / (1024f * 1024f * 1024f))
+}
+
 fun formatUptimeShort(ms: Long): String {
     if (ms <= 0) return "—"
     val totalSeconds = ms / 1000

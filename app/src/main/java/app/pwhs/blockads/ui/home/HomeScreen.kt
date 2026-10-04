@@ -69,6 +69,7 @@ import app.pwhs.blockads.ui.home.component.MilestoneBottomSheet
 import app.pwhs.blockads.ui.home.component.PowerButton
 import app.pwhs.blockads.ui.home.component.RecentBlockedSection
 import app.pwhs.blockads.ui.home.component.MiniBarChartDefaults
+import app.pwhs.blockads.ui.home.component.NetworkSpeedSection
 import app.pwhs.blockads.ui.home.component.StatCard
 import app.pwhs.blockads.ui.home.component.TopBlockedSection
 import app.pwhs.blockads.ui.home.data.RecentLogFilter
@@ -121,6 +122,7 @@ fun HomeScreen(
     val recentFilter by viewModel.recentFilter.collectAsStateWithLifecycle()
     val hourlyStats by viewModel.hourlyStats.collectAsStateWithLifecycle()
     val dailyStats by viewModel.dailyStats.collectAsStateWithLifecycle()
+    val networkSpeed by viewModel.networkSpeed.collectAsStateWithLifecycle()
     val milestoneReached by viewModel.milestoneReached.collectAsStateWithLifecycle()
     val topBlockedDomains by viewModel.topBlockedDomains.collectAsStateWithLifecycle()
     val protectionUptimeMs by viewModel.protectionUptimeMs.collectAsStateWithLifecycle()
@@ -341,6 +343,11 @@ fun HomeScreen(
                     }
                 }
             }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Real-time network speed row
+            NetworkSpeedSection(networkSpeed = networkSpeed)
 
             Spacer(modifier = Modifier.height(12.dp))
 
