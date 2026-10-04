@@ -151,7 +151,9 @@ class AdBlockVpnServiceShellTest {
         awaitTrue(message = "stopSelf") { shadowOf(service).isStoppedBySelf }
         verify { tun.close() }
         verify { engine.stop() }
-        assertTrue(notifications.getNotification(VpnNotificationManager.NOTIFICATION_ID) != null)
+        awaitTrue(message = "stopped notification") {
+            notifications.getNotification(VpnNotificationManager.NOTIFICATION_ID) != null
+        }
         awaitTrue(message = "STOPPED") { AdBlockVpnService.state.value == VpnState.STOPPED }
         assertEquals(false, vpnEnabledWrites.last())
     }
@@ -161,7 +163,9 @@ class AdBlockVpnServiceShellTest {
         every { VpnService.prepare(any()) } returns Intent()
         command(AdBlockVpnService.ACTION_START)
         awaitTrue(message = "stopSelf") { shadowOf(service).isStoppedBySelf }
-        assertTrue(notifications.getNotification(VpnNotificationManager.REVOKED_NOTIFICATION_ID) != null)
+        awaitTrue(message = "revoked notification") {
+            notifications.getNotification(VpnNotificationManager.REVOKED_NOTIFICATION_ID) != null
+        }
     }
 
     @Test
