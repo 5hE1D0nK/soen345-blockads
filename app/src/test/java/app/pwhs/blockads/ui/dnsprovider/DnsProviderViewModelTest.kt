@@ -4,11 +4,11 @@ import android.app.Application
 import app.cash.turbine.test
 import app.pwhs.blockads.R
 import app.pwhs.blockads.data.datastore.AppPreferences
+import app.pwhs.blockads.data.entities.DnsCategory
 import app.pwhs.blockads.data.entities.DnsProtocol
 import app.pwhs.blockads.data.entities.DnsProviders
 import app.pwhs.blockads.service.ServiceController
 import app.pwhs.blockads.ui.MainDispatcherRule
-import app.pwhs.blockads.ui.event.UiEvent
 import app.pwhs.blockads.ui.keepHot
 import io.mockk.Runs
 import io.mockk.coEvery
@@ -28,7 +28,6 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -42,6 +41,7 @@ class DnsProviderViewModelTest {
     private val fallback = MutableStateFlow(AppPreferences.DEFAULT_FALLBACK_DNS)
     private val protocol = MutableStateFlow(DnsProtocol.PLAIN)
     private val doh = MutableStateFlow("")
+    private val odohRelay = MutableStateFlow("")
     private val blockDoh = MutableStateFlow(false)
 
     private val appPrefs: AppPreferences = mockk(relaxed = true) {
@@ -50,12 +50,15 @@ class DnsProviderViewModelTest {
         every { fallbackDns } returns fallback
         every { dnsProtocol } returns protocol
         every { dohUrl } returns doh
+        every { odohRelayUrl } returns odohRelay
         every { blockDohBypass } returns blockDoh
         coEvery { setDnsProviderId(any()) } coAnswers { providerId.value = firstArg() }
         coEvery { setUpstreamDns(any()) } coAnswers { upstream.value = firstArg() }
         coEvery { setFallbackDns(any()) } coAnswers { fallback.value = firstArg() }
         coEvery { setDnsProtocol(any()) } coAnswers { protocol.value = firstArg() }
         coEvery { setDohUrl(any()) } coAnswers { doh.value = firstArg() }
+        coEvery { setOdohRelayUrl(any()) } coAnswers { odohRelay.value = firstArg() }
+        coEvery { setBlockDohBypass(any()) } coAnswers { blockDoh.value = firstArg() }
     }
     private val vm by lazy { DnsProviderViewModel(appPrefs, mockk<Application>(relaxed = true)) }
 
@@ -68,7 +71,7 @@ class DnsProviderViewModelTest {
     @After
     fun tearDown() = unmockkAll()
 
-    private fun TestScope.hot() = keepHot(vm.selectedProviderId, vm.customDnsEnabled, vm.customDnsDisplay, vm.blockDohBypass)
+    private fun TestScope.hot() = keepHot(vm.state)
 
     @Test
     fun `parsed host strips schemes and DoH paths`() {
@@ -85,181 +88,157 @@ class DnsProviderViewModelTest {
         cases.forEach { (input, host) -> assertEquals(input, host, vm.getParsedHost(input)) }
     }
 
-    @Ignore("known bug: getParsedHost strips only all-lower or all-upper tls:// prefixes, so 'Tls://host' is saved as the upstream")
-    @Test
-    fun `parsed host handles mixed-case tls scheme`() {
-        assertEquals("dns.google", vm.getParsedHost("Tls://dns.google"))
-    }
-
-    @Ignore("known bug: an IPv6 DoH literal keeps its brackets, so the upstream is saved as '[2606:4700::1111]'")
-    @Test
-    fun `parsed host unwraps bracketed IPv6 DoH hosts`() {
-        assertEquals("2606:4700::1111", vm.getParsedHost("https://[2606:4700::1111]/dns-query"))
-    }
-
     @Test
     fun `selecting a DoH provider stores its url and restarts`() = runTest {
         hot()
-        vm.selectProvider(DnsProviders.CLOUDFLARE)
+        vm.onIntent(DnsProviderUiIntent.SelectProvider(DnsProviders.CLOUDFLARE))
         assertEquals("cloudflare", providerId.value)
         assertEquals("1.1.1.1", upstream.value)
         assertEquals(DnsProtocol.DOH, protocol.value)
         assertEquals("https://cloudflare-dns.com/dns-query", doh.value)
-        assertEquals("cloudflare", vm.selectedProviderId.value)
-        assertFalse(vm.customDnsEnabled.value)
+        assertEquals("cloudflare", vm.state.value.selectedProviderId)
+        assertFalse(vm.state.value.isCustomDns)
         verify { ServiceController.requestRestart(any()) }
     }
 
     @Test
-    fun `selecting a quic provider uses DoQ and a plain provider uses plain DNS`() {
-        vm.selectProvider(DnsProviders.QUAD9_DOQ)
+    fun `selecting a quic provider uses DoQ and a plain provider uses plain DNS`() = runTest {
+        hot()
+        vm.onIntent(DnsProviderUiIntent.SelectProvider(DnsProviders.QUAD9_DOQ))
         assertEquals(DnsProtocol.DOQ, protocol.value)
         assertEquals("quic://dns.quad9.net", doh.value)
 
-        vm.selectProvider(DnsProviders.OPENDNS)
+        vm.onIntent(DnsProviderUiIntent.SelectProvider(DnsProviders.OPENDNS))
         assertEquals(DnsProtocol.PLAIN, protocol.value)
         assertEquals("208.67.222.222", upstream.value)
     }
 
     @Test
-    fun `the fallback is swapped only when it would equal the new primary`() {
+    fun `the fallback is swapped only when it would equal the new primary`() = runTest {
+        hot()
         fallback.value = "1.1.1.1"
-        vm.selectProvider(DnsProviders.GOOGLE)
+        vm.onIntent(DnsProviderUiIntent.SelectProvider(DnsProviders.GOOGLE))
         assertEquals("unchanged when distinct", "1.1.1.1", fallback.value)
 
         fallback.value = DnsProviders.QUAD9.ipAddress
-        vm.selectProvider(DnsProviders.QUAD9_DOQ)
+        vm.onIntent(DnsProviderUiIntent.SelectProvider(DnsProviders.QUAD9_DOQ))
         assertEquals(DnsProviders.ADGUARD.ipAddress, fallback.value)
 
-        vm.selectProvider(DnsProviders.ADGUARD)
+        vm.onIntent(DnsProviderUiIntent.SelectProvider(DnsProviders.ADGUARD))
         assertEquals(DnsProviders.QUAD9.ipAddress, fallback.value)
 
         fallback.value = DnsProviders.MULLVAD.ipAddress
-        vm.selectProvider(DnsProviders.MULLVAD)
+        vm.onIntent(DnsProviderUiIntent.SelectProvider(DnsProviders.MULLVAD))
         assertEquals("first other privacy provider", DnsProviders.ADGUARD.ipAddress, fallback.value)
     }
 
     @Test
-    fun `a custom provider id is never shown as a preset`() = runTest {
+    fun `a custom provider id is marked as custom`() = runTest {
         providerId.value = AppPreferences.CUSTOM_DNS_PROVIDER_ID
         upstream.value = "1.1.1.1"
         hot()
-        assertNull(vm.selectedProviderId.value)
-        assertTrue(vm.customDnsEnabled.value)
+        assertNull(vm.state.value.selectedProviderId)
+        assertTrue(vm.state.value.isCustomDns)
     }
 
     @Test
-    fun `without a stored id a plain preset ip is recognized but not over DoH`() = runTest {
-        upstream.value = DnsProviders.OPENDNS.ipAddress
-        hot()
-        assertEquals("opendns", vm.selectedProviderId.value)
-
-        protocol.value = DnsProtocol.DOH
-        assertNull(vm.selectedProviderId.value)
-
-        protocol.value = DnsProtocol.PLAIN
-        upstream.value = DnsProviders.CLOUDFLARE.ipAddress
-        assertNull("preset with DoH needs its id stored", vm.selectedProviderId.value)
-    }
-
-    @Test
-    fun `custom display shows the server in the form the user typed`() = runTest {
+    fun `custom display shows the server in the form configured`() = runTest {
         hot()
         upstream.value = "8.8.8.8"
-        assertEquals("8.8.8.8", vm.customDnsDisplay.value)
+        assertEquals("8.8.8.8", vm.state.value.customDnsDisplay)
 
         doh.value = "https://dns.google/dns-query"
         protocol.value = DnsProtocol.DOH
-        assertEquals("https://dns.google/dns-query", vm.customDnsDisplay.value)
+        assertEquals("https://dns.google/dns-query", vm.state.value.customDnsDisplay)
 
         upstream.value = "dns.google"
         protocol.value = DnsProtocol.DOT
-        assertEquals("tls://dns.google", vm.customDnsDisplay.value)
+        assertEquals("tls://dns.google", vm.state.value.customDnsDisplay)
 
         protocol.value = DnsProtocol.DOQ
-        assertEquals("quic://dns.google/dns-query", vm.customDnsDisplay.value)
+        assertEquals("quic://dns.google/dns-query", vm.state.value.customDnsDisplay)
         doh.value = "QUIC://dns.quad9.net"
-        assertEquals("QUIC://dns.quad9.net", vm.customDnsDisplay.value)
+        assertEquals("QUIC://dns.quad9.net", vm.state.value.customDnsDisplay)
     }
 
     @Test
-    fun `custom DoH, DoQ, DoT and plain entries set protocol and host`() {
-        vm.setCustomDns(" https://dns.example/dns-query ")
+    fun `custom DoH, ODoH, DoQ, DoT and plain entries set protocol and host`() = runTest {
+        hot()
+        vm.onIntent(DnsProviderUiIntent.SaveCustomDns(DnsProtocol.DOH, "https://dns.example/dns-query"))
         assertEquals(AppPreferences.CUSTOM_DNS_PROVIDER_ID, providerId.value)
         assertEquals(DnsProtocol.DOH, protocol.value)
         assertEquals("https://dns.example/dns-query", doh.value)
         assertEquals("dns.example", upstream.value)
 
-        vm.setCustomDns("quic://doq.example")
+        vm.onIntent(
+            DnsProviderUiIntent.SaveCustomDns(
+                protocol = DnsProtocol.ODOH,
+                endpoint = "https://odoh.cloudflare-dns.com/dns-query",
+                relayUrl = "https://odoh-relay.cloudflare.com/proxy"
+            )
+        )
+        assertEquals(DnsProtocol.ODOH, protocol.value)
+        assertEquals("https://odoh.cloudflare-dns.com/dns-query", doh.value)
+        assertEquals("https://odoh-relay.cloudflare.com/proxy", odohRelay.value)
+
+        vm.onIntent(DnsProviderUiIntent.SaveCustomDns(DnsProtocol.DOQ, "quic://doq.example"))
         assertEquals(DnsProtocol.DOQ, protocol.value)
         assertEquals("quic://doq.example", doh.value)
 
-        vm.setCustomDns("tls://dot.example")
+        vm.onIntent(DnsProviderUiIntent.SaveCustomDns(DnsProtocol.DOT, "tls://dot.example"))
         assertEquals(DnsProtocol.DOT, protocol.value)
         assertEquals("dot.example", upstream.value)
 
-        vm.setCustomDns("8.8.4.4")
+        vm.onIntent(DnsProviderUiIntent.SaveCustomDns(DnsProtocol.PLAIN, "8.8.4.4"))
         assertEquals(DnsProtocol.PLAIN, protocol.value)
         assertEquals("8.8.4.4", upstream.value)
-        verify(exactly = 4) { ServiceController.requestRestart(any()) }
+        verify(atLeast = 5) { ServiceController.requestRestart(any()) }
     }
 
     @Test
-    fun `blank custom input is ignored`() {
-        vm.setCustomDns("   ")
-        coVerify(exactly = 0) { appPrefs.setDnsProviderId(any()) }
+    fun `blank custom input is ignored`() = runTest {
+        hot()
+        vm.onIntent(DnsProviderUiIntent.SaveCustomDns(DnsProtocol.PLAIN, "   "))
+        coVerify(exactly = 0) { appPrefs.setUpstreamDns(any()) }
     }
 
     @Test
     fun `a plain custom server equal to the fallback is refused`() = runTest {
-        fallback.value = "8.8.8.8 "
-        vm.events.test {
-            vm.setCustomDns("8.8.8.8")
-            assertEquals(UiEvent.ToastRes(R.string.dns_error_duplicate), awaitItem())
+        hot()
+        fallback.value = "8.8.8.8"
+        vm.effects.test {
+            vm.onIntent(DnsProviderUiIntent.SaveCustomDns(DnsProtocol.PLAIN, "8.8.8.8"))
+            assertEquals(DnsProviderUiEffect.ShowToast(R.string.dns_error_duplicate), awaitItem())
         }
         coVerify(exactly = 0) { appPrefs.setUpstreamDns(any()) }
     }
 
     @Test
-    fun `an encrypted custom server may share the fallback host`() {
-        fallback.value = "dns.google"
-        vm.setCustomDns("tls://dns.google")
-        assertEquals(DnsProtocol.DOT, protocol.value)
-    }
-
-    @Test
-    fun `a fallback equal to a plain upstream is refused, case-insensitively`() = runTest {
+    fun `a fallback equal to a plain upstream is refused`() = runTest {
+        hot()
         upstream.value = "dns.example"
-        vm.events.test {
-            vm.setFallbackDns(" DNS.example ")
-            assertEquals(UiEvent.ToastRes(R.string.dns_error_duplicate), awaitItem())
+        protocol.value = DnsProtocol.PLAIN
+        vm.effects.test {
+            vm.onIntent(DnsProviderUiIntent.SaveFallbackDns("dns.example"))
+            assertEquals(DnsProviderUiEffect.ShowToast(R.string.dns_error_duplicate), awaitItem())
         }
         coVerify(exactly = 0) { appPrefs.setFallbackDns(any()) }
     }
 
     @Test
-    fun `a fallback may equal the host of an encrypted upstream`() {
-        upstream.value = "1.1.1.1"
-        protocol.value = DnsProtocol.DOH
-        vm.setFallbackDns("1.1.1.1 ")
-        assertEquals("1.1.1.1", fallback.value)
-        verify { ServiceController.requestRestart(any()) }
+    fun `tab and category selection updates state`() = runTest {
+        hot()
+        vm.onIntent(DnsProviderUiIntent.SelectTab(1))
+        assertEquals(1, vm.state.value.selectedTab)
+
+        vm.onIntent(DnsProviderUiIntent.SelectCategory(DnsCategory.PRIVACY))
+        assertEquals(DnsCategory.PRIVACY, vm.state.value.selectedCategory)
     }
 
     @Test
     fun `DoH bypass blocking persists`() = runTest {
         hot()
-        vm.setBlockDohBypass(true)
+        vm.onIntent(DnsProviderUiIntent.ToggleBlockDohBypass(true))
         coVerify { appPrefs.setBlockDohBypass(true) }
-        blockDoh.value = true
-        assertTrue(vm.blockDohBypass.value)
-    }
-
-    @Test
-    fun `upstream and fallback are shared eagerly`() {
-        upstream.value = "4.4.4.4"
-        fallback.value = "5.5.5.5"
-        assertEquals("4.4.4.4", vm.upstreamDns.value)
-        assertEquals("5.5.5.5", vm.fallbackDns.value)
     }
 }

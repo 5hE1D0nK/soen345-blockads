@@ -212,4 +212,25 @@
     <string name="dns_block_doh_bypass_notice">Lưu ý: Nếu trình duyệt (như Chrome) báo lỗi kết nối bảo mật (DNS_PROBE_FINISHED_BAD_SECURE_CONFIG), vui lòng chuyển cài đặt \"Sử dụng DNS an toàn\" trong trình duyệt về chế độ \"Tự động\".</string>
     <string name="allow_app_bypass_title">Cho phép ứng dụng bỏ qua VPN</string>
     <string name="allow_app_bypass_description">Cho phép các ứng dụng liên kết kết nối với một mạng cụ thể (Android Auto không dây, truyền màn hình, thiết lập thiết bị) truy cập trực tiếp. Mọi lưu lượng khác vẫn đi qua đường hầm.</string>
+
+    <!-- DNS Screen Refactor & ODoH Preparation -->
+    <string name="dns_tab_builtin">Có sẵn</string>
+    <string name="dns_tab_custom">Tùy chỉnh</string>
+    <string name="dns_active_hero_title">Máy chủ DNS đang dùng</string>
+    <string name="dns_active_status_active">Đang hoạt động</string>
+    <string name="dns_protocol_label">Giao thức</string>
+    <string name="dns_endpoint_label">Địa chỉ kết nối</string>
+    <string name="dns_fallback_label">DNS dự phòng</string>
+    <string name="dns_category_all">Tất cả</string>
+    <string name="dns_custom_configure_btn">Cấu hình DNS tùy chỉnh</string>
+    <string name="dns_custom_sheet_title">Cấu hình DNS &amp; Giao thức</string>
+    <string name="dns_custom_sheet_desc">Chọn giao thức và cấu hình máy chủ DNS upstream của bạn.</string>
+    <string name="dns_custom_target_url">Target URL (Resolver)</string>
+    <string name="dns_custom_relay_url">Relay URL (Proxy ẩn danh - Tùy chọn)</string>
+    <string name="dns_custom_relay_hint">Máy chủ proxy HTTP chuyển tiếp gói tin mã hóa giấu IP của bạn</string>
+    <string name="dns_custom_server_ip">Địa chỉ máy chủ</string>
+    <string name="dns_custom_presets">Mẫu cấu hình nhanh</string>
+    <string name="dns_custom_preset_cf_odoh">Cloudflare ODoH</string>
+    <string name="dns_custom_active_badge">Đang dùng DNS tùy chỉnh</string>
 </resources>
+

@@ -240,4 +240,25 @@
     <string name="dns_block_doh_bypass_title">Block DNS-over-HTTPS (DoH) Bypass</string>
     <string name="dns_block_doh_bypass_desc">Prevent apps and browsers from bypassing local filtering using encrypted DoH/DoT</string>
     <string name="dns_block_doh_bypass_notice">Note: If your browser (e.g. Chrome) shows a connection error (DNS_PROBE_FINISHED_BAD_SECURE_CONFIG), set \"Use secure DNS\" in your browser settings to \"Automatic\".</string>
+
+    <!-- DNS Screen Refactor & ODoH Preparation -->
+    <string name="dns_tab_builtin" translatable="false">Built-in</string>
+    <string name="dns_tab_custom" translatable="false">Custom</string>
+    <string name="dns_active_hero_title" translatable="false">Active DNS Server</string>
+    <string name="dns_active_status_active" translatable="false">Active</string>
+    <string name="dns_protocol_label" translatable="false">Protocol</string>
+    <string name="dns_endpoint_label" translatable="false">Endpoint</string>
+    <string name="dns_fallback_label" translatable="false">Fallback DNS</string>
+    <string name="dns_category_all" translatable="false">All</string>
+    <string name="dns_custom_configure_btn" translatable="false">Configure Custom DNS</string>
+    <string name="dns_custom_sheet_title" translatable="false">Custom DNS &amp; Protocols</string>
+    <string name="dns_custom_sheet_desc" translatable="false">Select a protocol and configure your custom upstream DNS server.</string>
+    <string name="dns_custom_target_url" translatable="false">Target URL</string>
+    <string name="dns_custom_relay_url" translatable="false">Relay URL (Optional)</string>
+    <string name="dns_custom_relay_hint" translatable="false">Oblivious HTTP proxy forwarding encrypted queries to the resolver</string>
+    <string name="dns_custom_server_ip" translatable="false">Server Address</string>
+    <string name="dns_custom_presets" translatable="false">Quick Presets</string>
+    <string name="dns_custom_preset_cf_odoh" translatable="false">Cloudflare ODoH</string>
+    <string name="dns_custom_active_badge" translatable="false">Using Custom DNS</string>
 </resources>
+

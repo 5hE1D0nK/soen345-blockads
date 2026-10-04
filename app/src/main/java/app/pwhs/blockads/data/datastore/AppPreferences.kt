@@ -120,6 +120,7 @@ class AppPreferences internal constructor(
     val fallbackDns: Flow<String> get() = dns.fallbackDns
     val dnsProtocol: Flow<DnsProtocol> get() = dns.dnsProtocol
     val dohUrl: Flow<String> get() = dns.dohUrl
+    val odohRelayUrl: Flow<String> get() = dns.odohRelayUrl
     val dnsProviderId: Flow<String?> get() = dns.dnsProviderId
     val dnsResponseType: Flow<String> get() = dns.dnsResponseType
     val splitDnsZones: Flow<String> get() = dns.splitDnsZones
@@ -189,6 +190,7 @@ class AppPreferences internal constructor(
     suspend fun setFallbackDns(dnsServer: String) = dns.setFallbackDns(dnsServer)
     suspend fun setDnsProtocol(protocol: DnsProtocol) = dns.setDnsProtocol(protocol)
     suspend fun setDohUrl(url: String) = dns.setDohUrl(url)
+    suspend fun setOdohRelayUrl(url: String) = dns.setOdohRelayUrl(url)
     suspend fun setDnsProviderId(providerId: String?) = dns.setDnsProviderId(providerId)
     suspend fun setDnsResponseType(responseType: String) = dns.setDnsResponseType(responseType)
     suspend fun setSplitDnsZones(zones: String) = dns.setSplitDnsZones(zones)

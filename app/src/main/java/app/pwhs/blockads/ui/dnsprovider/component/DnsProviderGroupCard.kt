@@ -42,6 +42,9 @@ fun DnsProviderGroupCard(
         Column {
             providers.forEachIndexed { index, provider ->
                 val isSelected = provider.id == selectedProviderId
+                val isDoh = provider.dohUrl != null && !provider.dohUrl.startsWith("quic://", ignoreCase = true)
+                val isDoq = provider.dohUrl != null && provider.dohUrl.startsWith("quic://", ignoreCase = true)
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -62,41 +65,49 @@ fun DnsProviderGroupCard(
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.SemiBold,
                                 color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                             )
-                            if (provider.dohUrl != null) {
-                                val badgeText = if (provider.dohUrl.startsWith("quic://", ignoreCase = true)) {
-                                    "DoQ"
-                                } else {
-                                    stringResource(R.string.dns_doh_badge)
-                                }
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Surface(
-                                    color = MaterialTheme.colorScheme.secondaryContainer,
-                                    shape = RoundedCornerShape(6.dp)
-                                ) {
-                                    Text(
-                                        text = badgeText,
-                                        style = MaterialTheme.typography.labelSmall,
-                                        fontWeight = FontWeight.Medium,
-                                        color = MaterialTheme.colorScheme.onSecondaryContainer,
-                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                                    )
-                                }
+
+                            Spacer(modifier = Modifier.width(8.dp))
+
+                            // Protocol Badge
+                            val (badgeText, badgeBg, badgeTextColor) = when {
+                                isDoq -> Triple("DoQ", Color(0xFFF59E0B).copy(alpha = 0.15f), Color(0xFFD97706))
+                                isDoh -> Triple(stringResource(R.string.dns_doh_badge), MaterialTheme.colorScheme.primaryContainer, MaterialTheme.colorScheme.onPrimaryContainer)
+                                else -> Triple("Plain", MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.onSurfaceVariant)
+                            }
+
+                            Surface(
+                                color = badgeBg,
+                                shape = RoundedCornerShape(6.dp)
+                            ) {
+                                Text(
+                                    text = badgeText,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = badgeTextColor,
+                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                )
                             }
                         }
-                        Spacer(modifier = Modifier.height(2.dp))
+
+                        Spacer(modifier = Modifier.height(3.dp))
                         Text(
                             text = provider.description,
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                        Spacer(modifier = Modifier.height(2.dp))
-                        Text(
-                            text = provider.ipAddress,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
-                            fontWeight = FontWeight.Medium
-                        )
+
+                        // Only show raw IP for plain UDP DNS (avoids confusing users on DoH)
+                        if (!isDoh && !isDoq && provider.ipAddress != "0.0.0.0") {
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = provider.ipAddress,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
                     }
+
                     if (isSelected) {
                         Spacer(modifier = Modifier.width(12.dp))
                         Icon(
@@ -107,6 +118,7 @@ fun DnsProviderGroupCard(
                         )
                     }
                 }
+
                 if (index < providers.lastIndex) {
                     HorizontalDivider(
                         modifier = Modifier.padding(horizontal = 16.dp),

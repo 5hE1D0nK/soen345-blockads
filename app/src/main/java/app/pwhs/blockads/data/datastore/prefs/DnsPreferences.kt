@@ -21,6 +21,7 @@ class DnsPreferences(private val dataStore: DataStore<Preferences>) {
         val KEY_DNS_RESPONSE_TYPE = stringPreferencesKey("dns_response_type")
         val KEY_SPLIT_DNS_ZONES = stringPreferencesKey("split_dns_zones")
         val KEY_BLOCK_DOH_BYPASS = booleanPreferencesKey("block_doh_bypass")
+        val KEY_ODOH_RELAY_URL = stringPreferencesKey("odoh_relay_url")
 
         const val DNS_RESPONSE_NXDOMAIN = "nxdomain"
         const val DNS_RESPONSE_REFUSED = "refused"
@@ -30,6 +31,7 @@ class DnsPreferences(private val dataStore: DataStore<Preferences>) {
         const val DEFAULT_FALLBACK_DNS = "94.140.14.14"
         const val DEFAULT_DNS_PROTOCOL = "PLAIN"
         const val DEFAULT_DOH_URL = "https://dns.quad9.net/dns-query"
+        const val DEFAULT_ODOH_RELAY_URL = ""
     }
 
     val upstreamDns: Flow<String> = dataStore.data.map { prefs ->
@@ -53,6 +55,10 @@ class DnsPreferences(private val dataStore: DataStore<Preferences>) {
         prefs[KEY_DOH_URL] ?: DEFAULT_DOH_URL
     }
 
+    val odohRelayUrl: Flow<String> = dataStore.data.map { prefs ->
+        prefs[KEY_ODOH_RELAY_URL] ?: DEFAULT_ODOH_RELAY_URL
+    }
+
     val dnsProviderId: Flow<String?> = dataStore.data.map { prefs ->
         prefs[KEY_DNS_PROVIDER_ID]
     }
@@ -64,6 +70,13 @@ class DnsPreferences(private val dataStore: DataStore<Preferences>) {
     val splitDnsZones: Flow<String> = dataStore.data.map { prefs ->
         prefs[KEY_SPLIT_DNS_ZONES] ?: ""
     }
+
+    suspend fun setOdohRelayUrl(url: String) {
+        dataStore.edit { prefs ->
+            prefs[KEY_ODOH_RELAY_URL] = url
+        }
+    }
+
 
     suspend fun setUpstreamDns(dns: String) {
         dataStore.edit { prefs ->
