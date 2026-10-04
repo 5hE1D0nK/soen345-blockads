@@ -23,7 +23,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.DataSaverOn
-import androidx.compose.material.icons.filled.GppGood
 import androidx.compose.material.icons.filled.QueryStats
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Timer
@@ -105,7 +104,6 @@ fun HomeScreen(
     val blockedCount by viewModel.blockedCount.collectAsStateWithLifecycle()
     val domainCount by viewModel.domainCount.collectAsStateWithLifecycle()
     val totalCount by viewModel.totalCount.collectAsStateWithLifecycle()
-    val securityThreatsBlocked by viewModel.securityThreatsBlocked.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val filterLoadFailed by viewModel.filterLoadFailed.collectAsStateWithLifecycle()
     val recentBlocked by viewModel.recentBlocked.collectAsStateWithLifecycle()
@@ -362,16 +360,6 @@ fun HomeScreen(
                     value = formatCount(blockedCount),
                     color = DangerRed,
                     onClick = { onNavigateToLogScreen(LogFilterStatus.BLOCKED) }
-                )
-                StatCard(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxHeight(),
-                    icon = Icons.Default.GppGood,
-                    label = stringResource(R.string.home_security_threats),
-                    value = formatCount(securityThreatsBlocked),
-                    color = SecurityOrange,
-                    onClick = { onNavigateToLogScreen(LogFilterStatus.THREATS) }
                 )
             }
 

@@ -41,8 +41,6 @@ class StatisticsViewModelTest {
         StatisticsViewModel(dao) { now }
         verify { dao.getTotalCountSince(midnight) }
         verify { dao.getBlockedCountSince(midnight) }
-        verify { dao.getBlockedCountByReasonSince(FilterListRepository.BLOCK_REASON_SECURITY, midnight) }
-        verify { dao.getBlockedCountByReason(FilterListRepository.BLOCK_REASON_SECURITY) }
     }
 
     @Test
@@ -51,16 +49,15 @@ class StatisticsViewModelTest {
         every { dao.getBlockedCount() } returns flowOf(4)
         every { dao.getTotalCountSince(any()) } returns flowOf(3)
         every { dao.getBlockedCountSince(any()) } returns flowOf(2)
-        every { dao.getBlockedCountByReason(any()) } returns flowOf(1)
         every { dao.getTopBlockedDomains(any()) } returns flowOf(listOf(TopBlockedDomain("ads.com", 9)))
         every { dao.getTopApps(any()) } returns flowOf(listOf(AppStat("Chrome", "com.android.chrome", 5, 2)))
         val vm = StatisticsViewModel(dao) { now }
         keepHot(
-            vm.totalCount, vm.blockedCount, vm.todayTotal, vm.todayBlocked, vm.securityBlockedCount,
-            vm.todaySecurityBlocked, vm.hourlyStats, vm.dailyStats, vm.weeklyStats, vm.monthlyStats,
+            vm.totalCount, vm.blockedCount, vm.todayTotal, vm.todayBlocked,
+            vm.hourlyStats, vm.dailyStats, vm.weeklyStats, vm.monthlyStats,
             vm.topBlockedDomains, vm.topApps,
         )
-        assertEquals(listOf(10, 4, 3, 2, 1), listOf(vm.totalCount, vm.blockedCount, vm.todayTotal, vm.todayBlocked, vm.securityBlockedCount).map { it.value })
+        assertEquals(listOf(10, 4, 3, 2), listOf(vm.totalCount, vm.blockedCount, vm.todayTotal, vm.todayBlocked).map { it.value })
         assertEquals("ads.com", vm.topBlockedDomains.value.single().domain)
         assertEquals("Chrome", vm.topApps.value.single().appName)
     }

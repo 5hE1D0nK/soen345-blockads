@@ -40,14 +40,6 @@ class StatisticsViewModel(
     val todayBlocked: StateFlow<Int> = dnsLogDao.getBlockedCountSince(todayStart)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
 
-    val securityBlockedCount: StateFlow<Int> = dnsLogDao.getBlockedCountByReason(
-        FilterListRepository.BLOCK_REASON_SECURITY
-    ).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
-
-    val todaySecurityBlocked: StateFlow<Int> = dnsLogDao.getBlockedCountByReasonSince(
-        FilterListRepository.BLOCK_REASON_SECURITY, todayStart
-    ).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
-
     val hourlyStats: StateFlow<List<HourlyStat>> = dnsLogDao.getHourlyStats()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 

@@ -44,4 +44,10 @@
     <string name="stats_chart_12m">12 Tháng</string>
     <string name="stats_per_app">Thống kê theo ứng dụng</string>
     <string name="log_record_logs">Ghi nhật ký</string>
+    <string name="log_filter_by_app">Lọc theo ứng dụng</string>
+    <string name="log_search_app_hint">Tìm ứng dụng…</string>
+    <string name="log_reset_filters">Đặt lại</string>
+    <string name="log_pause_recording">Tạm dừng ghi log</string>
+    <string name="log_resume_recording">Tiếp tục ghi log</string>
+    <string name="log_recording_paused_notice">Đang tạm dừng ghi nhật ký DNS</string>
 </resources>

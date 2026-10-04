@@ -73,6 +73,17 @@
     <string name="firewall_network_all">Tất cả</string>
     <string name="firewall_schedule_hour_plus">Giờ +</string>
     <string name="firewall_schedule_minute_plus">Phút +</string>
+    <string name="firewall_status_disabled">Đã tắt</string>
+    <string name="firewall_enable_all_user">Chặn tất cả ứng dụng người dùng</string>
+    <string name="firewall_disable_all_user">Bỏ chặn tất cả ứng dụng người dùng</string>
+    <string name="firewall_enable_all_system">Chặn tất cả ứng dụng hệ thống</string>
+    <string name="firewall_disable_all_system">Bỏ chặn tất cả ứng dụng hệ thống</string>
+    <string name="firewall_filter_all">Tất cả</string>
+    <string name="firewall_filter_blocked">Đã chặn</string>
+    <string name="firewall_filter_allowed">Được phép</string>
+    <string name="firewall_app_info">Thông tin ứng dụng</string>
+    <string name="firewall_clear_search">Xoá</string>
+    <string name="firewall_reset_rule">Đặt lại</string>
     <string name="block_reason_firewall">Tường lửa</string>
     <string name="filter_setup_active_count">%1$d active</string>
     <string name="filter_error_invalid_url">Vui lòng nhập URL hợp lệ (http:// hoặc https://)</string>

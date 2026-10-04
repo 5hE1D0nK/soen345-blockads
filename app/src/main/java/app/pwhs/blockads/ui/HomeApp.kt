@@ -93,6 +93,9 @@ fun HomeApp(
     val showBottomNavLabels by appPrefs.showBottomNavLabels.collectAsStateWithLifecycle(
         initialValue = true,
     )
+    val firewallEnabled by appPrefs.firewallEnabled.collectAsStateWithLifecycle(
+        initialValue = false,
+    )
     val homeStack = rememberNavBackStack(HomeKey)
     val filterStack = rememberNavBackStack(FilterKey)
     val firewallStack = rememberNavBackStack(FireWallKey)
@@ -145,11 +148,17 @@ fun HomeApp(
                             currentTab = screen
                         },
                         icon = {
-                            Icon(
-                                painter = painterResource(screen.icon),
-                                contentDescription = stringResource(screen.labelRes),
-                                modifier = Modifier.size(24.dp)
-                            )
+                            if (screen == BottomBarScreen.Firewall && firewallEnabled) {
+                                app.pwhs.blockads.ui.component.BurningFireIcon(
+                                    contentDescription = stringResource(screen.labelRes)
+                                )
+                            } else {
+                                Icon(
+                                    painter = painterResource(screen.icon),
+                                    contentDescription = stringResource(screen.labelRes),
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
                         },
                         label = if (showBottomNavLabels) {
                             {

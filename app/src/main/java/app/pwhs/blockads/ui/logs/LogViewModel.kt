@@ -98,11 +98,6 @@ class LogViewModel(
             when (status) {
                 LogFilterStatus.ALL -> if (since > 0) dnsLogDao.getAllSince(since) else dnsLogDao.getAll()
                 LogFilterStatus.BLOCKED -> if (since > 0) dnsLogDao.getBlockedOnlySince(since) else dnsLogDao.getBlockedOnly()
-                LogFilterStatus.THREATS -> if (since > 0) {
-                    dnsLogDao.getBlockedByReasonSince(FilterListRepository.BLOCK_REASON_SECURITY, since)
-                } else {
-                    dnsLogDao.getBlockedByReason(FilterListRepository.BLOCK_REASON_SECURITY)
-                }
             }
         }
         .combine(_searchQuery) { logs, query ->

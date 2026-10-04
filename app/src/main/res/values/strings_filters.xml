@@ -89,6 +89,17 @@
     <string name="firewall_status_schedule" translatable="false">· %1$02d:%2$02d–%3$02d:%4$02d</string>
     <string name="firewall_schedule_hour_plus">Hour +</string>
     <string name="firewall_schedule_minute_plus">Min +</string>
+    <string name="firewall_status_disabled">Disabled</string>
+    <string name="firewall_enable_all_user">Block All User Apps</string>
+    <string name="firewall_disable_all_user">Unblock All User Apps</string>
+    <string name="firewall_enable_all_system">Block All System Apps</string>
+    <string name="firewall_disable_all_system">Unblock All System Apps</string>
+    <string name="firewall_filter_all">All</string>
+    <string name="firewall_filter_blocked">Blocked</string>
+    <string name="firewall_filter_allowed">Allowed</string>
+    <string name="firewall_app_info">App Info</string>
+    <string name="firewall_clear_search">Clear</string>
+    <string name="firewall_reset_rule">Reset</string>
     <string name="block_reason_firewall">Firewall</string>
     <string name="block_reason_upstream_dns">Upstream DNS</string>
     <string name="filter_setup_active_count">%1$d active</string>

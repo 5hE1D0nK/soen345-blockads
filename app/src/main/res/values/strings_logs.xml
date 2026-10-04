@@ -44,4 +44,10 @@
     <string name="stats_chart_12m">12 Months</string>
     <string name="stats_per_app">Per-App Statistics</string>
     <string name="log_record_logs">Record Logs</string>
+    <string name="log_filter_by_app">Filter by App</string>
+    <string name="log_search_app_hint">Search app…</string>
+    <string name="log_reset_filters">Reset</string>
+    <string name="log_pause_recording">Pause recording</string>
+    <string name="log_resume_recording">Resume recording</string>
+    <string name="log_recording_paused_notice">DNS logging is currently paused</string>
 </resources>

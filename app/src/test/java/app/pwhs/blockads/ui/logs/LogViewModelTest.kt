@@ -94,7 +94,7 @@ class LogViewModelTest {
     ) = DnsLogEntry(id = id, domain = domain, timestamp = at, isBlocked = blocked, appName = app, blockedBy = by)
 
     @Test
-    fun `status filter picks blocked-only and threat queries`() = runTest {
+    fun `status filter picks blocked-only queries`() = runTest {
         table.value = listOf(
             entry(1, "ok.com", false),
             entry(2, "ad.com", true, by = "7"),
@@ -107,9 +107,6 @@ class LogViewModelTest {
         assertTrue(vm.showBlockedOnly.value)
         assertEquals(listOf(2L, 3L), vm.logs.value.map { it.id })
 
-        vm.setFilterStatus(LogFilterStatus.THREATS)
-        assertEquals(listOf(3L), vm.logs.value.map { it.id })
-
         vm.setFilterStatus(LogFilterStatus.BLOCKED)
         vm.toggleFilter()
         assertEquals(LogFilterStatus.ALL, vm.filterStatus.value)
@@ -120,8 +117,7 @@ class LogViewModelTest {
         keepHot(vm.logs)
         vm.setTimeRange(TimeRange.HOUR_1)
         vm.setFilterStatus(LogFilterStatus.BLOCKED)
-        vm.setFilterStatus(LogFilterStatus.THREATS)
-        assertEquals(List(3) { now - TimeRange.HOUR_1.millis }, sinceArgs)
+        assertEquals(List(2) { now - TimeRange.HOUR_1.millis }, sinceArgs)
     }
 
     @Test
