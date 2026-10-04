@@ -198,4 +198,20 @@
     <string name="https_wizard_copy_filename">Kopiuj nazwę pliku</string>
     <string name="https_wizard_filename_copied">Nazwa pliku certyfikatu została skopiowana do schowka</string>
     <string name="https_wizard_verified_success">Certyfikat został zweryfikowany i jest gotowy do użycia!</string>
+    <string name="filter_category_privacy">Prywatność</string>
+    <string name="filter_category_social">Społecznościowe</string>
+    <string name="filter_category_annoyances">Irytujące elementy</string>
+    <string name="filter_category_regional">Regionalne</string>
+    <string name="filter_category_other">Inne</string>
+    <string name="firewall_status_disabled">Wyłączone</string>
+    <string name="firewall_enable_all_user">Zablokuj wszystkie aplikacje użytkownika</string>
+    <string name="firewall_disable_all_user">Odblokuj wszystkie aplikacje użytkownika</string>
+    <string name="firewall_enable_all_system">Zablokuj wszystkie aplikacje systemowe</string>
+    <string name="firewall_disable_all_system">Odblokuj wszystkie aplikacje systemowe</string>
+    <string name="firewall_filter_all">Wszystkie</string>
+    <string name="firewall_filter_blocked">Zablokowane</string>
+    <string name="firewall_filter_allowed">Dozwolone</string>
+    <string name="firewall_app_info">Informacje o aplikacji</string>
+    <string name="firewall_clear_search">Wyczyść</string>
+    <string name="firewall_reset_rule">Resetuj</string>
 </resources>

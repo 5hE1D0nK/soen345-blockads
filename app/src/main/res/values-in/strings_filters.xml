@@ -198,4 +198,20 @@
     <string name="https_wizard_copy_filename">Salin nama file</string>
     <string name="https_wizard_filename_copied">Nama file sertifikat disalin ke papan klip</string>
     <string name="https_wizard_verified_success">Sertifikat telah diverifikasi dan siap digunakan!</string>
+    <string name="filter_category_privacy">Privasi</string>
+    <string name="filter_category_social">Media Sosial</string>
+    <string name="filter_category_annoyances">Gangguan</string>
+    <string name="filter_category_regional">Regional</string>
+    <string name="filter_category_other">Lainnya</string>
+    <string name="firewall_status_disabled">Dinonaktifkan</string>
+    <string name="firewall_enable_all_user">Blokir Semua Aplikasi Pengguna</string>
+    <string name="firewall_disable_all_user">Buka Blokir Semua Aplikasi Pengguna</string>
+    <string name="firewall_enable_all_system">Blokir Semua Aplikasi Sistem</string>
+    <string name="firewall_disable_all_system">Buka Blokir Semua Aplikasi Sistem</string>
+    <string name="firewall_filter_all">Semua</string>
+    <string name="firewall_filter_blocked">Diblokir</string>
+    <string name="firewall_filter_allowed">Diizinkan</string>
+    <string name="firewall_app_info">Info Aplikasi</string>
+    <string name="firewall_clear_search">Hapus</string>
+    <string name="firewall_reset_rule">Atur Ulang</string>
 </resources>

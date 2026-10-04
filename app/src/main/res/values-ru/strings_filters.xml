@@ -198,4 +198,20 @@
     <string name="https_wizard_copy_filename">Копировать имя файла</string>
     <string name="https_wizard_filename_copied">Имя файла сертификата скопировано в буфер обмена</string>
     <string name="https_wizard_verified_success">Сертификат проверен и готов к использованию!</string>
+    <string name="filter_category_privacy">Конфиденциальность</string>
+    <string name="filter_category_social">Социальные сети</string>
+    <string name="filter_category_annoyances">Раздражители</string>
+    <string name="filter_category_regional">Региональные</string>
+    <string name="filter_category_other">Другое</string>
+    <string name="firewall_status_disabled">Отключено</string>
+    <string name="firewall_enable_all_user">Заблокировать все приложения пользователя</string>
+    <string name="firewall_disable_all_user">Разблокировать все приложения пользователя</string>
+    <string name="firewall_enable_all_system">Заблокировать все системные приложения</string>
+    <string name="firewall_disable_all_system">Разблокировать все системные приложения</string>
+    <string name="firewall_filter_all">Все</string>
+    <string name="firewall_filter_blocked">Заблокированные</string>
+    <string name="firewall_filter_allowed">Разрешенные</string>
+    <string name="firewall_app_info">О приложении</string>
+    <string name="firewall_clear_search">Очистить</string>
+    <string name="firewall_reset_rule">Сбросить</string>
 </resources>

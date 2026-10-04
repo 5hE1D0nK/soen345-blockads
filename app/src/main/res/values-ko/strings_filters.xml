@@ -198,4 +198,20 @@
     <string name="https_wizard_copy_filename">파일 이름 복사</string>
     <string name="https_wizard_filename_copied">인증서 파일 이름이 클립보드에 복사되었습니다</string>
     <string name="https_wizard_verified_success">인증서가 확인되었으며 사용할 준비가 되었습니다!</string>
+    <string name="filter_category_privacy">개인정보 보호</string>
+    <string name="filter_category_social">소셜 미디어</string>
+    <string name="filter_category_annoyances">성가신 요소</string>
+    <string name="filter_category_regional">지역</string>
+    <string name="filter_category_other">기타</string>
+    <string name="firewall_status_disabled">비활성화됨</string>
+    <string name="firewall_enable_all_user">모든 사용자 앱 차단</string>
+    <string name="firewall_disable_all_user">모든 사용자 앱 차단 해제</string>
+    <string name="firewall_enable_all_system">모든 시스템 앱 차단</string>
+    <string name="firewall_disable_all_system">모든 시스템 앱 차단 해제</string>
+    <string name="firewall_filter_all">전체</string>
+    <string name="firewall_filter_blocked">차단됨</string>
+    <string name="firewall_filter_allowed">허용됨</string>
+    <string name="firewall_app_info">앱 정보</string>
+    <string name="firewall_clear_search">지우기</string>
+    <string name="firewall_reset_rule">초기화</string>
 </resources>

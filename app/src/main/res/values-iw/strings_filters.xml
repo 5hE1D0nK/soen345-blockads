@@ -198,4 +198,20 @@
     <string name="https_wizard_copy_filename">העתק שם קובץ</string>
     <string name="https_wizard_filename_copied">שם קובץ התעודה הועתק ללוח</string>
     <string name="https_wizard_verified_success">התעודה מאומתת ומוכנה לשימוש!</string>
+    <string name="filter_category_privacy">פרטיות</string>
+    <string name="filter_category_social">רשתות חברתיות</string>
+    <string name="filter_category_annoyances">מטרדים</string>
+    <string name="filter_category_regional">אזורי</string>
+    <string name="filter_category_other">אחר</string>
+    <string name="firewall_status_disabled">מושבת</string>
+    <string name="firewall_enable_all_user">חסום את כל יישומי המשתמש</string>
+    <string name="firewall_disable_all_user">בטל חסימה של כל יישומי המשתמש</string>
+    <string name="firewall_enable_all_system">חסום את כל יישומי המערכת</string>
+    <string name="firewall_disable_all_system">בטל חסימה של כל יישומי המערכת</string>
+    <string name="firewall_filter_all">הכל</string>
+    <string name="firewall_filter_blocked">חסום</string>
+    <string name="firewall_filter_allowed">מורשה</string>
+    <string name="firewall_app_info">פרטי יישום</string>
+    <string name="firewall_clear_search">נקה</string>
+    <string name="firewall_reset_rule">אפס</string>
 </resources>

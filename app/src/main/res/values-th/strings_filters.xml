@@ -198,4 +198,20 @@
     <string name="https_wizard_copy_filename">คัดลอกชื่อไฟล์</string>
     <string name="https_wizard_filename_copied">คัดลอกชื่อไฟล์ใบรับรองไปยังคลิปบอร์ดแล้ว</string>
     <string name="https_wizard_verified_success">ใบรับรองได้รับการยืนยันและพร้อมใช้งานแล้ว!</string>
+    <string name="filter_category_privacy">ความเป็นส่วนตัว</string>
+    <string name="filter_category_social">โซเชียล</string>
+    <string name="filter_category_annoyances">สิ่งรบกวน</string>
+    <string name="filter_category_regional">ตามภูมิภาค</string>
+    <string name="filter_category_other">อื่นๆ</string>
+    <string name="firewall_status_disabled">ปิดใช้งาน</string>
+    <string name="firewall_enable_all_user">บล็อกแอปของผู้ใช้ทั้งหมด</string>
+    <string name="firewall_disable_all_user">ปลดบล็อกแอปของผู้ใช้ทั้งหมด</string>
+    <string name="firewall_enable_all_system">บล็อกแอปของระบบทั้งหมด</string>
+    <string name="firewall_disable_all_system">ปลดบล็อกแอปของระบบทั้งหมด</string>
+    <string name="firewall_filter_all">ทั้งหมด</string>
+    <string name="firewall_filter_blocked">ถูกบล็อก</string>
+    <string name="firewall_filter_allowed">อนุญาต</string>
+    <string name="firewall_app_info">ข้อมูลแอป</string>
+    <string name="firewall_clear_search">ล้าง</string>
+    <string name="firewall_reset_rule">รีเซ็ต</string>
 </resources>

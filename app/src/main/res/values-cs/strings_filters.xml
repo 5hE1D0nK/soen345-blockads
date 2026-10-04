@@ -198,4 +198,20 @@
     <string name="https_wizard_copy_filename">Kopírovat název souboru</string>
     <string name="https_wizard_filename_copied">Název souboru certifikátu byl zkopírován do schránky</string>
     <string name="https_wizard_verified_success">Certifikát je ověřen a připraven k použití!</string>
+    <string name="filter_category_privacy">Soukromí</string>
+    <string name="filter_category_social">Sociální sítě</string>
+    <string name="filter_category_annoyances">Otravné prvky</string>
+    <string name="filter_category_regional">Regionální</string>
+    <string name="filter_category_other">Ostatní</string>
+    <string name="firewall_status_disabled">Vypnuto</string>
+    <string name="firewall_enable_all_user">Blokovat všechny uživatelské aplikace</string>
+    <string name="firewall_disable_all_user">Odblokovat všechny uživatelské aplikace</string>
+    <string name="firewall_enable_all_system">Blokovat všechny systémové aplikace</string>
+    <string name="firewall_disable_all_system">Odblokovat všechny systémové aplikace</string>
+    <string name="firewall_filter_all">Vše</string>
+    <string name="firewall_filter_blocked">Blokováno</string>
+    <string name="firewall_filter_allowed">Povoleno</string>
+    <string name="firewall_app_info">Informace o aplikaci</string>
+    <string name="firewall_clear_search">Vymazat</string>
+    <string name="firewall_reset_rule">Obnovit</string>
 </resources>

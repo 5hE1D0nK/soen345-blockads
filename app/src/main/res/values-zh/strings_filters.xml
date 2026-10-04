@@ -198,4 +198,20 @@
     <string name="https_wizard_copy_filename">复制文件名</string>
     <string name="https_wizard_filename_copied">证书文件名已复制到剪贴板</string>
     <string name="https_wizard_verified_success">证书已验证，可立即投入使用！</string>
+    <string name="filter_category_privacy">隐私</string>
+    <string name="filter_category_social">社交媒体</string>
+    <string name="filter_category_annoyances">恼人元素</string>
+    <string name="filter_category_regional">地区</string>
+    <string name="filter_category_other">其他</string>
+    <string name="firewall_status_disabled">已禁用</string>
+    <string name="firewall_enable_all_user">阻止所有用户应用</string>
+    <string name="firewall_disable_all_user">取消阻止所有用户应用</string>
+    <string name="firewall_enable_all_system">阻止所有系统应用</string>
+    <string name="firewall_disable_all_system">取消阻止所有系统应用</string>
+    <string name="firewall_filter_all">全部</string>
+    <string name="firewall_filter_blocked">已阻止</string>
+    <string name="firewall_filter_allowed">已允许</string>
+    <string name="firewall_app_info">应用信息</string>
+    <string name="firewall_clear_search">清除</string>
+    <string name="firewall_reset_rule">重置</string>
 </resources>

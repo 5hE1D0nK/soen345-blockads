@@ -216,4 +216,20 @@ Desteklenen formatlar:
     <string name="https_wizard_copy_filename">Dosya adını kopyala</string>
     <string name="https_wizard_filename_copied">Sertifika dosya adı panoya kopyalandı</string>
     <string name="https_wizard_verified_success">Sertifika doğrulandı ve kullanıma hazır!</string>
+    <string name="filter_category_privacy">Gizlilik</string>
+    <string name="filter_category_social">Sosyal Medya</string>
+    <string name="filter_category_annoyances">Can sıkıcı ögeler</string>
+    <string name="filter_category_regional">Bölgesel</string>
+    <string name="filter_category_other">Diğer</string>
+    <string name="firewall_status_disabled">Devre dışı</string>
+    <string name="firewall_enable_all_user">Tüm Kullanıcı Uygulamalarını Engelle</string>
+    <string name="firewall_disable_all_user">Tüm Kullanıcı Uygulamalarının Engelini Kaldır</string>
+    <string name="firewall_enable_all_system">Tüm Sistem Uygulamalarını Engelle</string>
+    <string name="firewall_disable_all_system">Tüm Sistem Uygulamalarının Engelini Kaldır</string>
+    <string name="firewall_filter_all">Tümü</string>
+    <string name="firewall_filter_blocked">Engellendi</string>
+    <string name="firewall_filter_allowed">İzin verildi</string>
+    <string name="firewall_app_info">Uygulama Bilgisi</string>
+    <string name="firewall_clear_search">Temizle</string>
+    <string name="firewall_reset_rule">Sıfırla</string>
 </resources>

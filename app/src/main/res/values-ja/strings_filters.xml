@@ -198,4 +198,20 @@
     <string name="https_wizard_copy_filename">ファイル名をコピー</string>
     <string name="https_wizard_filename_copied">証明書ファイル名をクリップボードにコピーしました</string>
     <string name="https_wizard_verified_success">証明書が検証され、使用準備が整いました！</string>
+    <string name="filter_category_privacy">プライバシー</string>
+    <string name="filter_category_social">ソーシャル</string>
+    <string name="filter_category_annoyances">迷惑要素</string>
+    <string name="filter_category_regional">地域</string>
+    <string name="filter_category_other">その他</string>
+    <string name="firewall_status_disabled">無効</string>
+    <string name="firewall_enable_all_user">すべてのユーザーアプリをブロック</string>
+    <string name="firewall_disable_all_user">すべてのユーザーアプリのブロックを解除</string>
+    <string name="firewall_enable_all_system">すべてのシステムアプリをブロック</string>
+    <string name="firewall_disable_all_system">すべてのシステムアプリのブロックを解除</string>
+    <string name="firewall_filter_all">すべて</string>
+    <string name="firewall_filter_blocked">ブロック済み</string>
+    <string name="firewall_filter_allowed">許可済み</string>
+    <string name="firewall_app_info">アプリ情報</string>
+    <string name="firewall_clear_search">クリア</string>
+    <string name="firewall_reset_rule">リセット</string>
 </resources>

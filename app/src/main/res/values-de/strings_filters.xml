@@ -198,4 +198,20 @@
     <string name="https_wizard_copy_filename">Dateinamen kopieren</string>
     <string name="https_wizard_filename_copied">Zertifikatsdateiname in die Zwischenablage kopiert</string>
     <string name="https_wizard_verified_success">Zertifikat ist verifiziert und einsatzbereit!</string>
+    <string name="filter_category_privacy">Privatsphäre</string>
+    <string name="filter_category_social">Soziale Medien</string>
+    <string name="filter_category_annoyances">Belästigungen</string>
+    <string name="filter_category_regional">Regional</string>
+    <string name="filter_category_other">Sonstige</string>
+    <string name="firewall_status_disabled">Deaktiviert</string>
+    <string name="firewall_enable_all_user">Alle Benutzer-Apps blockieren</string>
+    <string name="firewall_disable_all_user">Alle Benutzer-Apps freigeben</string>
+    <string name="firewall_enable_all_system">Alle System-Apps blockieren</string>
+    <string name="firewall_disable_all_system">Alle System-Apps freigeben</string>
+    <string name="firewall_filter_all">Alle</string>
+    <string name="firewall_filter_blocked">Blockiert</string>
+    <string name="firewall_filter_allowed">Erlaubt</string>
+    <string name="firewall_app_info">App-Info</string>
+    <string name="firewall_clear_search">Löschen</string>
+    <string name="firewall_reset_rule">Zurücksetzen</string>
 </resources>

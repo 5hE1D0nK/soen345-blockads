@@ -198,4 +198,20 @@
     <string name="https_wizard_copy_filename">Файл атын көшіру</string>
     <string name="https_wizard_filename_copied">Сертификат файлының аты алмасу буферіне көшірілді</string>
     <string name="https_wizard_verified_success">Сертификат тексерілді және пайдалануға дайын!</string>
+    <string name="filter_category_privacy">Құпиялылық</string>
+    <string name="filter_category_social">Әлеуметтік желілер</string>
+    <string name="filter_category_annoyances">Кедергілер</string>
+    <string name="filter_category_regional">Аймақтық</string>
+    <string name="filter_category_other">Басқа</string>
+    <string name="firewall_status_disabled">Өшірулі</string>
+    <string name="firewall_enable_all_user">Барлық пайдаланушы қолданбаларын бұғаттау</string>
+    <string name="firewall_disable_all_user">Барлық пайдаланушы қолданбаларын бұғаттаудан шығару</string>
+    <string name="firewall_enable_all_system">Барлық жүйелік қолданбаларды бұғаттау</string>
+    <string name="firewall_disable_all_system">Барлық жүйелік қолданбаларды бұғаттаудан шығару</string>
+    <string name="firewall_filter_all">Барлығы</string>
+    <string name="firewall_filter_blocked">Бұғатталған</string>
+    <string name="firewall_filter_allowed">Рұқсат етілген</string>
+    <string name="firewall_app_info">Қолданба туралы ақпарат</string>
+    <string name="firewall_clear_search">Тазалау</string>
+    <string name="firewall_reset_rule">Қалпына келтіру</string>
 </resources>

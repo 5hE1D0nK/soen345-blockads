@@ -211,4 +211,20 @@
     <string name="https_wizard_copy_filename">نسخ اسم الملف</string>
     <string name="https_wizard_filename_copied">تم نسخ اسم ملف الشهادة إلى الحافظة</string>
     <string name="https_wizard_verified_success">تم التحقق من الشهادة وهي جاهزة للاستخدام!</string>
+    <string name="filter_category_privacy">الخصوصية</string>
+    <string name="filter_category_social">شبكات اجتماعية</string>
+    <string name="filter_category_annoyances">عناصر مزعجة</string>
+    <string name="filter_category_regional">إقليمي</string>
+    <string name="filter_category_other">أخرى</string>
+    <string name="firewall_status_disabled">معطل</string>
+    <string name="firewall_enable_all_user">حظر جميع تطبيقات المستخدم</string>
+    <string name="firewall_disable_all_user">إلغاء حظر جميع تطبيقات المستخدم</string>
+    <string name="firewall_enable_all_system">حظر جميع تطبيقات النظام</string>
+    <string name="firewall_disable_all_system">إلغاء حظر جميع تطبيقات النظام</string>
+    <string name="firewall_filter_all">الكل</string>
+    <string name="firewall_filter_blocked">محظور</string>
+    <string name="firewall_filter_allowed">مسموح</string>
+    <string name="firewall_app_info">معلومات التطبيق</string>
+    <string name="firewall_clear_search">مسح</string>
+    <string name="firewall_reset_rule">إعادة تعيين</string>
 </resources>
