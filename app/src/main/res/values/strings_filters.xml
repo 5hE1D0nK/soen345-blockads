@@ -69,7 +69,12 @@
     <string name="block_reason_filter_list">Filter List</string>
     <string name="block_reason_security">Dangerous Website</string>
     <string name="filter_category_ad">Ad Blocking</string>
+    <string name="filter_category_privacy">Privacy</string>
+    <string name="filter_category_social">Social</string>
+    <string name="filter_category_annoyances">Annoyances</string>
     <string name="filter_category_security">Security</string>
+    <string name="filter_category_regional">Regional</string>
+    <string name="filter_category_other">Other</string>
     <string name="firewall_title">Firewall</string>
     <string name="firewall_count">%d apps blocked</string>
     <string name="firewall_search">Search apps…</string>

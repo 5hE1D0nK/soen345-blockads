@@ -55,7 +55,12 @@
     <string name="block_reason_filter_list">Danh sách bộ lọc</string>
     <string name="block_reason_security">Website nguy hiểm</string>
     <string name="filter_category_ad">Chặn quảng cáo</string>
+    <string name="filter_category_privacy">Quyền riêng tư</string>
+    <string name="filter_category_social">Mạng xã hội</string>
+    <string name="filter_category_annoyances">Phiền toái</string>
     <string name="filter_category_security">Bảo mật</string>
+    <string name="filter_category_regional">Khu vực</string>
+    <string name="filter_category_other">Khác</string>
     <string name="firewall_title">Tường lửa</string>
     <string name="firewall_count">%d ứng dụng bị chặn</string>
     <string name="firewall_search">Tìm ứng dụng…</string>
