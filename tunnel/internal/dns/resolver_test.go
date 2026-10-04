@@ -15,6 +15,7 @@ func TestParseProtocol(t *testing.T) {
 		"DOH": ProtocolDoH, "doh": ProtocolDoH, "DoH": ProtocolDoH,
 		"DOT": ProtocolDoT, "dot": ProtocolDoT,
 		"DOQ": ProtocolDoQ, "doq": ProtocolDoQ,
+		"ODOH": ProtocolODoH, "odoh": ProtocolODoH, "ODoH": ProtocolODoH,
 		"PLAIN": ProtocolPlain, "": ProtocolPlain, "udp": ProtocolPlain, "DOH ": ProtocolPlain,
 	}
 	for in, want := range tests {
@@ -25,11 +26,11 @@ func TestParseProtocol(t *testing.T) {
 }
 
 func FuzzParseProtocol(f *testing.F) {
-	for _, s := range []string{"DOH", "dot", "DoQ", "plain", "", "\x00"} {
+	for _, s := range []string{"DOH", "dot", "DoQ", "plain", "ODOH", "", "\x00"} {
 		f.Add(s)
 	}
 	f.Fuzz(func(t *testing.T, s string) {
-		if p := ParseProtocol(s); p < ProtocolPlain || p > ProtocolDoQ {
+		if p := ParseProtocol(s); p < ProtocolPlain || p > ProtocolODoH {
 			t.Fatalf("ParseProtocol(%q) = %d, out of range", s, p)
 		}
 	})
