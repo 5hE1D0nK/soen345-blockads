@@ -30,7 +30,6 @@ class VpnSessionControllerRaceTest {
         f.events.clear()
     }
 
-    @Ignore("known bug: stop during STARTING does not cancel the start job, which then ends RUNNING")
     @Test
     fun `stop during STARTING ends STOPPED`() = session { f ->
         f.configGate = CompletableDeferred()
@@ -44,7 +43,6 @@ class VpnSessionControllerRaceTest {
         assertEquals(VpnState.STOPPED, f.state)
     }
 
-    @Ignore("known bug: stop during the retry backoff lets the next attempt bring the session back to RUNNING")
     @Test
     fun `stop during retry backoff ends STOPPED`() = session { f ->
         f.tunnelResults += listOf(TunnelResult.Failure, f.success())
@@ -57,7 +55,6 @@ class VpnSessionControllerRaceTest {
         assertEquals(VpnState.STOPPED, f.state)
     }
 
-    @Ignore("known bug: stop during restart's cleanup delay is overridden when the delayed start runs")
     @Test
     fun `stop during a restart's cleanup delay ends STOPPED`() = session { f ->
         startRunning(f)

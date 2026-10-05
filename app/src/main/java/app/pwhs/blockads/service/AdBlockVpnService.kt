@@ -236,6 +236,7 @@ class AdBlockVpnService : VpnService() {
     }
 
     private fun updateNotification() {
+        if (status.state.value == VpnState.STOPPED) return
         val notification = buildCurrentNotification()
         vpnNotificationManager.updateNotification(notification)
         AdBlockWidgetProvider.sendUpdateBroadcast(this)

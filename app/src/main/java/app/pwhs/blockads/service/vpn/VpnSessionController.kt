@@ -8,12 +8,15 @@ import app.pwhs.blockads.data.datastore.AppPreferences
 import app.pwhs.blockads.service.FirewallManager
 import app.pwhs.blockads.service.VpnRetryManager
 import app.pwhs.blockads.service.VpnState
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -91,7 +94,8 @@ class VpnSessionController(
         if (s != VpnState.RUNNING && s != VpnState.STARTING) return
 
         Timber.d("Restarting VPN to apply new settings")
-        scope.launch(ioDispatcher) {
+        restartJob?.cancel()
+        restartJob = scope.launch(ioDispatcher) {
             tearDownForRestart()
             retryManager.reset()
             delay(RESTART_CLEANUP_DELAY_MS)
@@ -107,7 +111,7 @@ class VpnSessionController(
         host.enterForeground()
         network.startNetworkMonitoring()
 
-        scope.launch {
+        startJob = scope.launch {
             try {
                 val startupTime = clock()
 
@@ -134,7 +138,7 @@ class VpnSessionController(
                 host.updateNotification()
 
                 var vpnEstablished = false
-                while (!vpnEstablished && retryManager.shouldRetry()) {
+                while (isActive && !vpnEstablished && retryManager.shouldRetry()) {
                     when (val tunnelRes = establishTunnel(config.whitelistedApps)) {
                         is TunnelResult.Success -> {
                             vpnInterface = tunnelRes.vpnInterface
@@ -207,6 +211,8 @@ class VpnSessionController(
                     engine.startTunnel(pfd, resolvedWgConfigJson, httpsFilteringEnabled)
                 }
 
+            } catch (e: CancellationException) {
+                Timber.d("VPN startup cancelled")
             } catch (e: Exception) {
                 Timber.e(e, "VPN startup failed")
                 stop()
@@ -214,7 +220,14 @@ class VpnSessionController(
         }
     }
 
+    private var startJob: Job? = null
+    private var restartJob: Job? = null
+
     fun stop(showStoppedNotification: Boolean = true) {
+        startJob?.cancel()
+        startJob = null
+        restartJob?.cancel()
+        restartJob = null
         status.state.value = VpnState.STOPPING
         isReconnecting = false
         isPhysicalNetworkLost = false
@@ -234,7 +247,7 @@ class VpnSessionController(
             }
             vpnInterface = null
 
-            val goStop = scope.launch(NonCancellable) { engine.stop() }
+            val goStop = scope.launch(NonCancellable + ioDispatcher) { engine.stop() }
             if (withTimeoutOrNull(GO_STOP_TIMEOUT_MS) { goStop.join() } == null) {
                 Timber.w("Go tunnel stop still running after ${GO_STOP_TIMEOUT_MS}ms — finishing shutdown anyway")
             }
@@ -288,12 +301,18 @@ class VpnSessionController(
             status.state.value = VpnState.STOPPED
             status.lastStoppedTimestamp = clock()
         }
+        status.privateDnsStrict.value = false
         isReconnecting = false
         isPhysicalNetworkLost = false
         status.startTimestamp = 0L
 
         network.stopNetworkMonitoring()
         network.stopPeriodicMonitoring()
+
+        startJob?.cancel()
+        startJob = null
+        restartJob?.cancel()
+        restartJob = null
 
         scope.cancel()
         try {
