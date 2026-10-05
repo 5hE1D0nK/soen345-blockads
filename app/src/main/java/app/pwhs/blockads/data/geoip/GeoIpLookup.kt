@@ -10,6 +10,9 @@ import java.util.Locale
 /**
  * High-performance, 100% on-device GeoIP lookup engine.
  * Resolves IPv4 addresses and domains to ISO 3166-1 alpha-2 country codes.
+ *
+ * Binary database format (10 bytes/record: uint32 start, uint32 end, 2-byte ASCII country code).
+ * Generated via scripts/generate_geoip.py using CC0 public domain data from sapics/ip-location-db.
  */
 object GeoIpLookup {
 

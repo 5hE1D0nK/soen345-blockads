@@ -153,6 +153,7 @@ android {
 
         resources {
             excludes += "**/sentry-debug-meta.properties"
+            excludes += "META-INF/version-control-info.textproto"
         }
     }
 }
