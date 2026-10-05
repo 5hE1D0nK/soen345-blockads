@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Block
+import androidx.compose.material.icons.outlined.Layers
 import androidx.compose.material.icons.outlined.NotificationsOff
 import androidx.compose.material.icons.outlined.Public
 import androidx.compose.material.icons.outlined.Security
@@ -19,6 +20,7 @@ enum class FilterCategoryTab(
     @StringRes val titleRes: Int,
     val icon: ImageVector
 ) {
+    ALL(R.string.filter_chip_all, Icons.Outlined.Layers),
     STARRED(R.string.filter_category_starred, Icons.Filled.Star),
     ADS(R.string.filter_category_ad, Icons.Outlined.Block),
     PRIVACY(R.string.filter_category_privacy, Icons.Outlined.VisibilityOff),
@@ -31,6 +33,10 @@ enum class FilterCategoryTab(
 }
 
 fun FilterList.matchesCategory(tab: FilterCategoryTab, starredUrls: Set<String> = emptySet()): Boolean {
+    if (tab == FilterCategoryTab.ALL) {
+        return true
+    }
+
     if (tab == FilterCategoryTab.STARRED) {
         return starredUrls.contains(url)
     }

@@ -33,6 +33,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.pwhs.blockads.R
+import app.pwhs.blockads.data.entities.FilterList as FilterListEntity
 import app.pwhs.blockads.ui.event.UiEventEffect
 import app.pwhs.blockads.ui.filter.component.AddFilterDialog
 import app.pwhs.blockads.ui.filter.component.CustomTabContent
@@ -123,6 +124,13 @@ fun FilterSetupScreen(
             ) { page ->
                 val currentTab = FilterCategoryTab.entries[page]
                 val tabFilters = filterLists.filter { it.matchesCategory(currentTab, starredUrls) }
+                val displayFilters = remember(tabFilters, currentTab) {
+                    if (currentTab == FilterCategoryTab.ALL) {
+                        tabFilters.sortedWith(compareByDescending<FilterListEntity> { it.isEnabled }.thenBy { it.name })
+                    } else {
+                        tabFilters
+                    }
+                }
 
                 if (currentTab == FilterCategoryTab.CUSTOM) {
                     if (isSearching && tabFilters.isEmpty()) {
@@ -158,7 +166,7 @@ fun FilterSetupScreen(
                         ) {
                             item {
                                 FilterListCard(
-                                    filters = tabFilters,
+                                    filters = displayFilters,
                                     onToggle = { viewModel.toggleFilterList(it) },
                                     onFilterClick = onNavigateToFilterDetail,
                                     starredUrls = starredUrls,
