@@ -105,7 +105,8 @@ class VpnTunnelBuilderTest {
         assertEquals("", result.resolvedWgConfigJson)
         assertEquals(listOf("BlockAds"), sessions)
         assertEquals(1350, mtu)
-        assertTrue(routes.containsAll(listOf("0.0.0.0/0", "::/0", "100.64.100.1/32", "fd00::1/128")))
+        assertTrue(routes.containsAll(listOf("0.0.0.0/0", "100.64.100.1/32", "fd00::1/128")))
+        assertTrue("::/0" !in routes)
         assertEquals(listOf("app.pwhs.blockads", "com.bank"), disallowed)
         assertTrue(bypass)
     }
@@ -116,7 +117,7 @@ class VpnTunnelBuilderTest {
         establish()
         assertTrue("0.0.0.0/0" !in routes)
         assertTrue(routes.size > 10)
-        assertTrue("::/0" in routes)
+        assertTrue("::/0" !in routes)
     }
 
     @Test

@@ -87,7 +87,6 @@ object TunnelPlanner {
         routes = listOf(
             TunnelRoute(Cidr("100.64.100.1", 32)),
             TunnelRoute(Cidr("fd00::1", 128)),
-            TunnelRoute(Cidr("::", 0)),
         ) + ipv4Routes(input.excludeLan),
         dnsServers = listOf("100.64.100.1", "fd00::1"),
         disallowedApps = emptyList(),

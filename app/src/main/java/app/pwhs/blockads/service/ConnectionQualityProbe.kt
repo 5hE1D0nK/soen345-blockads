@@ -65,6 +65,7 @@ class ConnectionQualityProbe(
             socket = Socket()
             socketProtector?.let { protector ->
                 try {
+                    socket.bind(InetSocketAddress(0))
                     val pfd = android.os.ParcelFileDescriptor.fromSocket(socket)
                     protector(pfd.fd)
                     pfd.detachFd()

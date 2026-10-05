@@ -43,7 +43,6 @@ class TunnelPlannerTest {
                 routes = listOf(
                     TunnelRoute(Cidr("100.64.100.1", 32)),
                     TunnelRoute(Cidr("fd00::1", 128)),
-                    TunnelRoute(Cidr("::", 0)),
                     TunnelRoute(Cidr("0.0.0.0", 0)),
                 ),
                 dnsServers = listOf("100.64.100.1", "fd00::1"),
@@ -61,19 +60,19 @@ class TunnelPlannerTest {
     fun `direct excludeLan swaps the IPv4 default for decomposed routes and never uses excludeRoute`() {
         for (sdk in listOf(29, 32, 33, 35)) {
             val routes = TunnelPlanner.plan(input(excludeLan = true, sdkInt = sdk)).routes
-            assertEquals(3 + decomposedLan.size, routes.size)
-            assertEquals(decomposedLan, routes.drop(3))
+            assertEquals(2 + decomposedLan.size, routes.size)
+            assertEquals(decomposedLan, routes.drop(2))
             assertTrue(routes.none { it.excluded })
             assertTrue(TunnelRoute(Cidr("0.0.0.0", 0)) !in routes)
+            assertTrue(TunnelRoute(Cidr("::", 0)) !in routes)
         }
     }
 
     @Test
-    fun `excludeLan leaves IPv6 LAN inside the tunnel in both modes`() {
-        for (plan in listOf(TunnelPlanner.plan(input(excludeLan = true)), TunnelPlanner.plan(wg(excludeLan = true)))) {
-            assertTrue(TunnelRoute(Cidr("::", 0)) in plan.routes)
-            assertTrue(plan.routes.none { it.cidr.address.contains(":") && it.excluded })
-        }
+    fun `excludeLan leaves IPv6 LAN inside the tunnel in wireguard mode`() {
+        val plan = TunnelPlanner.plan(wg(excludeLan = true))
+        assertTrue(TunnelRoute(Cidr("::", 0)) in plan.routes)
+        assertTrue(plan.routes.none { it.cidr.address.contains(":") && it.excluded })
     }
 
     @Test
