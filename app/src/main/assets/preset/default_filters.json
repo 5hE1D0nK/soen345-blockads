@@ -83,7 +83,7 @@
     "category": "ads",
     "ruleCount": 230281,
     "downloadUrl": "https://filter.pwhs.app/hagezi_pro.zip?v=1790723115",
-    "originalUrl": "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/pro.txt",
+    "originalUrl": "https://hagezi-mirror.dnsbunker.org/adblock/pro.txt",
     "bloomUrl": "https://filter.pwhs.app/hagezi_pro.bloom?v=1790723115",
     "trieUrl": "https://filter.pwhs.app/hagezi_pro.trie?v=1790723115",
     "cssUrl": "https://filter.pwhs.app/hagezi_pro.css?v=1790723115",

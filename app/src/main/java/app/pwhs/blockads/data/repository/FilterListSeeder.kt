@@ -100,6 +100,7 @@ class FilterListSeeder(
 
             if (existing != null) {
                 val needsUpdate = existing.category != cat ||
+                    (originalUrl.isNotEmpty() && existing.originalUrl != originalUrl) ||
                     (item.bloomUrl.isNotEmpty() && existing.bloomUrl != item.bloomUrl) ||
                     (item.trieUrl.isNotEmpty() && existing.trieUrl != item.trieUrl) ||
                     (item.ruleCount > 0 && existing.ruleCount != item.ruleCount) ||
