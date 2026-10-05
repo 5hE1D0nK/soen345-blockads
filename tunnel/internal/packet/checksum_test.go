@@ -70,7 +70,6 @@ func verifyIPv6(t *testing.T, pkt []byte, payloadLen int) {
 }
 
 func TestBuildIPv6UDPPacketChecksum(t *testing.T) {
-	t.Skip("known bug: IPv6 UDP checksum is computed before the payload is copied")
 	for _, payload := range [][]byte{{}, {0xAB}, []byte("some dns payload"), make([]byte, 511)} {
 		for i := range payload {
 			payload[i] = byte(i*7 + 1)

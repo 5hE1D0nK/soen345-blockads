@@ -45,9 +45,6 @@ func TestBuildParseRoundTrip(t *testing.T) {
 	}
 	for _, v6 := range []bool{false, true} {
 		t.Run(map[bool]string{false: "ipv4", true: "ipv6"}[v6], func(t *testing.T) {
-			if v6 {
-				t.Skip("known bug: IPv6 UDP checksum is computed before the payload is copied")
-			}
 			for _, name := range []string{"ads.example.com", "odd.example.co"} {
 				for _, qtype := range []uint16{dns.TypeA, dns.TypeAAAA} {
 					q := dnsQuery(t, name, qtype)

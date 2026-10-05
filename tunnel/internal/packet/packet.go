@@ -313,10 +313,11 @@ func BuildIPv6UDPPacket(srcIP, dstIP net.IP, srcPort, dstPort uint16, payload []
 	binary.BigEndian.PutUint16(packet[udpOffset+2:udpOffset+4], dstPort)
 	binary.BigEndian.PutUint16(packet[udpOffset+4:udpOffset+6], uint16(udpLen))
 
+	copy(packet[udpOffset+udpHeaderSize:], payload)
+
 	csum := calculateUDPIPv6Checksum(srcIP.To16(), dstIP.To16(), packet, udpOffset, udpLen)
 	binary.BigEndian.PutUint16(packet[udpOffset+6:udpOffset+8], csum)
 
-	copy(packet[udpOffset+udpHeaderSize:], payload)
 	return packet
 }
 
