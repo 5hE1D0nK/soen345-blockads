@@ -154,7 +154,9 @@ class VpnNotificationManager(private val context: Context) {
             .setOngoing(true)
             .setContentIntent(pendingIntent)
 
-        if (isPhysicalNetworkLost) {
+        if (isStopping) {
+            // No action buttons while stopping
+        } else if (isPhysicalNetworkLost) {
             builder.addAction(
                 Notification.Action.Builder(
                     null, context.getString(R.string.vpn_notification_action_stop), stopPendingIntent
@@ -329,6 +331,10 @@ class VpnNotificationManager(private val context: Context) {
 
     fun updateNotification(notification: Notification) {
         notificationManager?.notify(NOTIFICATION_ID, notification)
+    }
+
+    fun cancelForegroundNotification() {
+        notificationManager?.cancel(NOTIFICATION_ID)
     }
 
     private fun formatUptime(millis: Long): String {

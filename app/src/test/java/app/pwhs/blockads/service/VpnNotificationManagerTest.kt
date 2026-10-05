@@ -8,6 +8,7 @@ import androidx.test.core.app.ApplicationProvider
 import app.pwhs.blockads.R
 import app.pwhs.blockads.service.vpn.VpnNotificationManager
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -39,7 +40,7 @@ class VpnNotificationManagerTest {
 
     private val Notification.title get() = extras.getCharSequence(Notification.EXTRA_TITLE).toString()
     private val Notification.text get() = extras.getCharSequence(Notification.EXTRA_TEXT).toString()
-    private val Notification.actionTitles get() = actions.map { it.title.toString() }
+    private val Notification.actionTitles get() = actions?.map { it.title.toString() } ?: emptyList()
     private fun s(id: Int, vararg args: Any) = app.getString(id, *args)
 
     @Test
@@ -70,6 +71,7 @@ class VpnNotificationManagerTest {
         val n = build(isStopping = true, networkLost = true, isReconnecting = true, retryCount = 2)
         assertEquals(s(R.string.vpn_notification_stopping), n.title)
         assertEquals(s(R.string.vpn_notification_stopping_text), n.text)
+        assertTrue(n.actionTitles.isEmpty())
     }
 
     @Test
@@ -120,5 +122,8 @@ class VpnNotificationManagerTest {
 
         manager.updateNotification(build(isStopping = true))
         assertEquals(s(R.string.vpn_notification_stopping), shadowNm.getNotification(VpnNotificationManager.NOTIFICATION_ID).title)
+
+        manager.cancelForegroundNotification()
+        assertNull(shadowNm.getNotification(VpnNotificationManager.NOTIFICATION_ID))
     }
 }

@@ -115,7 +115,7 @@ class AdBlockVpnService : VpnService() {
         appNameResolver = AppNameResolver(this)
         batteryMonitor = BatteryMonitor(this)
         notificationHelper = NotificationHelper(this, appPrefs)
-        vpnNotificationManager = VpnNotificationManager(this)
+        vpnNotificationManager = VpnNotificationManager(applicationContext)
         tunnelBuilder = VpnTunnelBuilder(this, appPrefs)
         engineCoordinator = VpnEngineCoordinator(this, appPrefs, filterRepo, firewallRuleDao)
 
@@ -188,25 +188,30 @@ class AdBlockVpnService : VpnService() {
         }
     }
 
+    private var isPaused = false
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val startedFromBoot = intent?.getBooleanExtra(EXTRA_STARTED_FROM_BOOT, false) ?: false
         return when (intent?.action) {
-            ACTION_STOP -> { session.stop(); START_NOT_STICKY }
+            ACTION_STOP -> { isPaused = false; session.stop(); START_NOT_STICKY }
             ACTION_PAUSE_1H -> { pauseVpn(); START_NOT_STICKY }
-            ACTION_RESTART -> { session.restart(); START_STICKY }
-            else -> { session.start(startedFromBoot); START_STICKY }
+            ACTION_RESTART -> { isPaused = false; session.restart(); START_STICKY }
+            else -> { isPaused = false; session.start(startedFromBoot); START_STICKY }
         }
     }
 
     private fun pauseVpn() {
         Timber.d("Pausing VPN for 1 hour")
+        isPaused = true
         WorkManager.getInstance(this).enqueueUniqueWork(
             VpnResumeWorker.WORK_NAME,
             androidx.work.ExistingWorkPolicy.REPLACE,
             OneTimeWorkRequestBuilder<VpnResumeWorker>().setInitialDelay(1, TimeUnit.HOURS).build()
         )
-        session.stop(showStoppedNotification = false)
-        vpnNotificationManager.showPausedNotification()
+        session.stop(
+            showStoppedNotification = false,
+            onStopped = { vpnNotificationManager.showPausedNotification() }
+        )
     }
 
     override fun onRevoke() {

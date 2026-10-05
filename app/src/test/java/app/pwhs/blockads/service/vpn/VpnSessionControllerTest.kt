@@ -86,6 +86,7 @@ class VpnSessionControllerTest {
         assertEquals(1_000L + 1_000 + 2_000 + 3_000 + 5_000, currentTime)
         assertEquals(VpnState.STOPPING, f.state)
         assertTrue("stopped-notice" in f.events)
+        assertTrue("stopForeground(remove=true)" in f.events)
         f.finalizeStops()
         assertEquals(VpnState.STOPPED, f.state)
     }
@@ -122,6 +123,7 @@ class VpnSessionControllerTest {
         assertEquals(0, f.establishCalls)
         assertEquals(VpnState.STOPPING, f.state)
         assertTrue("stopped-notice" in f.events)
+        assertTrue("stopForeground(remove=true)" in f.events)
     }
 
     @Test
@@ -168,7 +170,7 @@ class VpnSessionControllerTest {
         verify { tun.close() }
         assertEquals(listOf(true, false), f.vpnEnabledWrites)
         assertEquals(
-            listOf("engineStop", "stopForeground(remove=false)", "stopped-notice", "stopSelf"),
+            listOf("engineStop", "stopForeground(remove=true)", "stopped-notice", "stopSelf"),
             f.events.drop(4),
         )
         assertEquals(VpnState.STOPPING, f.state)

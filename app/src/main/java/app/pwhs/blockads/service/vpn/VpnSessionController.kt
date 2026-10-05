@@ -82,6 +82,7 @@ class VpnSessionController(
     }
 
     fun onPhysicalNetworkLostChanged(lost: Boolean) {
+        if (status.state.value == VpnState.STOPPING) return
         if (isPhysicalNetworkLost != lost) {
             isPhysicalNetworkLost = lost
             host.updateNotification()
@@ -223,7 +224,10 @@ class VpnSessionController(
     private var startJob: Job? = null
     private var restartJob: Job? = null
 
-    fun stop(showStoppedNotification: Boolean = true) {
+    fun stop(
+        showStoppedNotification: Boolean = true,
+        onStopped: (() -> Unit)? = null,
+    ) {
         startJob?.cancel()
         startJob = null
         restartJob?.cancel()
@@ -257,12 +261,11 @@ class VpnSessionController(
                     Timber.w("Shutdown superseded by ${status.state.value} — leaving the new session alone")
                     return@withContext
                 }
+                host.stopForeground(removeNotification = true)
                 if (showStoppedNotification) {
-                    host.stopForeground(removeNotification = false)
                     host.showStoppedNotification()
-                } else {
-                    host.stopForeground(removeNotification = true)
                 }
+                onStopped?.invoke()
                 host.stopSelf()
                 Timber.d("VPN service stopSelf called, waiting for OS transport teardown")
             }
