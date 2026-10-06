@@ -27,7 +27,6 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -115,7 +114,6 @@ class AppManagementViewModelTest {
         assertEquals(4, vm.apps.value.first { it.packageName == "com.alpha" }.totalQueries)
     }
 
-    @Ignore("known bug: stats are keyed by label, so two apps with the same label share counts")
     @Test
     fun `apps sharing a label keep their own stats`() = runTest {
         app.installApp("com.twin.a", "Twin")
