@@ -139,8 +139,8 @@ class DnsProviderViewModelTest {
         vm.onIntent(DnsProviderUiIntent.SelectProvider(DnsProviders.ADGUARD))
         assertEquals(DnsProviders.QUAD9.ipAddress, fallback.value)
 
-        fallback.value = DnsProviders.MULLVAD.ipAddress
-        vm.onIntent(DnsProviderUiIntent.SelectProvider(DnsProviders.MULLVAD))
+        fallback.value = DnsProviders.DNSBUNKER.ipAddress
+        vm.onIntent(DnsProviderUiIntent.SelectProvider(DnsProviders.DNSBUNKER))
         assertEquals("first other privacy provider", DnsProviders.ADGUARD.ipAddress, fallback.value)
     }
 

@@ -130,15 +130,6 @@ object DnsProviders {
         description = "DNS over QUIC from Germany with Hagezi ad & threat blocking"
     )
 
-    val MULLVAD = DnsProvider(
-        id = "mullvad",
-        name = "Mullvad DNS",
-        category = DnsCategory.PRIVACY,
-        ipAddress = "194.242.2.2",
-        dohUrl = "https://dns.mullvad.net/dns-query",
-        description = "Audited no-logging DNS by Mullvad VPN"
-    )
-
     val ALL_PROVIDERS = listOf(
         SYSTEM,
         ADGUARD,
@@ -148,7 +139,6 @@ object DnsProviders {
         DNSBUNKER,
         DNSBUNKER_DOQ,
         GOOGLE,
-        MULLVAD,
         OPENDNS,
         OPENDNS_FAMILY,
         QUAD9,
