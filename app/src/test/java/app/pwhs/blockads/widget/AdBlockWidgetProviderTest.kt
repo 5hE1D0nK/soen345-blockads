@@ -110,10 +110,11 @@ class AdBlockWidgetProviderTest {
             }
         }
         startKoin { modules(module { single { dao } }) }
-        bindExpanded(1)
+        bindExpanded(1, 2)
 
-        awaitFinished(broadcastUpdate(1))
+        awaitFinished(broadcastUpdate(1, 2))
 
+        assertEquals("both stats loads must run", 2, daoCalls.get())
         assertEquals("uncaught exceptions: $uncaught", emptyList<Throwable>(), uncaught.toList())
     }
 }
