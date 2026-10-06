@@ -14,7 +14,6 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.core.context.startKoin
@@ -92,7 +91,6 @@ class AdBlockWidgetProviderTest {
         Thread.sleep(300)
     }
 
-    @Ignore("known bug: goAsync is called per widget and the second null result crashes")
     @Test
     fun `updating two expanded widgets in one broadcast does not crash`() {
         bindExpanded(1, 2)
@@ -103,7 +101,6 @@ class AdBlockWidgetProviderTest {
         assertEquals("uncaught exceptions: $uncaught", emptyList<Throwable>(), uncaught.toList())
     }
 
-    @Ignore("known bug: a DAO failure in the widget stats load crashes the process")
     @Test
     fun `a failing stats query does not crash the process`() {
         stopKoin()
@@ -113,10 +110,11 @@ class AdBlockWidgetProviderTest {
             }
         }
         startKoin { modules(module { single { dao } }) }
-        bindExpanded(1)
+        bindExpanded(1, 2)
 
-        awaitFinished(broadcastUpdate(1))
+        awaitFinished(broadcastUpdate(1, 2))
 
+        assertEquals("both stats loads must run", 2, daoCalls.get())
         assertEquals("uncaught exceptions: $uncaught", emptyList<Throwable>(), uncaught.toList())
     }
 }
