@@ -105,8 +105,12 @@ func (r *Resolver) Configure(protocol DNSProtocol, primary, fallback, dohURL str
 	if primary != "" {
 		r.primaryServer = primary
 	}
-	if fallback != "" {
+	if fallback == "none" {
+		r.fallbackServer = ""
+	} else if fallback != "" {
 		r.fallbackServer = fallback
+	} else if primary != "" {
+		r.fallbackServer = ""
 	}
 	r.dohURL = dohURL
 
@@ -224,7 +228,7 @@ func (r *Resolver) Resolve(rawQuery []byte) ([]byte, error) {
 		return resp, nil
 	}
 
-	if fallback != "" && fallback != primary {
+	if fallback != "" && fallback != "none" && fallback != primary {
 		return r.query(rawQuery, ProtocolPlain, fallback, "")
 	}
 

@@ -134,14 +134,32 @@ class DnsProviderViewModelTest {
 
         fallback.value = DnsProviders.QUAD9.ipAddress
         vm.onIntent(DnsProviderUiIntent.SelectProvider(DnsProviders.QUAD9_DOQ))
-        assertEquals(DnsProviders.ADGUARD.ipAddress, fallback.value)
+        assertEquals("149.112.112.112", fallback.value)
 
+        fallback.value = DnsProviders.ADGUARD.ipAddress
         vm.onIntent(DnsProviderUiIntent.SelectProvider(DnsProviders.ADGUARD))
-        assertEquals(DnsProviders.QUAD9.ipAddress, fallback.value)
+        assertEquals("94.140.14.15", fallback.value)
 
         fallback.value = DnsProviders.DNSBUNKER.ipAddress
         vm.onIntent(DnsProviderUiIntent.SelectProvider(DnsProviders.DNSBUNKER))
-        assertEquals("first other privacy provider", DnsProviders.ADGUARD.ipAddress, fallback.value)
+        assertEquals("185.250.250.62", fallback.value)
+    }
+
+    @Test
+    fun `saving a blank fallback persists empty string and disables fallback`() = runTest {
+        hot()
+        fallback.value = "1.1.1.1"
+        vm.onIntent(DnsProviderUiIntent.SaveFallbackDns("   "))
+        assertEquals("", fallback.value)
+        verify { ServiceController.requestRestart(any()) }
+    }
+
+    @Test
+    fun `selecting a provider when fallback is blank keeps it blank`() = runTest {
+        hot()
+        fallback.value = ""
+        vm.onIntent(DnsProviderUiIntent.SelectProvider(DnsProviders.QUAD9))
+        assertEquals("", fallback.value)
     }
 
     @Test

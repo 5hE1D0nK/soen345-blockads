@@ -74,11 +74,17 @@ class OnboardingViewModel(
          */
         internal fun selectFallbackDns(primary: DnsProvider): DnsProvider {
             return when (primary.id) {
-                DnsProviders.QUAD9.id, DnsProviders.QUAD9_DOQ.id -> DnsProviders.ADGUARD
-                DnsProviders.ADGUARD.id -> DnsProviders.QUAD9
+                DnsProviders.QUAD9.id -> DnsProviders.QUAD9_DOQ
+                DnsProviders.QUAD9_DOQ.id -> DnsProviders.QUAD9
+                DnsProviders.DNSBUNKER.id -> DnsProviders.DNSBUNKER_DOQ
+                DnsProviders.DNSBUNKER_DOQ.id -> DnsProviders.DNSBUNKER
+                DnsProviders.CLOUDFLARE.id -> DnsProviders.CLOUDFLARE_ODOH
+                DnsProviders.CLOUDFLARE_ODOH.id -> DnsProviders.CLOUDFLARE
+                DnsProviders.OPENDNS.id -> DnsProviders.OPENDNS_FAMILY
+                DnsProviders.OPENDNS_FAMILY.id -> DnsProviders.OPENDNS
                 DnsProviders.SYSTEM.id -> DnsProviders.QUAD9
                 else -> DnsProviders.ALL_PROVIDERS.firstOrNull {
-                    it.id != primary.id
+                    it.id != primary.id && it.id != DnsProviders.SYSTEM.id
                 } ?: DnsProviders.QUAD9
             }
         }

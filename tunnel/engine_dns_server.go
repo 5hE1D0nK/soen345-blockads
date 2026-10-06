@@ -244,16 +244,6 @@ func (e *Engine) lookupIP(domain string) (net.IP, error) {
 	// Use the full Resolve() pipeline (primary + fallback, respects DoH/DoT/DoQ)
 	resp, err := resolver.Resolve(rawQuery)
 	if err != nil {
-		// Primary + configured fallback both failed at the transport
-		// level. Try unfiltered public DNS over plain UDP so the MITM
-		// proxy doesn't have to fall through to Go's system resolver
-		// (which is unreliable on Android for VPN-excluded processes).
-		for _, server := range []string{"1.1.1.1:53", "8.8.8.8:53"} {
-			if ip, fbErr := resolver.ResolveARecord(domain, server); fbErr == nil && ip != nil {
-				logf("lookupIP: %s resolved via public fallback %s (primary err: %v)", domain, server, err)
-				return ip, nil
-			}
-		}
 		return nil, fmt.Errorf("resolve %s: %w", domain, err)
 	}
 

@@ -148,4 +148,16 @@ object DnsProviders {
     fun getById(id: String): DnsProvider? = ALL_PROVIDERS.find { it.id == id }
 
     fun getByIp(ip: String): DnsProvider? = ALL_PROVIDERS.find { it.ipAddress == ip }
+
+    fun getSecondaryIp(provider: DnsProvider): String? = when (provider.id) {
+        QUAD9.id, QUAD9_DOQ.id -> "149.112.112.112"
+        CLOUDFLARE.id, CLOUDFLARE_ODOH.id -> "1.0.0.1"
+        CLOUDFLARE_FAMILY.id -> "1.0.0.3"
+        ADGUARD.id -> "94.140.14.15"
+        GOOGLE.id -> "8.8.4.4"
+        OPENDNS.id -> "208.67.220.220"
+        OPENDNS_FAMILY.id -> "208.67.220.123"
+        DNSBUNKER.id, DNSBUNKER_DOQ.id -> "185.250.250.62"
+        else -> null
+    }
 }

@@ -49,6 +49,25 @@ func TestConfigureKeepsServersWhenEmpty(t *testing.T) {
 	}
 }
 
+func TestConfigureClearsFallbackWhenEmptyOrNone(t *testing.T) {
+	r := NewResolver(nil)
+	defer r.Shutdown()
+	r.Configure(ProtocolPlain, "9.9.9.9", "", "")
+	if r.primaryServer != "9.9.9.9" || r.fallbackServer != "" {
+		t.Errorf("empty fallback did not clear fallback: primary=%q fallback=%q", r.primaryServer, r.fallbackServer)
+	}
+
+	r.Configure(ProtocolPlain, "9.9.9.9", "8.8.8.8", "")
+	if r.fallbackServer != "8.8.8.8" {
+		t.Fatalf("failed to set fallback: %q", r.fallbackServer)
+	}
+
+	r.Configure(ProtocolPlain, "9.9.9.9", "none", "")
+	if r.fallbackServer != "" {
+		t.Errorf("none fallback did not clear fallback: %q", r.fallbackServer)
+	}
+}
+
 func TestSplitDNSConfig(t *testing.T) {
 	r := NewResolver(nil)
 	defer r.Shutdown()

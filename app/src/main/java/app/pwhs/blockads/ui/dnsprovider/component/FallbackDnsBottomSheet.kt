@@ -13,8 +13,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
@@ -46,10 +50,11 @@ fun FallbackDnsBottomSheet(
     var fallbackInput by remember { mutableStateOf(initialFallbackDns) }
 
     val quickFallbacks = listOf(
-        "9.9.9.9" to "Quad9",
-        "1.1.1.1" to "Cloudflare",
-        "94.140.14.14" to "AdGuard",
-        "8.8.8.8" to "Google"
+        "" to stringResource(R.string.settings_fallback_dns_not_set),
+        "149.112.112.112" to "Quad9",
+        "1.0.0.1" to "Cloudflare",
+        "94.140.14.15" to "AdGuard",
+        "8.8.4.4" to "Google"
     )
 
     ModalBottomSheet(
@@ -86,6 +91,16 @@ fun FallbackDnsBottomSheet(
                 onValueChange = { fallbackInput = it },
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = { Text(stringResource(R.string.settings_fallback_dns_placeholder)) },
+                trailingIcon = {
+                    if (fallbackInput.isNotEmpty()) {
+                        IconButton(onClick = { fallbackInput = "" }) {
+                            Icon(
+                                imageVector = Icons.Default.Clear,
+                                contentDescription = stringResource(R.string.firewall_clear_search)
+                            )
+                        }
+                    }
+                },
                 singleLine = true,
                 shape = RoundedCornerShape(12.dp)
             )
@@ -100,9 +115,10 @@ fun FallbackDnsBottomSheet(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 quickFallbacks.forEach { (ip, label) ->
+                    val chipText = if (ip.isBlank()) label else "$label ($ip)"
                     SuggestionChip(
                         onClick = { fallbackInput = ip },
-                        label = { Text("$label ($ip)", style = MaterialTheme.typography.labelSmall) }
+                        label = { Text(chipText, style = MaterialTheme.typography.labelSmall) }
                     )
                 }
             }
@@ -120,7 +136,6 @@ fun FallbackDnsBottomSheet(
                 Spacer(modifier = Modifier.width(8.dp))
                 Button(
                     onClick = { onSave(fallbackInput) },
-                    enabled = fallbackInput.isNotBlank(),
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Text(stringResource(R.string.dns_custom_save))

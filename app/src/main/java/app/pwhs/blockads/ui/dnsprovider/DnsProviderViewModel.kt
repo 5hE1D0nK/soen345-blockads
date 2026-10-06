@@ -138,16 +138,17 @@ class DnsProviderViewModel(
             }
 
             val currentFallback = appPrefs.fallbackDns.first()
-            if (currentFallback == provider.ipAddress) {
-                val fallbackProvider = when (provider.id) {
-                    DnsProviders.QUAD9.id, DnsProviders.QUAD9_DOQ.id -> DnsProviders.ADGUARD
-                    DnsProviders.ADGUARD.id -> DnsProviders.QUAD9
-                    DnsProviders.SYSTEM.id -> DnsProviders.QUAD9
-                    else -> DnsProviders.ALL_PROVIDERS.firstOrNull {
-                        it.id != provider.id && it.category == DnsCategory.PRIVACY
-                    } ?: DnsProviders.QUAD9
-                }
-                appPrefs.setFallbackDns(fallbackProvider.ipAddress)
+            if (currentFallback.isNotBlank() && currentFallback == provider.ipAddress) {
+                val fallbackIp = DnsProviders.getSecondaryIp(provider)
+                    ?: when (provider.id) {
+                        DnsProviders.QUAD9.id, DnsProviders.QUAD9_DOQ.id -> DnsProviders.ADGUARD.ipAddress
+                        DnsProviders.ADGUARD.id -> DnsProviders.QUAD9.ipAddress
+                        DnsProviders.SYSTEM.id -> DnsProviders.QUAD9.ipAddress
+                        else -> DnsProviders.ALL_PROVIDERS.firstOrNull {
+                            it.id != provider.id && it.category == DnsCategory.PRIVACY
+                        }?.ipAddress ?: DnsProviders.QUAD9.ipAddress
+                    }
+                appPrefs.setFallbackDns(fallbackIp)
             }
             restartService()
         }
@@ -218,15 +219,15 @@ class DnsProviderViewModel(
 
     private fun saveFallbackDns(dns: String) {
         val trimmed = dns.trim()
-        if (trimmed.isBlank()) return
-
         viewModelScope.launch {
-            val currentUpstream = appPrefs.upstreamDns.first().trim()
-            val currentProtocol = appPrefs.dnsProtocol.first()
+            if (trimmed.isNotBlank()) {
+                val currentUpstream = appPrefs.upstreamDns.first().trim()
+                val currentProtocol = appPrefs.dnsProtocol.first()
 
-            if (currentProtocol == DnsProtocol.PLAIN && currentUpstream.equals(trimmed, ignoreCase = true)) {
-                _effects.emit(DnsProviderUiEffect.ShowToast(R.string.dns_error_duplicate))
-                return@launch
+                if (currentProtocol == DnsProtocol.PLAIN && currentUpstream.equals(trimmed, ignoreCase = true)) {
+                    _effects.emit(DnsProviderUiEffect.ShowToast(R.string.dns_error_duplicate))
+                    return@launch
+                }
             }
 
             appPrefs.setFallbackDns(trimmed)

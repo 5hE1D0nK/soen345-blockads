@@ -338,7 +338,6 @@ func TestLookupIP(t *testing.T) {
 // hard-coded public resolvers over plaintext UDP, regardless of the
 // protocol the user picked.
 func TestLookupIPNoPublicPlaintextFallback(t *testing.T) {
-	t.Skip("known bug: lookupIP falls back to 1.1.1.1/8.8.8.8 over plaintext UDP")
 	e, _ := newServeEngine(t, deadUpstream)
 	if _, err := e.lookupIP("clean.example"); err == nil {
 		t.Error("lookupIP answered via a public plaintext resolver")
