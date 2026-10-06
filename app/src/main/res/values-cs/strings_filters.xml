@@ -214,4 +214,8 @@
     <string name="firewall_app_info">Informace o aplikaci</string>
     <string name="firewall_clear_search">Vymazat</string>
     <string name="firewall_reset_rule">Obnovit</string>
+    <string name="domain_rules_import_desc">Import povolených nebo blokovaných domén ze souboru hosts, syntaxe Adblock nebo prostého textu</string>
+    <string name="paste_from_clipboard">Vložit ze schránky</string>
+    <string name="filter_category_starred">S hvězdičkou</string>
+    <string name="filter_starred_empty">Zatím žádné filtry s hvězdičkou. Klepnutím na ikonu hvězdičky u libovolného filtru jej sem připnete pro rychlý přístup.</string>
 </resources>

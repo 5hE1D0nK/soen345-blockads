@@ -214,4 +214,8 @@
     <string name="firewall_app_info">アプリ情報</string>
     <string name="firewall_clear_search">クリア</string>
     <string name="firewall_reset_rule">リセット</string>
+    <string name="domain_rules_import_desc">hosts ファイル、Adblock 構文、またはプレーンテキストから許可またはブロックされたドメインをインポート</string>
+    <string name="paste_from_clipboard">クリップボードから貼り付け</string>
+    <string name="filter_category_starred">スター付き</string>
+    <string name="filter_starred_empty">スター付きのフィルターはまだありません。任意のフィルターの星アイコンをタップしてここに固定し、すばやくアクセスできるようにします。</string>
 </resources>

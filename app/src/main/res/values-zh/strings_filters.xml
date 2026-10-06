@@ -214,4 +214,8 @@
     <string name="firewall_app_info">应用信息</string>
     <string name="firewall_clear_search">清除</string>
     <string name="firewall_reset_rule">重置</string>
+    <string name="domain_rules_import_desc">从 hosts 文件、Adblock 语法或纯文本导入允许或阻止的域名</string>
+    <string name="paste_from_clipboard">从剪贴板粘贴</string>
+    <string name="filter_category_starred">已加星标</string>
+    <string name="filter_starred_empty">暂无加星标的规则。点击任何规则上的星标图标即可固定在此处以便快速访问。</string>
 </resources>

@@ -214,4 +214,8 @@
     <string name="firewall_app_info">Infos sur l\'application</string>
     <string name="firewall_clear_search">Effacer</string>
     <string name="firewall_reset_rule">Réinitialiser</string>
+    <string name="domain_rules_import_desc">Importer des domaines autorisés ou bloqués depuis un fichier hosts, la syntaxe Adblock ou du texte brut</string>
+    <string name="paste_from_clipboard">Coller depuis le presse-papiers</string>
+    <string name="filter_category_starred">Favoris</string>
+    <string name="filter_starred_empty">Aucun filtre favori pour le moment. Appuyez sur l\'icône étoile d\'un filtre pour l\'épingler ici pour un accès rapide.</string>
 </resources>

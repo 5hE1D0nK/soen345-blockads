@@ -227,4 +227,8 @@
     <string name="firewall_app_info">معلومات التطبيق</string>
     <string name="firewall_clear_search">مسح</string>
     <string name="firewall_reset_rule">إعادة تعيين</string>
+    <string name="domain_rules_import_desc">استيراد النطاقات المسموح بها أو المحظورة من ملف hosts أو صيغة Adblock أو نص عادي</string>
+    <string name="paste_from_clipboard">لصق من الحافظة</string>
+    <string name="filter_category_starred">المميزة بنجمة</string>
+    <string name="filter_starred_empty">لا توجد عوامل تصفية مميزة بنجمة حتى الآن. اضغط على أيقونة النجمة في أي عامل تصفية لتثبيته هنا للوصول السريع.</string>
 </resources>

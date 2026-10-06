@@ -214,4 +214,8 @@
     <string name="firewall_app_info">Info Aplikasi</string>
     <string name="firewall_clear_search">Hapus</string>
     <string name="firewall_reset_rule">Atur Ulang</string>
+    <string name="domain_rules_import_desc">Impor domain yang diizinkan atau diblokir dari file hosts, sintaks Adblock, atau teks biasa</string>
+    <string name="paste_from_clipboard">Tempel dari papan klip</string>
+    <string name="filter_category_starred">Berbintang</string>
+    <string name="filter_starred_empty">Belum ada filter berbintang. Ketuk ikon bintang pada filter mana pun untuk menyematkannya di sini agar mudah diakses.</string>
 </resources>

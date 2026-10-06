@@ -31,4 +31,8 @@
     <string name="home_disconnecting_desc_root">Root Proxy wird gestoppt…</string>
     <string name="home_paused_trusted_short">Pausiert in vertrauenswürdigem Netzwerk</string>
     <string name="nav_browser">Browser</string>
+    <string name="home_download_speed">Download-Geschwindigkeit</string>
+    <string name="home_upload_speed">Upload-Geschwindigkeit</string>
+    <string name="home_downloaded">Heruntergeladen</string>
+    <string name="home_uploaded">Hochgeladen</string>
 </resources>

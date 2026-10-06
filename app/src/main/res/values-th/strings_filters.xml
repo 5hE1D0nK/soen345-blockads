@@ -214,4 +214,8 @@
     <string name="firewall_app_info">ข้อมูลแอป</string>
     <string name="firewall_clear_search">ล้าง</string>
     <string name="firewall_reset_rule">รีเซ็ต</string>
+    <string name="domain_rules_import_desc">นำเข้าโดเมนที่อนุญาตหรือถูกบล็อกจากไฟล์ hosts, ไวยากรณ์ Adblock หรือข้อความธรรมดา</string>
+    <string name="paste_from_clipboard">วางจากคลิปบอร์ด</string>
+    <string name="filter_category_starred">ติดดาว</string>
+    <string name="filter_starred_empty">ยังไม่มีตัวกรองที่ติดดาว แตะไอคอนรูปดาวบนตัวกรองใดก็ได้เพื่อปักหมุดไว้ที่นี่เพื่อให้เข้าถึงได้อย่างรวดเร็ว</string>
 </resources>

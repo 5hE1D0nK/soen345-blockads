@@ -214,4 +214,8 @@
     <string name="firewall_app_info">App-Info</string>
     <string name="firewall_clear_search">Löschen</string>
     <string name="firewall_reset_rule">Zurücksetzen</string>
+    <string name="domain_rules_import_desc">Erlaubte oder blockierte Domains aus Hosts-Datei, Adblock-Syntax oder Klartext importieren</string>
+    <string name="paste_from_clipboard">Aus Zwischenablage einfügen</string>
+    <string name="filter_category_starred">Mit Stern</string>
+    <string name="filter_starred_empty">Noch keine Filter mit Stern. Tippe auf das Sternsymbol bei einem beliebigen Filter, um ihn hier für schnellen Zugriff anzupinnen.</string>
 </resources>

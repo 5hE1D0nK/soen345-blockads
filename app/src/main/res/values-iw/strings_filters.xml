@@ -214,4 +214,8 @@
     <string name="firewall_app_info">פרטי יישום</string>
     <string name="firewall_clear_search">נקה</string>
     <string name="firewall_reset_rule">אפס</string>
+    <string name="domain_rules_import_desc">ייבא דומיינים מותרים או חסומים מקובץ hosts, תחביר Adblock או טקסט רגיל</string>
+    <string name="paste_from_clipboard">הדבק מהלוח</string>
+    <string name="filter_category_starred">מסומנים בכוכב</string>
+    <string name="filter_starred_empty">אין עדיין מסננים מסומנים בכוכב. הקש על סמל הכוכב בכל מסנן כדי להצמיד אותו לכאן לגישה מהירה.</string>
 </resources>

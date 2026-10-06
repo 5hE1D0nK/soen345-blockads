@@ -214,4 +214,8 @@
     <string name="firewall_app_info">Қолданба туралы ақпарат</string>
     <string name="firewall_clear_search">Тазалау</string>
     <string name="firewall_reset_rule">Қалпына келтіру</string>
+    <string name="domain_rules_import_desc">Рұқсат етілген немесе бұғатталған домендерді hosts файлынан, Adblock синтаксисінен немесе қарапайым мәтіннен импорттау</string>
+    <string name="paste_from_clipboard">Алмасу буферінен қою</string>
+    <string name="filter_category_starred">Жұлдызшалы</string>
+    <string name="filter_starred_empty">Әзірше жұлдызшалы сүзгілер жоқ. Жылдам қол жеткізу үшін осы жерге бекіту мақсатында кез келген сүзгідегі жұлдызша белгішесін түртіңіз.</string>
 </resources>

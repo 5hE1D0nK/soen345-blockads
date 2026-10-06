@@ -214,4 +214,8 @@
     <string name="firewall_app_info">앱 정보</string>
     <string name="firewall_clear_search">지우기</string>
     <string name="firewall_reset_rule">초기화</string>
+    <string name="domain_rules_import_desc">hosts 파일, Adblock 구문 또는 일반 텍스트에서 허용되거나 차단된 도메인 가져오기</string>
+    <string name="paste_from_clipboard">클립보드에서 붙여넣기</string>
+    <string name="filter_category_starred">즐겨찾기</string>
+    <string name="filter_starred_empty">아직 즐겨찾는 필터가 없습니다. 필터의 별표 아이콘을 탭하여 여기에 고정하고 빠르게 액세스하세요.</string>
 </resources>

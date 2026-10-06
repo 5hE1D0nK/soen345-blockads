@@ -214,4 +214,8 @@
     <string name="firewall_app_info">Про програму</string>
     <string name="firewall_clear_search">Очистити</string>
     <string name="firewall_reset_rule">Скинути</string>
+    <string name="domain_rules_import_desc">Імпорт дозволених або заблокованих доменів із файлу hosts, синтаксису Adblock або звичайного тексту</string>
+    <string name="paste_from_clipboard">Вставити з буфера обміну</string>
+    <string name="filter_category_starred">Зі зірочкою</string>
+    <string name="filter_starred_empty">Ще немає фільтрів із зірочкою. Торкніться піктограми зірочки на будь-якому фільтрі, щоб закріпити його тут для швидкого доступу.</string>
 </resources>

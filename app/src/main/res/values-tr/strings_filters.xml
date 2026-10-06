@@ -232,4 +232,8 @@ Desteklenen formatlar:
     <string name="firewall_app_info">Uygulama Bilgisi</string>
     <string name="firewall_clear_search">Temizle</string>
     <string name="firewall_reset_rule">Sıfırla</string>
+    <string name="domain_rules_import_desc">İzin verilen veya engellenen alan adlarını hosts dosyasından, Adblock sözdiziminden veya düz metinden içe aktarın</string>
+    <string name="paste_from_clipboard">Panodan yapıştır</string>
+    <string name="filter_category_starred">Yıldızlı</string>
+    <string name="filter_starred_empty">Henüz yıldızlı filtre yok. Hızlı erişim için buraya sabitlemek üzere herhangi bir filtredeki yıldız simgesine dokunun.</string>
 </resources>
