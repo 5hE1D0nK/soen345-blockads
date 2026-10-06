@@ -55,10 +55,18 @@ class AppManagementViewModel(
     ) { installedApps, whitelisted, stats, query, sort ->
         // Every row carries both the label and the package name, and the package
         // name is what identifies the app: labels are not unique, so keying on them
-        // merged the stats of two apps that share one. Rows with no package name
-        // (system UIDs, history recorded before the column existed) fall back to it.
+        // merged the stats of two apps that share one.
         val statsByPackage = stats.associateBy { it.packageName }
-        val statsByLabel = stats.associateBy { it.appName }
+        // Only a row with no package identity of its own may be matched by label:
+        // the writer stores the friendly name in both fields when a UID owns no
+        // package, and history recorded before the column existed is blank.
+        // Anything else would leak one app's stats to another sharing its label.
+        val statsByLabel = stats
+            .filter {
+                it.packageName.isBlank() ||
+                    (it.packageName == it.appName && !it.packageName.contains("."))
+            }
+            .associateBy { it.appName }
 
         var result = installedApps.map { app ->
             val stat = statsByPackage[app.packageName] ?: statsByLabel[app.label]

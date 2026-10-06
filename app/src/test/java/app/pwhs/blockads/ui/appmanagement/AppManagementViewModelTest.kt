@@ -130,6 +130,26 @@ class AppManagementViewModelTest {
     }
 
     @Test
+    fun `a shared label does not lend one app another's stats`() = runTest {
+        app.installApp("com.twin.a", "Twin")
+        app.installApp("com.twin.b", "Twin")
+        stats.value = listOf(AppStat("Twin", "com.twin.b", totalQueries = 3, blockedQueries = 3))
+        val vm = loadedVm()
+        keepHot(vm.apps)
+        val byPackage = vm.apps.value.associate { it.packageName to it.totalQueries }
+        assertEquals(0, byPackage["com.twin.a"])
+        assertEquals(3, byPackage["com.twin.b"])
+    }
+
+    @Test
+    fun `a row with no package identity is still matched by its label`() = runTest {
+        stats.value = listOf(AppStat("Alpha", "", totalQueries = 7, blockedQueries = 2))
+        val vm = loadedVm()
+        keepHot(vm.apps)
+        assertEquals(7, vm.apps.value.first { it.packageName == "com.alpha" }.totalQueries)
+    }
+
+    @Test
     fun `toggling an app flips its whitelist entry and restarts`() {
         loadedVm().toggleApp("com.alpha")
         coVerify { appPrefs.toggleWhitelistedApp("com.alpha") }
