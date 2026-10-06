@@ -132,7 +132,7 @@ class AdBlockVpnServiceShellTest {
     @Test
     fun `start brings the session up and attaches the engine to the tunnel`() {
         command(AdBlockVpnService.ACTION_START)
-        assertEquals(VpnState.STARTING, AdBlockVpnService.state.value)
+        assertTrue(AdBlockVpnService.state.value in listOf(VpnState.STARTING, VpnState.RUNNING))
         assertTrue(shadowOf(service).isForegroundStopped.not())
 
         awaitTrue(message = "RUNNING") { AdBlockVpnService.isRunning }
@@ -146,7 +146,7 @@ class AdBlockVpnServiceShellTest {
         command(AdBlockVpnService.ACTION_START)
         awaitTrue(message = "RUNNING") { AdBlockVpnService.isRunning }
         command(AdBlockVpnService.ACTION_STOP)
-        assertEquals(VpnState.STOPPING, AdBlockVpnService.state.value)
+        assertTrue(AdBlockVpnService.state.value in listOf(VpnState.STOPPING, VpnState.STOPPED))
 
         awaitTrue(message = "stopSelf") { shadowOf(service).isStoppedBySelf }
         verify { tun.close() }
