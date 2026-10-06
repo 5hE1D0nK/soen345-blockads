@@ -9,7 +9,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
@@ -57,7 +56,6 @@ class ZipUtilsTest {
         assertEquals(setOf("info.json", "a.trie"), files.map { it.name }.toSet())
     }
 
-    @Ignore("known bug: zip-slip check lacks a trailing separator")
     @Test
     fun `rejects an entry escaping into a sibling directory sharing the prefix`() = runTest {
         val dest = File(tempFolder.root, "filter")
@@ -68,7 +66,16 @@ class ZipUtilsTest {
         assertFalse("zip-slip wrote outside destDir: $sibling", sibling.exists())
     }
 
-    @Ignore("known bug: HTTP error responses are extracted")
+    @Test
+    fun `rejects an entry escaping out of destDir`() = runTest {
+        val dest = File(tempFolder.root, "filter")
+        val escaped = File(tempFolder.root, "escaped.txt")
+
+        extractExpectingFailure(clientServing(zipOf("../escaped.txt" to "x")), dest)
+
+        assertFalse("zip-slip wrote outside destDir: $escaped", escaped.exists())
+    }
+
     @Test
     fun `rejects a non-2xx response even when its body is a zip`() = runTest {
         val dest = File(tempFolder.root, "filter")
@@ -78,7 +85,6 @@ class ZipUtilsTest {
         )
     }
 
-    @Ignore("known bug: failed extraction deletes the whole pre-existing destDir")
     @Test
     fun `failed extraction leaves pre-existing files in destDir alone`() = runTest {
         val dest = tempFolder.newFolder("filter")
@@ -87,5 +93,28 @@ class ZipUtilsTest {
         extractExpectingFailure(clientServing(ByteArray(0)), dest)
 
         assertTrue("cleanup deleted a file it did not extract", existing.exists())
+    }
+
+    @Test
+    fun `failed extraction removes the files it extracted`() = runTest {
+        val dest = File(tempFolder.root, "filter")
+        val extracted = File(dest, "a.trie")
+
+        // "a.trie" is written before the second entry trips the zip-slip check.
+        extractExpectingFailure(
+            clientServing(zipOf("a.trie" to "t", "../escaped.txt" to "x")),
+            dest
+        )
+
+        assertFalse("a partial extraction was left behind", extracted.exists())
+    }
+
+    @Test
+    fun `failed extraction removes the directory it created`() = runTest {
+        val dest = File(tempFolder.root, "filter")
+
+        extractExpectingFailure(clientServing(ByteArray(0)), dest)
+
+        assertFalse("a directory created by the failed run was left behind", dest.exists())
     }
 }
