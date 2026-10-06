@@ -1,7 +1,5 @@
 package app.pwhs.blockads.ui.settings.component
 
-import android.content.Intent
-import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -9,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -16,9 +15,10 @@ import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.content.FileProvider
 import app.pwhs.blockads.R
-import java.io.File
+import app.pwhs.blockads.utils.LogcatExporter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
 fun PrivacySection(
@@ -30,6 +30,7 @@ fun PrivacySection(
 ) {
     val context = LocalContext.current
     val resource = LocalResources.current
+    val coroutineScope = rememberCoroutineScope()
     val dividerColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.08f)
 
     Column(modifier = modifier) {
@@ -72,34 +73,15 @@ fun PrivacySection(
                     title = stringResource(id = R.string.settings_export_logs_title),
                     desc = stringResource(id = R.string.settings_export_logs_subtitle),
                     onClick = {
-                        try {
-                            val logFile = File(context.cacheDir, "logs/blockads_logs.txt")
-                            if (logFile.exists()) {
-                                val uri = FileProvider.getUriForFile(
-                                    context,
-                                    "${context.packageName}.fileprovider",
-                                    logFile
+                        coroutineScope.launch(Dispatchers.IO) {
+                            try {
+                                LogcatExporter.exportAndShare(
+                                    context = context,
+                                    chooserTitle = resource.getString(R.string.settings_export_logs_chooser_title)
                                 )
-                                val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                                    type = "text/plain"
-                                    putExtra(Intent.EXTRA_STREAM, uri)
-                                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                                }
-                                context.startActivity(
-                                    Intent.createChooser(
-                                        shareIntent,
-                                        resource.getString(R.string.settings_export_logs_chooser_title)
-                                    )
-                                )
-                            } else {
-                                Toast.makeText(
-                                    context,
-                                    resource.getString(R.string.settings_export_logs_not_found),
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                            } catch (e: Exception) {
+                                e.printStackTrace()
                             }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
                         }
                     }
                 )

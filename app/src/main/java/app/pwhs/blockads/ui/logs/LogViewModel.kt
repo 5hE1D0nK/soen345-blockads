@@ -31,7 +31,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.io.PrintWriter
 import java.text.SimpleDateFormat
 import java.util.Locale
 import app.pwhs.blockads.data.dao.FirewallRuleDao
@@ -161,6 +160,12 @@ class LogViewModel(
         val current = _selectedIds.value.toMutableSet()
         if (current.contains(id)) current.remove(id) else current.add(id)
         _selectedIds.value = current
+        _selectionMode.value = current.isNotEmpty()
+    }
+
+    fun clearSelection() {
+        _selectedIds.value = emptySet()
+        _selectionMode.value = false
     }
 
     fun clearLogs() {
@@ -246,7 +251,11 @@ class LogViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             val context = getApplication<Application>().applicationContext
             try {
-                val currentLogs = logs.value
+                val currentLogs = if (_selectionMode.value && _selectedIds.value.isNotEmpty()) {
+                    logs.value.filter { it.id in _selectedIds.value }
+                } else {
+                    logs.value
+                }
                 if (currentLogs.isEmpty()) {
                     _events.tryEmit(UiEvent.ToastRes(R.string.logs_empty))
                     return@launch
@@ -255,16 +264,16 @@ class LogViewModel(
                 val logsDir = java.io.File(context.cacheDir, "logs")
                 if (!logsDir.exists()) logsDir.mkdirs()
 
-                val fileName = "blockads_logs_${System.currentTimeMillis()}.csv"
+                val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(java.util.Date(clock()))
+                val fileName = "blockads_dns_logs_$timeStamp.csv"
                 val file = java.io.File(logsDir, fileName)
 
-                PrintWriter(file).use { writer ->
-                    writer.println("Time,Domain,App,Blocked")
-                    val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-                    currentLogs.forEach { log ->
-                        val timeStr = dateFormat.format(java.util.Date(log.timestamp))
-                        writer.println("$timeStr,${log.domain},${log.appName},${log.isBlocked}")
-                    }
+                file.bufferedWriter().use { writer ->
+                    DnsLogExporter.writeCsv(
+                        writer = writer,
+                        logs = currentLogs,
+                        filterNames = filterNames.value
+                    )
                 }
 
                 val authority = "${context.packageName}.fileprovider"

@@ -112,7 +112,13 @@ fun LogsScreen(
                 selectedCount = selectedIds.size,
                 isSearchVisible = isSearchVisible,
                 recordDnsLogs = recordDnsLogs,
-                onNavigateBack = onNavigateBack,
+                onNavigateBack = {
+                    if (selectionMode) {
+                        viewModel.clearSelection()
+                    } else {
+                        onNavigateBack()
+                    }
+                },
                 onToggleSearch = { isSearchVisible = !isSearchVisible },
                 onToggleRecordDnsLogs = { viewModel.setRecordDnsLogs(!recordDnsLogs) },
                 onExportLogs = { viewModel.exportLogs() },
@@ -232,7 +238,7 @@ fun LogsScreen(
                             isSelected = selectedIds.contains(entry.id),
                             filterNames = filterNames,
                             onTap = { selectedEntry = entry },
-                            onLongPress = { selectedEntry = entry },
+                            onLongPress = { viewModel.toggleSelection(entry.id) },
                             onToggleSelection = { viewModel.toggleSelection(entry.id) },
                             onQuickBlock = { viewModel.addToCustomBlockRules(entry.domain) },
                             onQuickWhitelist = { viewModel.addToWhitelist(entry.domain) }

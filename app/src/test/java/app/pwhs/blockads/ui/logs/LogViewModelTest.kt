@@ -87,6 +87,7 @@ class LogViewModelTest {
         // FileProvider caches its roots statically; each Robolectric test gets a new data dir.
         val cache = FileProvider::class.java.getDeclaredField("sCache").apply { isAccessible = true }
         (cache.get(null) as MutableMap<*, *>).clear()
+        File(app.cacheDir, "logs").deleteRecursively()
     }
 
     private fun entry(
@@ -249,13 +250,13 @@ class LogViewModelTest {
 
     private fun exportedCsv(): List<String> {
         val dir = File(app.cacheDir, "logs")
-        return dir.listFiles()!!.single().readLines()
+        return dir.listFiles()!!.maxByOrNull { it.lastModified() }!!.readLines()
     }
 
     @Test
     fun `exporting writes a CSV and offers it for sharing`() = runTest {
-        table.value = listOf(entry(1, "a.com", true, app = "Chrome"))
-        keepHot(vm.logs)
+        table.value = listOf(entry(1, "a.com", true, app = "Chrome", by = "7"))
+        keepHot(vm.logs, vm.filterNames)
         vm.events.test {
             vm.settle { exportLogs() }
             val event = awaitItem()
@@ -263,26 +264,43 @@ class LogViewModelTest {
             assertEquals("text/csv", (event as UiEvent.ShareFile).mimeType)
         }
         val lines = exportedCsv()
-        assertEquals("Time,Domain,App,Blocked", lines[0])
-        assertTrue(lines[1].endsWith(",a.com,Chrome,true"))
+        assertEquals(
+            "Time,Domain,Status,Block Reason,App,Package Name,Query Type,Response Time (ms),Resolved IP,Country",
+            lines[0]
+        )
+        assertTrue(lines[1].contains("a.com,Blocked,EasyList,Chrome"))
     }
 
-    @Ignore("known bug: CSV export does not quote values, so a comma in an app name adds a column")
     @Test
-    fun `exported CSV rows keep four columns when a value holds a comma`() = runTest {
+    fun `exported CSV rows keep proper columns when a value holds a comma`() = runTest {
         table.value = listOf(entry(1, "a.com", true, app = "Acme, Inc"))
         keepHot(vm.logs)
         vm.settle { exportLogs() }
         assertTrue(exportedCsv()[1].contains("\"Acme, Inc\""))
     }
 
-    @Ignore("known bug: CSV export does not neutralize formula prefixes (=, +, -, @)")
     @Test
     fun `exported CSV neutralizes spreadsheet formulas`() = runTest {
         table.value = listOf(entry(1, "a.com", true, app = "=HYPERLINK(\"x\")"))
         keepHot(vm.logs)
         vm.settle { exportLogs() }
         assertFalse(exportedCsv()[1].contains(",=HYPERLINK"))
+    }
+
+    @Test
+    fun `exporting with selection only exports selected entries`() = runTest {
+        table.value = listOf(
+            entry(1, "a.com", false, app = "AppA"),
+            entry(2, "b.com", true, app = "AppB")
+        )
+        keepHot(vm.logs)
+        vm.toggleSelection(2)
+        assertTrue(vm.selectionMode.value)
+        vm.settle { exportLogs() }
+        val lines = exportedCsv()
+        assertEquals(2, lines.size)
+        assertTrue(lines[1].contains("b.com"))
+        assertFalse(lines[1].contains("a.com"))
     }
 
     @Test
