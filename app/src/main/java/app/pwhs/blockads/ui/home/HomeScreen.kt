@@ -50,6 +50,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -149,31 +150,31 @@ fun HomeScreen(
         viewModel.preloadFilter()
     }
 
-    Scaffold(
-        modifier = modifier,
-        topBar = {
-            HomeAppBar(
-                isLoading = isLoading,
-                filterLoadFailed = filterLoadFailed,
-                viewModel = viewModel,
-                onNavigateToStatisticsScreen = onNavigateToStatisticsScreen,
-                onNavigateToLogScreen = { onNavigateToLogScreen(LogFilterStatus.ALL) },
-                onNavigateToBrowser = onNavigateToBrowser
-            )
-        }
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-        ) {
-            HomeAmbientBackground(
-                vpnEnabled = vpnEnabled,
-                vpnConnecting = vpnConnecting,
-                vpnStopping = vpnStopping,
-                modifier = Modifier.fillMaxSize()
-            )
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        HomeAmbientBackground(
+            vpnEnabled = vpnEnabled,
+            vpnConnecting = vpnConnecting,
+            vpnStopping = vpnStopping,
+            modifier = Modifier.fillMaxSize()
+        )
 
+        Scaffold(
+            containerColor = Color.Transparent,
+            topBar = {
+                HomeAppBar(
+                    isLoading = isLoading,
+                    filterLoadFailed = filterLoadFailed,
+                    viewModel = viewModel,
+                    onNavigateToStatisticsScreen = onNavigateToStatisticsScreen,
+                    onNavigateToLogScreen = { onNavigateToLogScreen(LogFilterStatus.ALL) },
+                    onNavigateToBrowser = onNavigateToBrowser
+                )
+            }
+        ) { innerPadding ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()

@@ -26,9 +26,8 @@ import app.pwhs.blockads.ui.theme.DangerRed
 import app.pwhs.blockads.ui.theme.NeonGreen
 
 /**
- * Ambient floating glow background for the Home Screen.
- * Inspired by Crystal Scan Paywall: uses two opposing diagonal radial gradient orbs
- * (top-right and bottom-left) that breathe with a waveOffset animation and react to VPN status.
+ * Background animation matching Crystal Scan Paywall verbatim.
+ * Draws two animated radial gradient circles in opposite corners that shift with waveOffset.
  */
 @Composable
 fun HomeAmbientBackground(
@@ -40,69 +39,53 @@ fun HomeAmbientBackground(
     val isDark = isSystemInDarkTheme()
     val primaryAccent = MaterialTheme.colorScheme.primary
 
-    // Dynamic color pairs based on VPN protection state
-    val (targetPrimary, targetSecondary) = when {
+    // Dynamic color pairs: Crystal Scan Purple & Pink when inactive, Green/Teal when protected
+    val (targetTint, targetSecondaryTint) = when {
         vpnStopping -> Pair(AccentOrange, DangerRed)
         vpnConnecting -> Pair(AccentBlue, Color(0xFF38BDF8))
         vpnEnabled -> Pair(primaryAccent, AccentTeal)
-        else -> Pair(DangerRed, AccentOrange)
+        else -> Pair(Color(0xFF8B5CF6), Color(0xFFEC4899))
     }
 
     val colorTransitionSpec = tween<Color>(durationMillis = 800)
-    val tint by animateColorAsState(targetValue = targetPrimary, animationSpec = colorTransitionSpec, label = "tint")
-    val secondaryTint by animateColorAsState(targetValue = targetSecondary, animationSpec = colorTransitionSpec, label = "secondaryTint")
+    val tint by animateColorAsState(targetValue = targetTint, animationSpec = colorTransitionSpec, label = "tint")
+    val secondaryTint by animateColorAsState(targetValue = targetSecondaryTint, animationSpec = colorTransitionSpec, label = "secondaryTint")
 
-    // Wave animation matching Crystal Scan Paywall
+    // Background Animation - verbatim from Crystal Scan PaywallActivity
     val infiniteTransition = rememberInfiniteTransition(label = "background")
     val waveOffset by infiniteTransition.animateFloat(
         initialValue = 0f,
         targetValue = 100f,
         animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 4000, easing = LinearEasing),
+            animation = tween(4000, easing = LinearEasing),
             repeatMode = RepeatMode.Reverse
         ),
         label = "wave"
     )
 
-    // Opacity: 0.15f / 0.10f in light mode, slightly deeper in dark mode
     val primaryAlpha = if (isDark) 0.20f else 0.15f
     val secondaryAlpha = if (isDark) 0.15f else 0.10f
 
     Canvas(modifier = modifier) {
-        val w = size.width
-        val h = size.height
-        if (w <= 0f || h <= 0f) return@Canvas
-
-        // Top-right primary orb
-        val center1 = Offset(
-            x = w * 0.8f + (waveOffset * 0.2f),
-            y = h * 0.1f + (waveOffset * 0.3f)
-        )
-        val radius1 = (w * 0.75f).coerceAtLeast(800f) + (waveOffset * 0.5f)
         drawCircle(
             brush = Brush.radialGradient(
-                colors = listOf(tint.copy(alpha = primaryAlpha), Color.Transparent),
-                center = center1,
-                radius = radius1
+                colors = listOf(tint.copy(alpha = primaryAlpha), Color.Transparent)
             ),
-            radius = radius1,
-            center = center1
+            radius = 800f + (waveOffset * 0.5f),
+            center = Offset(
+                size.width * 0.8f + (waveOffset * 0.2f),
+                size.height * 0.1f + (waveOffset * 0.3f)
+            )
         )
-
-        // Bottom-left secondary orb
-        val center2 = Offset(
-            x = w * 0.2f - (waveOffset * 0.4f),
-            y = h * 0.8f - (waveOffset * 0.2f)
-        )
-        val radius2 = (w * 0.60f).coerceAtLeast(600f) - (waveOffset * 0.3f)
         drawCircle(
             brush = Brush.radialGradient(
-                colors = listOf(secondaryTint.copy(alpha = secondaryAlpha), Color.Transparent),
-                center = center2,
-                radius = radius2
+                colors = listOf(secondaryTint.copy(alpha = secondaryAlpha), Color.Transparent)
             ),
-            radius = radius2,
-            center = center2
+            radius = 600f - (waveOffset * 0.3f),
+            center = Offset(
+                size.width * 0.2f - (waveOffset * 0.4f),
+                size.height * 0.8f - (waveOffset * 0.2f)
+            )
         )
     }
 }
