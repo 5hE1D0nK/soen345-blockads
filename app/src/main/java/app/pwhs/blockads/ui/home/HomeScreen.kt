@@ -84,8 +84,10 @@ import android.content.Context
 import android.widget.Toast
 import app.pwhs.blockads.ui.event.UiEventEffect
 import app.pwhs.blockads.ui.home.component.BlockedDomainActionSheet
+import app.pwhs.blockads.ui.home.component.HomeAmbientBackground
 import app.pwhs.blockads.ui.home.component.HomeStatusHeader
 import app.pwhs.blockads.ui.home.component.PrivateDnsWarningCard
+import app.pwhs.blockads.ui.home.component.SelectedBlockedDomain
 import app.pwhs.blockads.ui.home.component.VpnRevokedWarningCard
 import app.pwhs.blockads.utils.AppConstants.AVG_AD_SIZE_KB
 import app.pwhs.blockads.utils.VpnUtils
@@ -160,15 +162,26 @@ fun HomeScreen(
             )
         }
     ) { innerPadding ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
-                .verticalScroll(rememberScrollState())
-                .padding(innerPadding)
-                .padding(horizontal = 24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            HomeAmbientBackground(
+                vpnEnabled = vpnEnabled,
+                vpnConnecting = vpnConnecting,
+                vpnStopping = vpnStopping,
+                modifier = Modifier.fillMaxSize()
+            )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(innerPadding)
+                    .padding(horizontal = 24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
             Spacer(modifier = Modifier.height(16.dp))
 
             // Private DNS warning — DoT bypasses BlockAds filtering (#145)
@@ -475,14 +488,6 @@ fun HomeScreen(
                 }
             )
         }
+        }
     }
 }
-
-private data class SelectedBlockedDomain(
-    val domain: String,
-    val count: Int? = null,
-    val appName: String = "",
-    val packageName: String = "",
-    val blockedBy: String = "",
-    val isBlocked: Boolean = true
-)

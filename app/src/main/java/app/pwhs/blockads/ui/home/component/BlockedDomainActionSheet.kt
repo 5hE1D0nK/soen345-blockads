@@ -297,3 +297,12 @@ private fun ActionCard(
         }
     }
 }
+
+data class SelectedBlockedDomain(
+    val domain: String,
+    val count: Int? = null,
+    val appName: String = "",
+    val packageName: String = "",
+    val blockedBy: String = "",
+    val isBlocked: Boolean = true
+)
