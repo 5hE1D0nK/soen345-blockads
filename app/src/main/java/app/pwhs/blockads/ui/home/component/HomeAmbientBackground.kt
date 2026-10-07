@@ -1,7 +1,7 @@
 package app.pwhs.blockads.ui.home.component
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -10,6 +10,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -26,8 +27,8 @@ import app.pwhs.blockads.ui.theme.NeonGreen
 
 /**
  * Ambient floating glow background for the Home Screen.
- * Renders subtle animated radial gradient orbs that shift position, scale, and color
- * dynamically based on the VPN protection state.
+ * Inspired by Crystal Scan Paywall: uses two opposing diagonal radial gradient orbs
+ * (top-right and bottom-left) that breathe with a waveOffset animation and react to VPN status.
  */
 @Composable
 fun HomeAmbientBackground(
@@ -37,114 +38,50 @@ fun HomeAmbientBackground(
     modifier: Modifier = Modifier
 ) {
     val isDark = isSystemInDarkTheme()
+    val primaryAccent = MaterialTheme.colorScheme.primary
 
-    // Determine target colors based on VPN status
-    val (targetColor1, targetColor2, targetColor3) = when {
-        vpnStopping -> Triple(
-            AccentOrange,
-            DangerRed,
-            Color(0xFFEAB308) // Amber
-        )
-        vpnConnecting -> Triple(
-            AccentBlue,
-            Color(0xFF38BDF8), // Sky Blue
-            Color(0xFF818CF8)  // Indigo
-        )
-        vpnEnabled -> Triple(
-            NeonGreen,
-            AccentTeal,
-            Color(0xFF10B981) // Emerald
-        )
-        else -> Triple(
-            DangerRed,
-            Color(0xFFA855F7), // Purple
-            AccentOrange
-        )
+    // Dynamic color pairs based on VPN protection state
+    val (targetPrimary, targetSecondary) = when {
+        vpnStopping -> Pair(AccentOrange, DangerRed)
+        vpnConnecting -> Pair(AccentBlue, Color(0xFF38BDF8))
+        vpnEnabled -> Pair(primaryAccent, AccentTeal)
+        else -> Pair(DangerRed, AccentOrange)
     }
 
-    val colorTransitionSpec = tween<Color>(durationMillis = 1000)
-    val color1 by animateColorAsState(targetValue = targetColor1, animationSpec = colorTransitionSpec, label = "orbColor1")
-    val color2 by animateColorAsState(targetValue = targetColor2, animationSpec = colorTransitionSpec, label = "orbColor2")
-    val color3 by animateColorAsState(targetValue = targetColor3, animationSpec = colorTransitionSpec, label = "orbColor3")
+    val colorTransitionSpec = tween<Color>(durationMillis = 800)
+    val tint by animateColorAsState(targetValue = targetPrimary, animationSpec = colorTransitionSpec, label = "tint")
+    val secondaryTint by animateColorAsState(targetValue = targetSecondary, animationSpec = colorTransitionSpec, label = "secondaryTint")
 
-    val infiniteTransition = rememberInfiniteTransition(label = "ambientOrbs")
-
-    // Breathing pulse animations
-    val pulse1 by infiniteTransition.animateFloat(
-        initialValue = 0.88f,
-        targetValue = 1.15f,
+    // Wave animation matching Crystal Scan Paywall
+    val infiniteTransition = rememberInfiniteTransition(label = "background")
+    val waveOffset by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 100f,
         animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 6500, easing = FastOutSlowInEasing),
+            animation = tween(durationMillis = 4000, easing = LinearEasing),
             repeatMode = RepeatMode.Reverse
         ),
-        label = "pulse1"
+        label = "wave"
     )
 
-    val pulse2 by infiniteTransition.animateFloat(
-        initialValue = 1.12f,
-        targetValue = 0.88f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 8500, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "pulse2"
-    )
-
-    // Floating orbital drift offsets
-    val driftX1 by infiniteTransition.animateFloat(
-        initialValue = -35f,
-        targetValue = 35f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 7000, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "driftX1"
-    )
-
-    val driftY1 by infiniteTransition.animateFloat(
-        initialValue = -25f,
-        targetValue = 25f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 9000, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "driftY1"
-    )
-
-    val driftX2 by infiniteTransition.animateFloat(
-        initialValue = 30f,
-        targetValue = -30f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 8000, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "driftX2"
-    )
-
-    val driftY2 by infiniteTransition.animateFloat(
-        initialValue = -20f,
-        targetValue = 20f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 7500, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "driftY2"
-    )
-
-    // Base opacity: vibrant in dark theme, soft pastel in light theme
-    val baseAlpha = if (isDark) 0.18f else 0.08f
+    // Opacity: 0.15f / 0.10f in light mode, slightly deeper in dark mode
+    val primaryAlpha = if (isDark) 0.20f else 0.15f
+    val secondaryAlpha = if (isDark) 0.15f else 0.10f
 
     Canvas(modifier = modifier) {
         val w = size.width
         val h = size.height
         if (w <= 0f || h <= 0f) return@Canvas
 
-        // Orb 1: Upper-center behind Power Button & Status Header
-        val center1 = Offset(w * 0.5f + driftX1, h * 0.22f + driftY1)
-        val radius1 = (w * 0.65f * pulse1).coerceAtLeast(10f)
+        // Top-right primary orb
+        val center1 = Offset(
+            x = w * 0.8f + (waveOffset * 0.2f),
+            y = h * 0.1f + (waveOffset * 0.3f)
+        )
+        val radius1 = (w * 0.75f).coerceAtLeast(800f) + (waveOffset * 0.5f)
         drawCircle(
             brush = Brush.radialGradient(
-                colors = listOf(color1.copy(alpha = baseAlpha * 1.15f), Color.Transparent),
+                colors = listOf(tint.copy(alpha = primaryAlpha), Color.Transparent),
                 center = center1,
                 radius = radius1
             ),
@@ -152,30 +89,20 @@ fun HomeAmbientBackground(
             center = center1
         )
 
-        // Orb 2: Upper-right floating accent
-        val center2 = Offset(w * 0.85f + driftX2, h * 0.42f + driftY2)
-        val radius2 = (w * 0.55f * pulse2).coerceAtLeast(10f)
+        // Bottom-left secondary orb
+        val center2 = Offset(
+            x = w * 0.2f - (waveOffset * 0.4f),
+            y = h * 0.8f - (waveOffset * 0.2f)
+        )
+        val radius2 = (w * 0.60f).coerceAtLeast(600f) - (waveOffset * 0.3f)
         drawCircle(
             brush = Brush.radialGradient(
-                colors = listOf(color2.copy(alpha = baseAlpha * 0.95f), Color.Transparent),
+                colors = listOf(secondaryTint.copy(alpha = secondaryAlpha), Color.Transparent),
                 center = center2,
                 radius = radius2
             ),
             radius = radius2,
             center = center2
-        )
-
-        // Orb 3: Lower-left grounding ambient
-        val center3 = Offset(w * 0.15f - driftX1 * 0.5f, h * 0.72f - driftY1 * 0.5f)
-        val radius3 = (w * 0.62f * pulse1).coerceAtLeast(10f)
-        drawCircle(
-            brush = Brush.radialGradient(
-                colors = listOf(color3.copy(alpha = baseAlpha * 0.85f), Color.Transparent),
-                center = center3,
-                radius = radius3
-            ),
-            radius = radius3,
-            center = center3
         )
     }
 }
