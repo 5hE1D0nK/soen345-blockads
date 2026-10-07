@@ -282,13 +282,44 @@ class VpnSessionController(
     /** Handles VPN revocation from the OS (another VPN app took over or user revoked in settings). */
     fun onRevoke(): Boolean {
         Timber.w("VPN revoked by system or another VPN app")
+        host.showRevokedNotification()
+        status.state.value = VpnState.STOPPED
         status.lastStoppedTimestamp = 0L
-        scope.launch(NonCancellable) {
+        status.privateDnsStrict.value = false
+        isReconnecting = false
+        isPhysicalNetworkLost = false
+        network.cancelNetworkSwitch()
+        status.startTimestamp = 0L
+
+        network.stopNetworkMonitoring()
+        network.stopPeriodicMonitoring()
+
+        startJob?.cancel()
+        startJob = null
+        restartJob?.cancel()
+        restartJob = null
+
+        scope.launch(NonCancellable + ioDispatcher) {
             appPrefs.setVpnEnabled(false)
             appPrefs.setVpnRevokedByAnotherApp(true)
+            try {
+                vpnInterface?.close()
+            } catch (e: Exception) {
+                Timber.e("Error closing VPN interface: $e")
+            }
+            vpnInterface = null
+
+            val goStop = scope.launch(NonCancellable + ioDispatcher) { engine.stop() }
+            if (withTimeoutOrNull(GO_STOP_TIMEOUT_MS) { goStop.join() } == null) {
+                Timber.w("Go tunnel stop still running after ${GO_STOP_TIMEOUT_MS}ms — finishing shutdown anyway")
+            }
+
+            withContext(mainDispatcher) {
+                host.stopForeground(removeNotification = true)
+                host.stopSelf()
+                host.onFullyStopped()
+            }
         }
-        host.showRevokedNotification()
-        stop(showStoppedNotification = false)
         return true
     }
 

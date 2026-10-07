@@ -97,14 +97,12 @@ class VpnSessionControllerRaceTest {
         startRunning(f)
         f.elapsed += 2_000
         assertTrue(f.controller.onRevoke())
-        assertEquals(VpnState.STOPPING, f.state)
+        assertEquals(VpnState.STOPPED, f.state)
         advanceUntilIdle()
         assertEquals("revoked-notice", f.events.first())
         assertTrue("stopForeground(remove=true)" in f.events)
         assertFalse("stopped-notice" in f.events)
-        assertEquals(listOf(true, false, false), f.vpnEnabledWrites)
-        f.finalizeStops()
-        assertEquals(VpnState.STOPPED, f.state)
+        assertEquals(listOf(true, false), f.vpnEnabledWrites)
     }
 
     @Test
@@ -112,14 +110,12 @@ class VpnSessionControllerRaceTest {
         startRunning(f)
         f.elapsed += 10_000
         assertTrue(f.controller.onRevoke())
-        assertEquals(VpnState.STOPPING, f.state)
+        assertEquals(VpnState.STOPPED, f.state)
         advanceUntilIdle()
         assertEquals("revoked-notice", f.events.first())
         assertTrue("stopForeground(remove=true)" in f.events)
         assertFalse("stopped-notice" in f.events)
-        assertEquals(listOf(true, false, false), f.vpnEnabledWrites)
-        f.finalizeStops()
-        assertEquals(VpnState.STOPPED, f.state)
+        assertEquals(listOf(true, false), f.vpnEnabledWrites)
     }
 
     @Test
