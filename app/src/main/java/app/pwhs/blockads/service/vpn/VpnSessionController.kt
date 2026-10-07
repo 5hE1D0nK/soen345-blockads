@@ -214,10 +214,6 @@ class VpnSessionController(
 
             } catch (e: CancellationException) {
                 Timber.d("VPN startup cancelled")
-                if (status.state.value == VpnState.STARTING) {
-                    status.state.value = VpnState.STOPPED
-                    connectingPhase = ""
-                }
             } catch (e: Exception) {
                 Timber.e(e, "VPN startup failed")
                 stop()
@@ -246,7 +242,7 @@ class VpnSessionController(
         network.stopNetworkMonitoring()
         network.stopPeriodicMonitoring()
 
-        scope.launch(NonCancellable + ioDispatcher) {
+        scope.launch(ioDispatcher) {
             appPrefs.setVpnEnabled(false)
             try {
                 vpnInterface?.close()
@@ -288,12 +284,10 @@ class VpnSessionController(
 
     /** Returns false when the revoke is ignored as a stale callback from a superseded session. */
     fun onRevoke(): Boolean {
-        if (!host.isOtherVpnActive()) {
-            val sinceEstablish = elapsedRealtime() - lastVpnEstablishedAt
-            if (sinceEstablish in 0 until REVOKE_GRACE_MS) {
-                Timber.w("Ignoring stale onRevoke (${sinceEstablish}ms after establish — superseded session)")
-                return false
-            }
+        val sinceEstablish = elapsedRealtime() - lastVpnEstablishedAt
+        if (sinceEstablish in 0 until REVOKE_GRACE_MS) {
+            Timber.w("Ignoring stale onRevoke (${sinceEstablish}ms after establish — superseded session)")
+            return false
         }
 
         Timber.w("VPN revoked by system or user")

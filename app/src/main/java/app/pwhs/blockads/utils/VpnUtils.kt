@@ -19,7 +19,7 @@ object VpnUtils {
      * so we must also check whether we recently owned the VPN
      * (state == STOPPING) to avoid a false-positive conflict dialog.
      */
-    fun isOtherVpnActive(context: Context): Boolean = runCatching {
+    fun isOtherVpnActive(context: Context): Boolean {
         // Android allows dual VPNs in Work Profiles / Samsung Secure Folder (one in primary, one in managed profile).
         // Skip conflict warning when running inside a managed profile.
         val userManager = context.getSystemService(Context.USER_SERVICE) as? android.os.UserManager
@@ -27,9 +27,9 @@ object VpnUtils {
             return false
         }
 
-        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager ?: return false
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeNetwork = connectivityManager.activeNetwork
-        val allNetworks = connectivityManager.allNetworks?.toMutableList() ?: mutableListOf()
+        val allNetworks = connectivityManager.allNetworks.toMutableList()
         if (activeNetwork != null && !allNetworks.contains(activeNetwork)) {
             allNetworks.add(0, activeNetwork)
         }
@@ -50,8 +50,8 @@ object VpnUtils {
                 }
             }
         }
-        false
-    }.getOrDefault(false)
+        return false
+    }
 
     /**
      * Returns true if any network currently has TRANSPORT_VPN.
@@ -73,7 +73,6 @@ object VpnUtils {
      * Suspends until the OS has completely dropped the VPN transport and removed the key icon.
      */
     suspend fun awaitVpnTransportTeardown(context: Context, timeoutMs: Long = 1500L) {
-        if (isOtherVpnActive(context)) return
         val startWait = android.os.SystemClock.elapsedRealtime()
         while (isVpnTransportActive(context) &&
             android.os.SystemClock.elapsedRealtime() - startWait < timeoutMs

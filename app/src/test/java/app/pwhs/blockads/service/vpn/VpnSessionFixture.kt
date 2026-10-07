@@ -37,7 +37,6 @@ class VpnSessionFixture(test: TestScope) {
     var networkAvailable = true
     val networkAvailableFlow = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     var elapsed = 1_000_000L
-    var otherVpnActive: Boolean = false
     private val finalizers = mutableListOf<() -> Unit>()
 
     val config = StartupConfig(
@@ -65,7 +64,6 @@ class VpnSessionFixture(test: TestScope) {
         override fun logBatteryStatus() { events += "battery" }
         override fun scheduleStopFinalization(onFinalized: () -> Unit) { finalizers += onFinalized }
         override fun onFullyStopped() { events += "fullyStopped" }
-        override fun isOtherVpnActive(): Boolean = otherVpnActive
     }
 
     private val engine = object : VpnSessionEngine {

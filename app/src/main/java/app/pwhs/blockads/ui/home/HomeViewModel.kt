@@ -79,9 +79,8 @@ class HomeViewModel(
         AdBlockVpnService.state,
         RootProxyService.state
     ) { state1, state2 ->
-        val vpnActive = AdBlockVpnService.isServiceAlive && (state1 == VpnState.RUNNING || state1 == VpnState.STOPPING)
-        val rootActive = state2 == VpnState.RUNNING || state2 == VpnState.STOPPING
-        vpnActive || rootActive
+        state1 == VpnState.RUNNING || state1 == VpnState.STOPPING ||
+        state2 == VpnState.RUNNING || state2 == VpnState.STOPPING
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),
@@ -92,18 +91,15 @@ class HomeViewModel(
         AdBlockVpnService.state,
         RootProxyService.state
     ) { state1, state2 ->
-        val vpnStarting = AdBlockVpnService.isServiceAlive && (state1 == VpnState.STARTING || state1 == VpnState.RESTARTING)
-        val rootStarting = state2 == VpnState.STARTING || state2 == VpnState.RESTARTING
-        vpnStarting || rootStarting
+        state1 == VpnState.STARTING || state1 == VpnState.RESTARTING ||
+        state2 == VpnState.STARTING || state2 == VpnState.RESTARTING
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), AdBlockVpnService.isConnecting)
 
     val vpnStopping: StateFlow<Boolean> = combine(
         AdBlockVpnService.state,
         RootProxyService.state
     ) { state1, state2 ->
-        val vpnStopping = AdBlockVpnService.isServiceAlive && state1 == VpnState.STOPPING
-        val rootStopping = state2 == VpnState.STOPPING
-        vpnStopping || rootStopping
+        state1 == VpnState.STOPPING || state2 == VpnState.STOPPING
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
     val blockedCount: StateFlow<Int> = dnsLogDao.getBlockedCount()

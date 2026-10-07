@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import app.pwhs.blockads.data.datastore.AppPreferences
-import app.pwhs.blockads.utils.VpnUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -56,10 +55,6 @@ class BootReceiver : BroadcastReceiver() {
                             context.startService(serviceIntent)
                         }
                     } else {
-                        if (VpnUtils.isOtherVpnActive(context)) {
-                            Timber.d("Another VPN is active, skipping auto-reconnect on $trigger")
-                            return@launch
-                        }
                         Timber.d("Auto-reconnecting VPN after $trigger")
                         val serviceIntent = Intent(context, AdBlockVpnService::class.java).apply {
                             action = AdBlockVpnService.ACTION_START
