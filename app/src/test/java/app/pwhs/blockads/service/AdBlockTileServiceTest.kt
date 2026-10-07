@@ -108,13 +108,9 @@ class AdBlockTileServiceTest {
 
     @Test
     @Config(sdk = [Build.VERSION_CODES.TIRAMISU])
-    fun `another active VPN opens the conflict dialog instead of starting`() {
-        mockkObject(VpnUtils)
-        every { VpnUtils.isOtherVpnActive(any()) } returns true
+    fun `another active VPN starts BlockAds directly to take over tunnel`() {
         service().onClick()
-        assertNull(started())
-        val opened = shadowOf(app).nextStartedActivity
-        assertTrue(opened.getBooleanExtra(MainActivity.EXTRA_SHOW_VPN_CONFLICT_DIALOG, false))
+        assertEquals(AdBlockVpnService.ACTION_START, started()?.action)
     }
 
     @Ignore("Suspected: a tap during STARTING sends another START instead of cancelling")

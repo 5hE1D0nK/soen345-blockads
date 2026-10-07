@@ -181,11 +181,7 @@ fun HomeScreen(
                     onReconnect = {
                         viewModel.dismissVpnRevokedWarning()
                         if (!vpnConnecting && !vpnStopping) {
-                            if (routingMode != AppPreferences.ROUTING_MODE_ROOT && VpnUtils.isOtherVpnActive(context)) {
-                                onShowVpnConflictDialog()
-                            } else {
-                                onRequestVpnPermission()
-                            }
+                            onRequestVpnPermission()
                         }
                     },
                     onDismiss = {
@@ -260,11 +256,7 @@ fun HomeScreen(
                             viewModel.stopVpn(context)
                         } else {
                             viewModel.dismissVpnRevokedWarning()
-                            if (!isRootMode && VpnUtils.isOtherVpnActive(context)) {
-                                onShowVpnConflictDialog()
-                            } else {
-                                onRequestVpnPermission()
-                            }
+                            onRequestVpnPermission()
                         }
                     }
                 }

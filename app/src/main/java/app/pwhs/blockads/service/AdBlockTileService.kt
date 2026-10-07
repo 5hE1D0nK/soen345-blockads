@@ -42,23 +42,6 @@ class AdBlockTileService : TileService() {
             if (routingMode == AppPreferences.ROUTING_MODE_ROOT) {
                 RootProxyService.start(this)
             } else {
-                if (VpnUtils.isOtherVpnActive(this)) {
-                    val intent = Intent(this, MainActivity::class.java).apply {
-                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-                        putExtra(MainActivity.EXTRA_SHOW_VPN_CONFLICT_DIALOG, true)
-                    }
-                    val pendingIntent = PendingIntent.getActivity(
-                        this, 0, intent,
-                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                    )
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                        startActivityAndCollapse(pendingIntent)
-                    } else {
-                        startActivityAndCollapse(intent)
-                    }
-                    return
-                }
-
                 AdBlockVpnService.start(this)
             }
         }
