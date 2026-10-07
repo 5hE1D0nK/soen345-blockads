@@ -10,7 +10,7 @@ import app.pwhs.blockads.data.datastore.AppPreferences
 import app.pwhs.blockads.data.entities.FirewallRule
 import app.pwhs.blockads.data.dao.FirewallRuleDao
 import app.pwhs.blockads.service.ServiceController
-import app.pwhs.blockads.ui.whitelist.data.AppInfoData
+import app.pwhs.blockads.ui.common.AppInfoData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

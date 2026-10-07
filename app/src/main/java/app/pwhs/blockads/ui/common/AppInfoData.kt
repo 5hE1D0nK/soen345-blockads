@@ -1,4 +1,4 @@
-package app.pwhs.blockads.ui.whitelist.data
+package app.pwhs.blockads.ui.common
 
 data class AppInfoData(
     val packageName: String,

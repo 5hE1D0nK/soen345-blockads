@@ -40,7 +40,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import app.pwhs.blockads.R
 import app.pwhs.blockads.data.entities.FirewallRule
-import app.pwhs.blockads.ui.whitelist.data.AppInfoData
+import app.pwhs.blockads.ui.common.AppInfoData
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 
 @Composable

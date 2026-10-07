@@ -210,11 +210,13 @@ fun DomainRulesScreen(
                 when (page) {
                     0 -> WhitelistTab(
                         domains = filteredWhitelist,
+                        onToggle = { viewModel.toggleWhitelistDomain(it) },
                         onRemove = { viewModel.removeWhitelistDomain(it) },
                         onEdit = { editingWhitelistDomain = it }
                     )
                     1 -> BlocklistTab(
                         domains = filteredBlocklist,
+                        onToggle = { viewModel.toggleBlocklistDomain(it) },
                         onRemove = { viewModel.removeBlocklistDomain(it) },
                         onEdit = { editingBlocklistRule = it }
                     )

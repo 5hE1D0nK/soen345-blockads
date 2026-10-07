@@ -16,7 +16,6 @@ import app.pwhs.blockads.R
 
 @Composable
 fun ApplicationsSection(
-    onNavigateToWhitelistApps: () -> Unit,
     onNavigateToAppManagement: () -> Unit,
     onNavigateToTrustedNetworks: () -> Unit = {},
     excludeLan: Boolean = true,
@@ -34,18 +33,7 @@ fun ApplicationsSection(
 
         SettingsCard {
             Column {
-                // 1. App Whitelist
-                SettingItem(
-                    iconPainter = painterResource(R.drawable.ic_settings_whitelist_apps),
-                    iconTint = Color(0xFFEA580C),
-                    title = stringResource(R.string.settings_whitelist_apps),
-                    desc = stringResource(R.string.settings_whitelist_apps_desc),
-                    onClick = onNavigateToWhitelistApps
-                )
-
-                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = dividerColor)
-
-                // 2. App Management
+                // 1. App Management / Whitelist
                 SettingItem(
                     iconPainter = painterResource(R.drawable.ic_settings_app_management),
                     iconTint = Color(0xFFEA580C),

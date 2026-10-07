@@ -117,6 +117,10 @@
     <string name="app_management_blocked">Bị chặn: %d</string>
     <string name="app_management_system">Hệ thống</string>
     <string name="app_management_vpn_toggle">Định tuyến VPN cho %s</string>
+    <string name="app_management_filter_all">Tất cả</string>
+    <string name="app_management_filter_protected">Bảo vệ</string>
+    <string name="app_management_filter_whitelisted">Bỏ qua</string>
+    <string name="app_management_bypass_notice">Ứng dụng bỏ qua sẽ kết nối mạng trực tiếp, không qua VPN hay bộ lọc quảng cáo.</string>
     <string name="daily_summary_channel_name">Tóm tắt hàng ngày</string>
     <string name="daily_summary_channel_description">Tóm tắt chặn quảng cáo cuối ngày</string>
     <string name="daily_summary_title">Bảo vệ hôm nay</string>

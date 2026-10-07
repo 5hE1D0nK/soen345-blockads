@@ -13,6 +13,7 @@ import app.pwhs.blockads.ui.MainDispatcherRule
 import app.pwhs.blockads.ui.event.UiEvent
 import app.pwhs.blockads.ui.keepHot
 import io.mockk.Runs
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
@@ -28,6 +29,8 @@ import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
+import app.pwhs.blockads.data.repository.FilterListRepository
+
 class DomainRulesViewModelTest {
 
     @get:Rule
@@ -35,7 +38,8 @@ class DomainRulesViewModelTest {
 
     private val whitelistDao = FakeWhitelistDomainDao()
     private val ruleDao = FakeCustomDnsRuleDao()
-    private val vm by lazy { DomainRulesViewModel(whitelistDao, ruleDao, mockk<Application>(relaxed = true)) }
+    private val filterRepo: FilterListRepository = mockk(relaxed = true)
+    private val vm by lazy { DomainRulesViewModel(whitelistDao, ruleDao, filterRepo, mockk<Application>(relaxed = true)) }
 
     @Before
     fun setUp() {
@@ -97,6 +101,28 @@ class DomainRulesViewModelTest {
         ruleDao.rules.value = listOf(CustomDnsRule(id = 1, rule = "@@||a.com^", ruleType = RuleType.ALLOW, domain = "a.com"))
         vm.addBlocklistDomain("a.com")
         assertEquals(2, ruleDao.rules.value.size)
+    }
+
+    @Test
+    fun `toggling whitelist domain updates entity and requests restart`() = runTest {
+        val w = WhitelistDomain(id = 1, domain = "w.com", isEnabled = true)
+        whitelistDao.domains.value = listOf(w)
+        vm.toggleWhitelistDomain(w)
+        val updated = whitelistDao.domains.value.first()
+        assertEquals(false, updated.isEnabled)
+        coVerify(exactly = 1) { filterRepo.loadWhitelist() }
+        verify(exactly = 1) { ServiceController.requestRestart(any()) }
+    }
+
+    @Test
+    fun `toggling blocklist domain updates entity and requests restart`() = runTest {
+        val r = CustomDnsRule(id = 1, rule = "||a.com^", ruleType = RuleType.BLOCK, domain = "a.com", isEnabled = true)
+        ruleDao.rules.value = listOf(r)
+        vm.toggleBlocklistDomain(r)
+        val updated = ruleDao.rules.value.first()
+        assertEquals(false, updated.isEnabled)
+        coVerify(exactly = 1) { filterRepo.loadCustomRules() }
+        verify(exactly = 1) { ServiceController.requestRestart(any()) }
     }
 
     @Test

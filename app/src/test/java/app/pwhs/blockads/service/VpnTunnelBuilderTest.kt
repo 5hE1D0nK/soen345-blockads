@@ -41,7 +41,7 @@ class VpnTunnelBuilderTest {
         every { excludeLan } answers { flowOf(this@VpnTunnelBuilderTest.excludeLan) }
         every { allowAppBypass } answers { flowOf(this@VpnTunnelBuilderTest.allowAppBypass) }
     }
-    private val service: VpnService = mockk { every { packageName } returns "app.pwhs.blockads" }
+    private val service: VpnService = mockk(relaxed = true) { every { packageName } returns "app.pwhs.blockads" }
     private val tun: ParcelFileDescriptor = mockk(relaxed = true)
     private val sessions = mutableListOf<String>()
     private val addresses = mutableListOf<String>()

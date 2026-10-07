@@ -145,7 +145,7 @@ class FilterListRepository(
     }
 
     suspend fun loadWhitelist() {
-        val domains = whitelistDomainDao.getAllDomains()
+        val domains = whitelistDomainDao.getEnabledDomains()
         whitelistedDomains.clear()
         whitelistedDomains.addAll(domains.map { it.lowercase() })
         Timber.d("Loaded ${whitelistedDomains.size} whitelisted domains")

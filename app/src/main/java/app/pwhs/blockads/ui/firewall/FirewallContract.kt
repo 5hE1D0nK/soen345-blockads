@@ -1,7 +1,7 @@
 package app.pwhs.blockads.ui.firewall
 
 import app.pwhs.blockads.data.entities.FirewallRule
-import app.pwhs.blockads.ui.whitelist.data.AppInfoData
+import app.pwhs.blockads.ui.common.AppInfoData
 
 enum class FirewallFilterType {
     ALL,

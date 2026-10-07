@@ -51,15 +51,12 @@ fun SettingsScreen(
     onNavigateToAbout: () -> Unit = { },
     onNavigateToAppearance: () -> Unit = { },
     onNavigateToAppManagement: () -> Unit = { },
-    onNavigateToFilterSetup: () -> Unit = { },
-    onNavigateToWhitelistApps: () -> Unit = { },
     onNavigateToTrustedNetworks: () -> Unit = { },
     onNavigateToWireGuardImport: () -> Unit = { },
     onNavigateToHttpsFiltering: () -> Unit = { },
     onNavigateToDNSProvider: () -> Unit = { },
 ) {
     val autoReconnect by viewModel.autoReconnect.collectAsStateWithLifecycle()
-    val filterLists by viewModel.filterLists.collectAsStateWithLifecycle()
     val autoUpdateEnabled by viewModel.autoUpdateEnabled.collectAsStateWithLifecycle()
     val autoUpdateFrequency by viewModel.autoUpdateFrequency.collectAsStateWithLifecycle()
     val autoUpdateWifiOnly by viewModel.autoUpdateWifiOnly.collectAsStateWithLifecycle()
@@ -134,7 +131,6 @@ fun SettingsScreen(
 
             // ── Applications & Routing ───────────────────────────
             ApplicationsSection(
-                onNavigateToWhitelistApps = onNavigateToWhitelistApps,
                 onNavigateToAppManagement = onNavigateToAppManagement,
                 onNavigateToTrustedNetworks = onNavigateToTrustedNetworks,
                 excludeLan = excludeLan,
@@ -146,8 +142,6 @@ fun SettingsScreen(
             // ── Filters & Blocklists ─────────────────────────────
             FilterSetupSection(
                 modifier = Modifier.fillMaxWidth(),
-                onNavigateToFilterSetup = onNavigateToFilterSetup,
-                filterLists = filterLists,
                 autoUpdateNotification = autoUpdateNotification,
                 autoUpdateFrequency = autoUpdateFrequency,
                 autoUpdateWifiOnly = autoUpdateWifiOnly,

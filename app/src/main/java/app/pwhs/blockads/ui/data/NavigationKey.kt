@@ -47,9 +47,6 @@ data class FilterDetailKey(val filterId: Long) : NavKey
 data object AboutKey : NavKey
 
 @Serializable
-data object WhiteListAppKey : NavKey
-
-@Serializable
 data object AppManagementKey : NavKey
 
 @Serializable

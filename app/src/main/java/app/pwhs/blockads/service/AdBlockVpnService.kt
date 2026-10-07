@@ -152,10 +152,14 @@ class AdBlockVpnService : VpnService() {
                 }
             },
             onPhysicalNetworkLostChanged = { lost -> session.onPhysicalNetworkLostChanged(lost) },
-            onNetworkActiveChanged = { network ->
+            onNetworkActiveChanged = { _ ->
                 try {
-                    setUnderlyingNetworks(if (network != null) arrayOf(network) else null)
-                    Timber.d("Updated underlying network: $network")
+                    // Always set underlying networks to null so Android OS dynamically uses the
+                    // system default network (Wi-Fi, Cellular, etc.). Passing an explicit single-network
+                    // array locks the VPN to that transport, causing Samsung OneUI and Android SystemUI
+                    // to hide the Wi-Fi icon when turning on Wi-Fi while on mobile data.
+                    setUnderlyingNetworks(null)
+                    Timber.d("Reset underlying network to system default (null)")
                 } catch (e: Exception) {
                     Timber.w(e, "Failed to set underlying network")
                 }

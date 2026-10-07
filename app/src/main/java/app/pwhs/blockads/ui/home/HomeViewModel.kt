@@ -57,7 +57,7 @@ class HomeViewModel(
 ) : ViewModel() {
 
     val whitelistedDomains: StateFlow<Set<String>> = whitelistDomainDao.getAll()
-        .map { list -> list.map { it.domain.lowercase() }.toSet() }
+        .map { list -> list.filter { it.isEnabled }.map { it.domain.lowercase() }.toSet() }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptySet())
 
     private val _events = MutableSharedFlow<UiEvent>()

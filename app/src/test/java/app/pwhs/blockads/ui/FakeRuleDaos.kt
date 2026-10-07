@@ -46,6 +46,7 @@ class FakeWhitelistDomainDao(initial: List<WhitelistDomain> = emptyList()) : Whi
 
     override fun getAll(): Flow<List<WhitelistDomain>> = domains
     override suspend fun getAllDomains() = domains.value.map { it.domain }
+    override suspend fun getEnabledDomains() = domains.value.filter { it.isEnabled }.map { it.domain }
     override suspend fun insert(domain: WhitelistDomain) {
         val stored = if (domain.id == 0) domain.copy(id = (domains.value.maxOfOrNull { it.id } ?: 0) + 1) else domain
         domains.value = domains.value.filterNot { it.id == stored.id } + stored

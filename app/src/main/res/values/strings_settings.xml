@@ -158,6 +158,10 @@
     <string name="app_management_blocked">Blocked: %d</string>
     <string name="app_management_system">System</string>
     <string name="app_management_vpn_toggle">VPN routing for %s</string>
+    <string name="app_management_filter_all">All</string>
+    <string name="app_management_filter_protected">Protected</string>
+    <string name="app_management_filter_whitelisted">Bypassed</string>
+    <string name="app_management_bypass_notice">Bypassed apps connect directly to the internet without filtering or VPN protection.</string>
     <string name="daily_summary_channel_name">Daily Summary</string>
     <string name="daily_summary_channel_description">End-of-day ad blocking summary</string>
     <string name="daily_summary_title">Daily Protection Summary</string>

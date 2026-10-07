@@ -22,6 +22,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -42,6 +43,8 @@ fun DomainItem(
     addedTimestamp: Long,
     iconTint: Color,
     icon: androidx.compose.ui.graphics.vector.ImageVector,
+    isEnabled: Boolean = true,
+    onToggle: () -> Unit = {},
     onDelete: () -> Unit,
     onEdit: () -> Unit = {},
     modifier: Modifier = Modifier
@@ -65,13 +68,13 @@ fun DomainItem(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 icon,
                 contentDescription = null,
-                tint = iconTint,
+                tint = if (isEnabled) iconTint else TextSecondary.copy(alpha = 0.4f),
                 modifier = Modifier.size(20.dp)
             )
             Spacer(modifier = Modifier.width(12.dp))
@@ -80,6 +83,7 @@ fun DomainItem(
                     text = domain,
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Medium,
+                    color = if (isEnabled) MaterialTheme.colorScheme.onSurface else TextSecondary.copy(alpha = 0.6f),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -87,7 +91,7 @@ fun DomainItem(
                 Text(
                     text = formatTimestamp(addedTimestamp),
                     style = MaterialTheme.typography.bodySmall,
-                    color = TextSecondary
+                    color = TextSecondary.copy(alpha = if (isEnabled) 1f else 0.5f)
                 )
             }
             IconButton(
@@ -112,6 +116,11 @@ fun DomainItem(
                     modifier = Modifier.size(18.dp)
                 )
             }
+            Spacer(modifier = Modifier.width(4.dp))
+            Switch(
+                checked = isEnabled,
+                onCheckedChange = { onToggle() }
+            )
         }
     }
 }

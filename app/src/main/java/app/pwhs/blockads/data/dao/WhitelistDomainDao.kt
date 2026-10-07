@@ -16,6 +16,9 @@ interface WhitelistDomainDao {
     @Query("SELECT domain FROM whitelist_domains")
     suspend fun getAllDomains(): List<String>
 
+    @Query("SELECT domain FROM whitelist_domains WHERE isEnabled = 1")
+    suspend fun getEnabledDomains(): List<String>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(domain: WhitelistDomain)
 

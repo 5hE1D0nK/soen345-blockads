@@ -22,6 +22,7 @@ import app.pwhs.blockads.ui.theme.TextSecondary
 @Composable
 fun BlocklistTab(
     domains: List<CustomDnsRule>,
+    onToggle: (CustomDnsRule) -> Unit = {},
     onRemove: (CustomDnsRule) -> Unit,
     onEdit: (CustomDnsRule) -> Unit = {}
 ) {
@@ -54,6 +55,8 @@ fun BlocklistTab(
                             addedTimestamp = rule.addedTimestamp,
                             iconTint = DangerRed.copy(alpha = 0.7f),
                             icon = Icons.Default.Block,
+                            isEnabled = rule.isEnabled,
+                            onToggle = { onToggle(rule) },
                             onDelete = { onRemove(rule) },
                             onEdit = { onEdit(rule) }
                         )

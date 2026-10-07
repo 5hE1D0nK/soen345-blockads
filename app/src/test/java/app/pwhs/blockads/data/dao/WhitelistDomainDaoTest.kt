@@ -67,4 +67,17 @@ class WhitelistDomainDaoTest {
         dao.insert(WhitelistDomain(id = 5, domain = "after.example"))
         assertEquals(listOf("after.example"), dao.getAllDomains())
     }
+
+    @Test
+    fun `getEnabledDomains returns only enabled domains`() = runTest {
+        dao.insert(WhitelistDomain(id = 1, domain = "enabled1.example", isEnabled = true))
+        dao.insert(WhitelistDomain(id = 2, domain = "disabled.example", isEnabled = false))
+        dao.insert(WhitelistDomain(id = 3, domain = "enabled2.example", isEnabled = true))
+
+        assertEquals(listOf("enabled1.example", "enabled2.example"), dao.getEnabledDomains())
+        assertEquals(listOf("enabled1.example", "disabled.example", "enabled2.example"), dao.getAllDomains())
+
+        dao.update(WhitelistDomain(id = 2, domain = "disabled.example", isEnabled = true))
+        assertEquals(listOf("enabled1.example", "disabled.example", "enabled2.example"), dao.getEnabledDomains())
+    }
 }

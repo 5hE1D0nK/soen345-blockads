@@ -9,6 +9,7 @@ import app.pwhs.blockads.data.dao.WhitelistDomainDao
 import app.pwhs.blockads.data.entities.CustomDnsRule
 import app.pwhs.blockads.data.entities.RuleType
 import app.pwhs.blockads.data.entities.WhitelistDomain
+import app.pwhs.blockads.data.repository.FilterListRepository
 import app.pwhs.blockads.service.AdBlockVpnService
 import app.pwhs.blockads.service.ServiceController
 import app.pwhs.blockads.ui.event.UiEvent
@@ -25,6 +26,7 @@ import kotlinx.coroutines.launch
 class DomainRulesViewModel(
     private val whitelistDomainDao: WhitelistDomainDao,
     private val customDnsRuleDao: CustomDnsRuleDao,
+    private val filterRepo: FilterListRepository,
     application: Application
 ) : AndroidViewModel(application) {
 
@@ -38,15 +40,27 @@ class DomainRulesViewModel(
     private val _events = MutableSharedFlow<UiEvent>(extraBufferCapacity = 1)
     val events: SharedFlow<UiEvent> = _events.asSharedFlow()
 
+    private fun sanitizeDomain(input: String): String {
+        var d = input.trim().lowercase()
+        if (d.startsWith("http://")) d = d.removePrefix("http://")
+        if (d.startsWith("https://")) d = d.removePrefix("https://")
+        val slash = d.indexOf('/')
+        if (slash != -1) d = d.substring(0, slash)
+        val colon = d.indexOf(':')
+        if (colon != -1) d = d.substring(0, colon)
+        return d.trim()
+    }
+
     // ── Whitelist ────────────────────────────────────────────
 
     fun addWhitelistDomain(domain: String) {
         viewModelScope.launch {
-            val cleanDomain = domain.trim().lowercase()
+            val cleanDomain = sanitizeDomain(domain)
             if (cleanDomain.isNotBlank()) {
                 val exists = whitelistDomainDao.exists(cleanDomain)
                 if (exists == 0) {
                     whitelistDomainDao.insert(WhitelistDomain(domain = cleanDomain))
+                    filterRepo.loadWhitelist()
                     _events.toast(R.string.whitelist_domain_added, listOf(cleanDomain))
                     requestVpnRestart()
                 } else {
@@ -58,11 +72,12 @@ class DomainRulesViewModel(
 
     fun updateWhitelistDomain(oldDomain: WhitelistDomain, newDomain: String) {
         viewModelScope.launch {
-            val clean = newDomain.trim().lowercase()
+            val clean = sanitizeDomain(newDomain)
             if (clean.isNotBlank() && clean != oldDomain.domain.lowercase()) {
                 val exists = whitelistDomainDao.exists(clean)
                 if (exists == 0) {
                     whitelistDomainDao.update(oldDomain.copy(domain = clean))
+                    filterRepo.loadWhitelist()
                     _events.toast(R.string.whitelist_domain_added, listOf(clean))
                     requestVpnRestart()
                 } else {
@@ -72,9 +87,18 @@ class DomainRulesViewModel(
         }
     }
 
+    fun toggleWhitelistDomain(domain: WhitelistDomain) {
+        viewModelScope.launch {
+            whitelistDomainDao.update(domain.copy(isEnabled = !domain.isEnabled))
+            filterRepo.loadWhitelist()
+            requestVpnRestart()
+        }
+    }
+
     fun removeWhitelistDomain(domain: WhitelistDomain) {
         viewModelScope.launch {
             whitelistDomainDao.delete(domain)
+            filterRepo.loadWhitelist()
             _events.toast(R.string.whitelist_domain_removed)
             requestVpnRestart()
         }
@@ -84,7 +108,7 @@ class DomainRulesViewModel(
 
     fun addBlocklistDomain(domain: String) {
         viewModelScope.launch {
-            val cleanDomain = domain.trim().lowercase()
+            val cleanDomain = sanitizeDomain(domain)
             if (cleanDomain.isNotBlank()) {
                 val allRules = customDnsRuleDao.getAll()
                 val exists = allRules.any {
@@ -98,6 +122,7 @@ class DomainRulesViewModel(
                             domain = cleanDomain
                         )
                     )
+                    filterRepo.loadCustomRules()
                     _events.toast(R.string.blocklist_domain_added, listOf(cleanDomain))
                     requestVpnRestart()
                 } else {
@@ -109,7 +134,7 @@ class DomainRulesViewModel(
 
     fun updateBlocklistDomain(oldRule: CustomDnsRule, newDomain: String) {
         viewModelScope.launch {
-            val clean = newDomain.trim().lowercase()
+            val clean = sanitizeDomain(newDomain)
             if (clean.isNotBlank() && clean != oldRule.domain.lowercase()) {
                 val allRules = customDnsRuleDao.getAll()
                 val exists = allRules.any {
@@ -122,6 +147,7 @@ class DomainRulesViewModel(
                             rule = "||$clean^"
                         )
                     )
+                    filterRepo.loadCustomRules()
                     _events.toast(R.string.blocklist_domain_added, listOf(clean))
                     requestVpnRestart()
                 } else {
@@ -131,9 +157,18 @@ class DomainRulesViewModel(
         }
     }
 
+    fun toggleBlocklistDomain(rule: CustomDnsRule) {
+        viewModelScope.launch {
+            customDnsRuleDao.update(rule.copy(isEnabled = !rule.isEnabled))
+            filterRepo.loadCustomRules()
+            requestVpnRestart()
+        }
+    }
+
     fun removeBlocklistDomain(rule: CustomDnsRule) {
         viewModelScope.launch {
             customDnsRuleDao.delete(rule)
+            filterRepo.loadCustomRules()
             _events.toast(R.string.blocklist_domain_removed)
             requestVpnRestart()
         }
@@ -146,11 +181,12 @@ class DomainRulesViewModel(
         viewModelScope.launch {
             if (isAllow) {
                 val existing = whitelistDomainDao.getAllDomains().map { it.lowercase() }.toSet()
-                val newDomains = domains.map { it.trim().lowercase() }
+                val newDomains = domains.map { sanitizeDomain(it) }
                     .filter { it.isNotBlank() && !existing.contains(it) }
                     .distinct()
                 if (newDomains.isNotEmpty()) {
                     whitelistDomainDao.insertAll(newDomains.map { WhitelistDomain(domain = it) })
+                    filterRepo.loadWhitelist()
                     _events.toast(R.string.wireguard_imported, listOf("${newDomains.size} domains"))
                     requestVpnRestart()
                 }
@@ -159,7 +195,7 @@ class DomainRulesViewModel(
                     .filter { it.ruleType == RuleType.BLOCK }
                     .map { it.domain.lowercase() }
                     .toSet()
-                val newDomains = domains.map { it.trim().lowercase() }
+                val newDomains = domains.map { sanitizeDomain(it) }
                     .filter { it.isNotBlank() && !existing.contains(it) }
                     .distinct()
                 if (newDomains.isNotEmpty()) {
@@ -172,6 +208,7 @@ class DomainRulesViewModel(
                             )
                         }
                     )
+                    filterRepo.loadCustomRules()
                     _events.toast(R.string.wireguard_imported, listOf("${newDomains.size} domains"))
                     requestVpnRestart()
                 }

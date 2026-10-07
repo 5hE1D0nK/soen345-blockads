@@ -79,7 +79,7 @@ class LogViewModel(
     val selectedIds: StateFlow<Set<Long>> = _selectedIds.asStateFlow()
 
     val whitelistedDomains: StateFlow<Set<String>> = whitelistDomainDao.getAll()
-        .map { list -> list.map { it.domain.lowercase() }.toSet() }
+        .map { list -> list.filter { it.isEnabled }.map { it.domain.lowercase() }.toSet() }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptySet())
 
     val filterNames: StateFlow<Map<String, String>> = filterListDao.getAll()

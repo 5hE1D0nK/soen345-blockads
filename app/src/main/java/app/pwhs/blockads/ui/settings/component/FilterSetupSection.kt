@@ -18,17 +18,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import app.pwhs.blockads.R
 import app.pwhs.blockads.data.datastore.AppPreferences
-import app.pwhs.blockads.data.entities.FilterList
 
 @Composable
 fun FilterSetupSection(
     modifier: Modifier = Modifier,
-    filterLists: List<FilterList>,
     autoUpdateNotification: String,
     autoUpdateFrequency: String,
     autoUpdateWifiOnly: Boolean,
     autoUpdateEnabled: Boolean,
-    onNavigateToFilterSetup: () -> Unit = {},
     onSetAutoUpdateWifiOnly: (Boolean) -> Unit = {},
     onSetAutoUpdateFrequency: (String) -> Unit = {},
     onSetAutoUpdateNotification: (String) -> Unit = {},
@@ -47,20 +44,7 @@ fun FilterSetupSection(
 
         SettingsCard {
             Column {
-                // 1. Filter list navigation
-                val enabledFilterCount = filterLists.count { it.isEnabled }
-                SettingItem(
-                    iconPainter = painterResource(R.drawable.ic_settings_filter_lists),
-                    iconTint = Color(0xFF059669),
-                    title = stringResource(R.string.filter_setup_title),
-                    desc = stringResource(R.string.settings_category_filters_desc),
-                    statusValue = stringResource(R.string.settings_filter_lists, enabledFilterCount),
-                    onClick = onNavigateToFilterSetup
-                )
-
-                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = dividerColor)
-
-                // 2. Auto-update toggle
+                // 1. Auto-update toggle
                 SettingsToggleItem(
                     iconPainter = painterResource(R.drawable.ic_settings_auto_update),
                     iconTint = Color(0xFF059669),

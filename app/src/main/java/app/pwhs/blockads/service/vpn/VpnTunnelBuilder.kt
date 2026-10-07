@@ -156,6 +156,11 @@ class VpnTunnelBuilder(
 
             val pfd = builder.establish()
             if (pfd != null) {
+                try {
+                    vpnService.setUnderlyingNetworks(null)
+                } catch (e: Exception) {
+                    Timber.w(e, "Failed to set underlying network on VpnService")
+                }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     try {
                         val flags = android.system.Os.fcntlInt(pfd.fileDescriptor, android.system.OsConstants.F_GETFL, 0)
