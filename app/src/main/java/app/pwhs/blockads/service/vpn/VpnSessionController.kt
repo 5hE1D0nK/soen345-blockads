@@ -284,15 +284,19 @@ class VpnSessionController(
 
     /** Returns false when the revoke is ignored as a stale callback from a superseded session. */
     fun onRevoke(): Boolean {
+        val otherVpnActive = host.isOtherVpnActive()
         val sinceEstablish = elapsedRealtime() - lastVpnEstablishedAt
-        if (sinceEstablish in 0 until REVOKE_GRACE_MS) {
+        if (!otherVpnActive && sinceEstablish in 0 until REVOKE_GRACE_MS) {
             Timber.w("Ignoring stale onRevoke (${sinceEstablish}ms after establish — superseded session)")
             return false
         }
 
-        Timber.w("VPN revoked by system or user")
+        Timber.w("VPN revoked by system or other app (otherVpnActive=$otherVpnActive)")
         scope.launch(NonCancellable) {
             appPrefs.setVpnEnabled(false)
+            if (otherVpnActive) {
+                appPrefs.setVpnRevokedByAnotherApp(true)
+            }
         }
         host.showRevokedNotification()
         stop(showStoppedNotification = false)

@@ -37,6 +37,11 @@ class VpnSecurityPreferences(private val dataStore: DataStore<Preferences>) {
         val KEY_PAUSE_ON_TRUSTED = booleanPreferencesKey("pause_on_trusted")
         val KEY_PAUSED_BY_TRUSTED = booleanPreferencesKey("paused_by_trusted")
         val KEY_PAUSED_TRUSTED_SSID = stringPreferencesKey("paused_trusted_ssid")
+        val KEY_VPN_REVOKED_BY_ANOTHER_APP = booleanPreferencesKey("vpn_revoked_by_another_app")
+    }
+
+    val vpnRevokedByAnotherApp: Flow<Boolean> = dataStore.data.map { prefs ->
+        prefs[KEY_VPN_REVOKED_BY_ANOTHER_APP] ?: false
     }
 
     val vpnEnabled: Flow<Boolean> = dataStore.data.map { prefs ->
@@ -240,4 +245,10 @@ class VpnSecurityPreferences(private val dataStore: DataStore<Preferences>) {
 
     suspend fun getPausedByTrustedSnapshot(): Boolean =
         dataStore.data.map { it[KEY_PAUSED_BY_TRUSTED] ?: false }.first()
+
+    suspend fun setVpnRevokedByAnotherApp(value: Boolean) {
+        dataStore.edit { prefs ->
+            prefs[KEY_VPN_REVOKED_BY_ANOTHER_APP] = value
+        }
+    }
 }

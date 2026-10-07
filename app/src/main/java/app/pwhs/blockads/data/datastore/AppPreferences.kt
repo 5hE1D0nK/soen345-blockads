@@ -114,6 +114,7 @@ class AppPreferences internal constructor(
     val pausedByTrusted: Flow<Boolean> get() = vpnSecurity.pausedByTrusted
     val pausedTrustedSsid: Flow<String> get() = vpnSecurity.pausedTrustedSsid
     val filterHttp3: Flow<Boolean> get() = vpnSecurity.filterHttp3
+    val vpnRevokedByAnotherApp: Flow<Boolean> get() = vpnSecurity.vpnRevokedByAnotherApp
 
     // ── DNS Flows ────────────────────────────────────────────────────────
     val upstreamDns: Flow<String> get() = dns.upstreamDns
@@ -185,6 +186,7 @@ class AppPreferences internal constructor(
     suspend fun getPauseOnTrustedEnabledSnapshot(): Boolean = vpnSecurity.getPauseOnTrustedEnabledSnapshot()
     suspend fun setPausedByTrusted(value: Boolean, ssid: String = "") = vpnSecurity.setPausedByTrusted(value, ssid)
     suspend fun getPausedByTrustedSnapshot(): Boolean = vpnSecurity.getPausedByTrustedSnapshot()
+    suspend fun setVpnRevokedByAnotherApp(value: Boolean) = vpnSecurity.setVpnRevokedByAnotherApp(value)
 
     suspend fun setUpstreamDns(dnsServer: String) = dns.setUpstreamDns(dnsServer)
     suspend fun setFallbackDns(dnsServer: String) = dns.setFallbackDns(dnsServer)

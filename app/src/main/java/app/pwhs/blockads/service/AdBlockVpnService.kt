@@ -284,6 +284,7 @@ class AdBlockVpnService : VpnService() {
             VpnUtils.scheduleStopFinalization(applicationContext, onFinalized)
 
         override fun onFullyStopped() = AdBlockWidgetProvider.sendUpdateBroadcast(applicationContext)
+        override fun isOtherVpnActive(): Boolean = VpnUtils.isOtherVpnActive(this@AdBlockVpnService)
     }
 
     private val sessionEngine = object : VpnSessionEngine {

@@ -86,6 +86,7 @@ import app.pwhs.blockads.ui.event.UiEventEffect
 import app.pwhs.blockads.ui.home.component.BlockedDomainActionSheet
 import app.pwhs.blockads.ui.home.component.HomeStatusHeader
 import app.pwhs.blockads.ui.home.component.PrivateDnsWarningCard
+import app.pwhs.blockads.ui.home.component.VpnRevokedWarningCard
 import app.pwhs.blockads.utils.AppConstants.AVG_AD_SIZE_KB
 import app.pwhs.blockads.utils.VpnUtils
 import app.pwhs.blockads.utils.formatCount
@@ -133,8 +134,10 @@ fun HomeScreen(
     val privateDnsWarning by viewModel.privateDnsWarning.collectAsStateWithLifecycle()
     val pausedByTrusted by viewModel.pausedByTrusted.collectAsStateWithLifecycle()
     val pausedTrustedSsid by viewModel.pausedTrustedSsid.collectAsStateWithLifecycle()
+    val vpnRevokedByAnotherApp by viewModel.vpnRevokedByAnotherApp.collectAsStateWithLifecycle()
     // Show the trusted-network paused state only while actually off.
     val showTrustedPause = pausedByTrusted && !vpnEnabled && !vpnConnecting && !vpnStopping
+    val showRevokedWarning = vpnRevokedByAnotherApp && !vpnEnabled && !vpnConnecting && !vpnStopping
     val context = LocalContext.current
     var selectedBlockedDomain by remember { mutableStateOf<SelectedBlockedDomain?>(null) }
 
@@ -171,6 +174,24 @@ fun HomeScreen(
             // Private DNS warning — DoT bypasses BlockAds filtering (#145)
             if (privateDnsWarning) {
                 PrivateDnsWarningCard()
+            }
+
+            if (showRevokedWarning) {
+                VpnRevokedWarningCard(
+                    onReconnect = {
+                        viewModel.dismissVpnRevokedWarning()
+                        if (!vpnConnecting && !vpnStopping) {
+                            if (routingMode != AppPreferences.ROUTING_MODE_ROOT && VpnUtils.isOtherVpnActive(context)) {
+                                onShowVpnConflictDialog()
+                            } else {
+                                onRequestVpnPermission()
+                            }
+                        }
+                    },
+                    onDismiss = {
+                        viewModel.dismissVpnRevokedWarning()
+                    }
+                )
             }
 
             val isRootMode = routingMode == AppPreferences.ROUTING_MODE_ROOT
@@ -238,6 +259,7 @@ fun HomeScreen(
                         if (vpnEnabled) {
                             viewModel.stopVpn(context)
                         } else {
+                            viewModel.dismissVpnRevokedWarning()
                             if (!isRootMode && VpnUtils.isOtherVpnActive(context)) {
                                 onShowVpnConflictDialog()
                             } else {

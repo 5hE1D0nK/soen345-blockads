@@ -73,6 +73,7 @@ object VpnUtils {
      * Suspends until the OS has completely dropped the VPN transport and removed the key icon.
      */
     suspend fun awaitVpnTransportTeardown(context: Context, timeoutMs: Long = 1500L) {
+        if (isOtherVpnActive(context)) return
         val startWait = android.os.SystemClock.elapsedRealtime()
         while (isVpnTransportActive(context) &&
             android.os.SystemClock.elapsedRealtime() - startWait < timeoutMs

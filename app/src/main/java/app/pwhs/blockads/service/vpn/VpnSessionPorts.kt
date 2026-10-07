@@ -30,6 +30,7 @@ interface VpnSessionHost {
     fun logBatteryStatus()
     fun scheduleStopFinalization(onFinalized: () -> Unit)
     fun onFullyStopped()
+    fun isOtherVpnActive(): Boolean
 }
 
 /** The Go engine as a session sees it: configure, attach to the TUN, stop. */

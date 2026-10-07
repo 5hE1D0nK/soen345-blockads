@@ -12,6 +12,10 @@
     <string name="vpn_alert_channel_description">Cảnh báo quan trọng về thay đổi trạng thái VPN</string>
     <string name="vpn_revoked_title">Chặn quảng cáo đã dừng</string>
     <string name="vpn_revoked_text">Ứng dụng VPN khác đã chiếm kết nối. Nhấn để bật lại BlockAds.</string>
+    <string name="vpn_revoked_card_title">Bảo vệ đã tạm dừng</string>
+    <string name="vpn_revoked_card_desc">Một ứng dụng VPN khác vừa kết nối. Lưu lượng của bạn hiện không được BlockAds lọc.</string>
+    <string name="vpn_revoked_action_reconnect">Bật lại</string>
+    <string name="vpn_revoked_action_dismiss">Bỏ qua</string>
     <string name="vpn_stopped_title">BlockAds đã tạm dừng</string>
     <string name="vpn_stopped_text">Chặn quảng cáo đã tắt. Nhấn Bật để tiếp tục.</string>
     <string name="vpn_stopped_action_enable">Bật</string>

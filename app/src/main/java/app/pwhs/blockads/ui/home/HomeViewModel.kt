@@ -74,6 +74,15 @@ class HomeViewModel(
     val pausedTrustedSsid: StateFlow<String> = appPrefs.pausedTrustedSsid
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "")
 
+    val vpnRevokedByAnotherApp: StateFlow<Boolean> = appPrefs.vpnRevokedByAnotherApp
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+
+    fun dismissVpnRevokedWarning() {
+        viewModelScope.launch {
+            appPrefs.setVpnRevokedByAnotherApp(false)
+        }
+    }
+
     // ── Reactive VPN state (derived from the single source of truth) ──
     val vpnEnabled: StateFlow<Boolean> = combine(
         AdBlockVpnService.state,

@@ -58,6 +58,7 @@ class HomeViewModelTest {
     private val lastSeen = MutableStateFlow(0L)
     private val milestonesOn = MutableStateFlow(true)
     private val domainCount = MutableStateFlow(0)
+    private val vpnRevokedByAnotherApp = MutableStateFlow(false)
 
     private val appPrefs: AppPreferences = mockk(relaxed = true) {
         every { routingMode } returns this@HomeViewModelTest.routingMode
@@ -65,6 +66,7 @@ class HomeViewModelTest {
         every { pausedTrustedSsid } returns flowOf("Home")
         every { lastSeenMilestoneDialog } returns lastSeen
         every { milestoneNotificationsEnabled } returns milestonesOn
+        every { vpnRevokedByAnotherApp } returns this@HomeViewModelTest.vpnRevokedByAnotherApp
     }
     private val dnsLogDao: DnsLogDao = mockk(relaxed = true) {
         every { getBlockedCount() } returns blocked
@@ -265,5 +267,11 @@ class HomeViewModelTest {
         coEvery { repo.loadAllEnabledFilters() } returns Result.failure(RuntimeException("corrupt trie"))
         vm.preloadFilter()
         assertTrue(vm.filterLoadFailed.value)
+    }
+
+    @Test
+    fun `dismissVpnRevokedWarning clears flag in app preferences`() {
+        vm.dismissVpnRevokedWarning()
+        coVerify { appPrefs.setVpnRevokedByAnotherApp(false) }
     }
 }
