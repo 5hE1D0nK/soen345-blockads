@@ -117,12 +117,12 @@ class VpnSessionControllerRaceTest {
         assertEquals(VpnState.STOPPED, f.state)
     }
 
-    @Ignore("known bug: a genuine revoke (another VPN taking over) within 10s of establishing is swallowed")
     @Test
-    fun `a genuine revoke right after establishing still stops the session`() = session { f ->
+    fun `a genuine revoke right after establishing still stops the session when other VPN active`() = session { f ->
         startRunning(f)
         f.elapsed += 2_000
-        f.controller.onRevoke()
+        f.otherVpnActive = true
+        assertTrue(f.controller.onRevoke())
         advanceUntilIdle()
         assertTrue(f.state != VpnState.RUNNING)
     }

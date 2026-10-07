@@ -50,10 +50,12 @@ class AdBlockVpnService : VpnService() {
         internal val status = VpnStatusStore()
         val state: StateFlow<VpnState> = status.state.asStateFlow()
 
-        val isRunning: Boolean get() = status.state.value == VpnState.RUNNING
-        val isConnecting: Boolean get() = status.state.value == VpnState.STARTING
-        val isRestarting: Boolean get() = status.state.value == VpnState.RESTARTING
-        val isStopping: Boolean get() = status.state.value == VpnState.STOPPING
+        @Volatile internal var isServiceAlive = false
+
+        val isRunning: Boolean get() = isServiceAlive && status.state.value == VpnState.RUNNING
+        val isConnecting: Boolean get() = isServiceAlive && status.state.value == VpnState.STARTING
+        val isRestarting: Boolean get() = isServiceAlive && status.state.value == VpnState.RESTARTING
+        val isStopping: Boolean get() = isServiceAlive && status.state.value == VpnState.STOPPING
 
         var startTimestamp: Long
             get() = status.startTimestamp
@@ -105,6 +107,7 @@ class AdBlockVpnService : VpnService() {
     @Volatile private var isRecordDnsLogsEnabled = true
 
     override fun onCreate() {
+        isServiceAlive = true
         super.onCreate()
         val koin = org.koin.java.KoinJavaComponent.getKoin()
         filterRepo = koin.get()
@@ -224,6 +227,7 @@ class AdBlockVpnService : VpnService() {
     }
 
     override fun onDestroy() {
+        isServiceAlive = false
         session.onDestroy()
         super.onDestroy()
     }
@@ -284,6 +288,7 @@ class AdBlockVpnService : VpnService() {
             VpnUtils.scheduleStopFinalization(applicationContext, onFinalized)
 
         override fun onFullyStopped() = AdBlockWidgetProvider.sendUpdateBroadcast(applicationContext)
+        override fun isOtherVpnActive(): Boolean = VpnUtils.isOtherVpnActive(this@AdBlockVpnService)
     }
 
     private val sessionEngine = object : VpnSessionEngine {

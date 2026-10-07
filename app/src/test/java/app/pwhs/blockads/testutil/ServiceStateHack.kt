@@ -16,6 +16,7 @@ object ServiceStateHack {
 
     fun setVpn(state: VpnState) {
         AdBlockVpnService.status.state.value = state
+        AdBlockVpnService.isServiceAlive = state != VpnState.STOPPED
     }
 
     fun setRoot(state: VpnState) {
@@ -25,5 +26,6 @@ object ServiceStateHack {
     fun reset() {
         setVpn(VpnState.STOPPED)
         setRoot(VpnState.STOPPED)
+        AdBlockVpnService.isServiceAlive = false
     }
 }

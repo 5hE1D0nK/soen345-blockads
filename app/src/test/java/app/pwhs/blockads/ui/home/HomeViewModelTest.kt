@@ -104,6 +104,7 @@ class HomeViewModelTest {
     fun setUp() {
         mockkObject(AdBlockVpnService.Companion, RootProxyService.Companion)
         every { AdBlockVpnService.state } returns vpnState
+        every { AdBlockVpnService.isServiceAlive } answers { vpnState.value != VpnState.STOPPED }
         every { AdBlockVpnService.isRunning } answers { vpnState.value == VpnState.RUNNING }
         every { AdBlockVpnService.privateDnsStrict } returns privateDnsStrict
         every { RootProxyService.state } returns rootState
@@ -144,6 +145,17 @@ class HomeViewModelTest {
         vpnState.value = VpnState.STOPPING
         assertTrue(vm.vpnEnabled.value)
         assertTrue(vm.vpnStopping.value)
+    }
+
+    @Test
+    fun `vpn flags show stopped if service is dead even if state is not stopped`() {
+        every { AdBlockVpnService.isServiceAlive } returns false
+        keepHot(vm.vpnEnabled, vm.vpnConnecting, vm.vpnStopping)
+        vpnState.value = VpnState.STARTING
+
+        // Should not be connecting or enabled when service is dead
+        assertFalse(vm.vpnConnecting.value)
+        assertFalse(vm.vpnEnabled.value)
     }
 
     @Test

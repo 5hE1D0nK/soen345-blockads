@@ -10,6 +10,7 @@ import app.pwhs.blockads.service.ConnectionQualityProbe
 import app.pwhs.blockads.service.ConnectionStatus
 import app.pwhs.blockads.service.NetworkMonitor
 import app.pwhs.blockads.utils.BatteryMonitor
+import app.pwhs.blockads.utils.VpnUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -35,7 +36,8 @@ class VpnConnectionSupervisor(
     private val onLinkPropertiesChanged: (LinkProperties?) -> Unit,
     private val onPhysicalNetworkLostChanged: (Boolean) -> Unit,
     private val onNetworkActiveChanged: (Network?) -> Unit,
-    private val onRequestRestart: () -> Unit
+    private val onRequestRestart: () -> Unit,
+    private val isOtherVpnActive: () -> Boolean = { VpnUtils.isOtherVpnActive(context) }
 ) : VpnNetworkWatch {
 
     companion object {
@@ -88,13 +90,17 @@ class VpnConnectionSupervisor(
 
         networkSwitchJob?.cancel()
         networkSwitchJob = scope.launch {
+            if (isOtherVpnActive()) {
+                Timber.d("Another VPN is active, skipping auto-reconnect")
+                return@launch
+            }
             val autoReconnect = appPrefs.autoReconnect.first()
             val vpnWasEnabled = appPrefs.vpnEnabled.first()
 
             if (autoReconnect && vpnWasEnabled && isIdleProvider()) {
                 Timber.d("Auto-reconnecting VPN after network became available")
                 delay(NETWORK_STABILIZATION_DELAY_MS)
-                if (isIdleProvider()) {
+                if (isIdleProvider() && !isOtherVpnActive()) {
                     onStartVpn()
                 }
             }
