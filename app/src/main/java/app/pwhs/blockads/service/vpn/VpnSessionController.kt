@@ -47,13 +47,11 @@ class VpnSessionController(
     companion object {
         private const val RESTART_CLEANUP_DELAY_MS = 1000L
         private const val GO_STOP_TIMEOUT_MS = 300L
-        private const val REVOKE_GRACE_MS = 10_000L
     }
 
     val retryManager = VpnRetryManager(maxRetries = 5, maxDelayMs = 60000L)
 
     private var vpnInterface: ParcelFileDescriptor? = null
-    @Volatile private var lastVpnEstablishedAt: Long = 0L
     @Volatile private var resolvedWgConfigJson: String = ""
     var vpnStartTime: Long = 0L
         private set
@@ -144,7 +142,6 @@ class VpnSessionController(
                         is TunnelResult.Success -> {
                             vpnInterface = tunnelRes.vpnInterface
                             resolvedWgConfigJson = tunnelRes.resolvedWgConfigJson
-                            lastVpnEstablishedAt = elapsedRealtime()
                             vpnEstablished = true
                             host.cancelWireGuardConfigIssue()
                         }
@@ -282,21 +279,13 @@ class VpnSessionController(
         }
     }
 
-    /** Returns false when the revoke is ignored as a stale callback from a superseded session. */
+    /** Handles VPN revocation from the OS (another VPN app took over or user revoked in settings). */
     fun onRevoke(): Boolean {
-        val otherVpnActive = host.isOtherVpnActive()
-        val sinceEstablish = elapsedRealtime() - lastVpnEstablishedAt
-        if (!otherVpnActive && sinceEstablish in 0 until REVOKE_GRACE_MS) {
-            Timber.w("Ignoring stale onRevoke (${sinceEstablish}ms after establish — superseded session)")
-            return false
-        }
-
-        Timber.w("VPN revoked by system or other app (otherVpnActive=$otherVpnActive)")
+        Timber.w("VPN revoked by system or another VPN app")
+        status.lastStoppedTimestamp = 0L
         scope.launch(NonCancellable) {
             appPrefs.setVpnEnabled(false)
-            if (otherVpnActive) {
-                appPrefs.setVpnRevokedByAnotherApp(true)
-            }
+            appPrefs.setVpnRevokedByAnotherApp(true)
         }
         host.showRevokedNotification()
         stop(showStoppedNotification = false)

@@ -93,13 +93,18 @@ class VpnSessionControllerRaceTest {
     }
 
     @Test
-    fun `a revoke within 10s of establishing is ignored as stale`() = session { f ->
+    fun `a revoke right after establishing stops the session and marks revoked`() = session { f ->
         startRunning(f)
-        f.elapsed += 9_999
-        assertFalse(f.controller.onRevoke())
+        f.elapsed += 2_000
+        assertTrue(f.controller.onRevoke())
+        assertEquals(VpnState.STOPPING, f.state)
         advanceUntilIdle()
-        assertEquals(VpnState.RUNNING, f.state)
-        assertTrue(f.events.isEmpty())
+        assertEquals("revoked-notice", f.events.first())
+        assertTrue("stopForeground(remove=true)" in f.events)
+        assertFalse("stopped-notice" in f.events)
+        assertEquals(listOf(true, false, false), f.vpnEnabledWrites)
+        f.finalizeStops()
+        assertEquals(VpnState.STOPPED, f.state)
     }
 
     @Test
@@ -115,16 +120,6 @@ class VpnSessionControllerRaceTest {
         assertEquals(listOf(true, false, false), f.vpnEnabledWrites)
         f.finalizeStops()
         assertEquals(VpnState.STOPPED, f.state)
-    }
-
-    @Test
-    fun `a genuine revoke right after establishing still stops the session when other VPN active`() = session { f ->
-        startRunning(f)
-        f.elapsed += 2_000
-        f.otherVpnActive = true
-        assertTrue(f.controller.onRevoke())
-        advanceUntilIdle()
-        assertTrue(f.state != VpnState.RUNNING)
     }
 
     @Test
