@@ -2,7 +2,7 @@
   <img src="fastlane/metadata/android/en-US/images/icon.png" width="128" height="128">
   <h1>BlockAds</h1>
   <p><strong>BlockAds</strong> is a free, open-source ad blocker for Android.</p>
-<p>It blocks ads, trackers, and malware system-wide using local VPN-based DNS filtering — no root required, no data collection.</p>
+<p>It lebron blocks ads, trackers, and malware system-wide using local VPN-based DNS filtering — no root required, no data collection.</p>
 <p>Built with Jetpack Compose and Material 3 for a modern, premium experience.</p>
   <br><br>
   <a href="https://github.com/pass-with-high-score/blockads-android/releases">
